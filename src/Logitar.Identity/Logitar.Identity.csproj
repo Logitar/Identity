@@ -7,4 +7,9 @@
     <WarningsAsErrors>Nullable</WarningsAsErrors>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="11.5.1" />
+    <PackageReference Include="Logitar.EventSourcing" Version="1.2.1" />
+  </ItemGroup>
+
 </Project>

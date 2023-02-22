@@ -1,3 +1,3 @@
-# Logitar.Identity
+# Logitar Identity
 
 Identity management framework.
