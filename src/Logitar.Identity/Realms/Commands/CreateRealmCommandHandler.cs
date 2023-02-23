@@ -11,9 +11,9 @@ namespace Logitar.Identity.Realms.Commands;
 internal class CreateRealmCommandHandler : IRequestHandler<CreateRealmCommand, Realm>
 {
   /// <summary>
-  /// The actor context.
+  /// The current actor.
   /// </summary>
-  private readonly IActorContext _actorContext;
+  private readonly ICurrentActor _currentActor;
   /// <summary>
   /// The event store.
   /// </summary>
@@ -30,16 +30,16 @@ internal class CreateRealmCommandHandler : IRequestHandler<CreateRealmCommand, R
   /// <summary>
   /// Initializes a new instance of the <see cref="CreateRealmCommandHandler"/> class using the specified arguments.
   /// </summary>
-  /// <param name="actorContext">The actor context.</param>
+  /// <param name="currentActor">The current actor.</param>
   /// <param name="eventStore">The event store.</param>
   /// <param name="realmQuerier">The realm querier.</param>
   /// <param name="realmRepository">The realm repository.</param>
-  public CreateRealmCommandHandler(IActorContext actorContext,
+  public CreateRealmCommandHandler(ICurrentActor currentActor,
     IEventStore eventStore,
     IRealmQuerier realmQuerier,
     IRealmRepository realmRepository)
   {
-    _actorContext = actorContext;
+    _currentActor = currentActor;
     _eventStore = eventStore;
     _realmQuerier = realmQuerier;
     _realmRepository = realmRepository;
@@ -70,7 +70,7 @@ internal class CreateRealmCommandHandler : IRequestHandler<CreateRealmCommand, R
     Dictionary<ExternalProvider, ExternalProviderConfiguration> externalProviders = RealmHelper
       .GetExternalProviders(input.GoogleOAuth2Configuration);
 
-    RealmAggregate realm = new(_actorContext.ActorId, input.UniqueName, input.DisplayName, input.Description,
+    RealmAggregate realm = new(_currentActor.Id, input.UniqueName, input.DisplayName, input.Description,
       defaultLocale, input.Url, input.RequireConfirmedAccount, input.RequireUniqueEmail,
       usernameSettings, passwordSettings, input.JwtSecret, claimMappings, customAttributes,
       externalProviders);

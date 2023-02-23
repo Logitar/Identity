@@ -29,7 +29,7 @@ internal class Startup : StartupBase
     string connectionString = _configuration.GetValue<string>("POSTGRESQLCONNSTR_IdentityContext") ?? string.Empty;
     services.AddLogitarIdentityWithEntityFrameworkCorePostgreSQL(connectionString);
 
-    services.AddSingleton<IActorContext, HttpActorContext>();
+    services.AddSingleton<ICurrentActor, HttpCurrentActor>();
   }
 
   public override void Configure(IApplicationBuilder builder)

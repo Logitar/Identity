@@ -11,9 +11,9 @@ namespace Logitar.Identity.Realms.Commands;
 internal class UpdateRealmCommandHandler : IRequestHandler<UpdateRealmCommand, Realm>
 {
   /// <summary>
-  /// The actor context.
+  /// The current actor.
   /// </summary>
-  private readonly IActorContext _actorContext;
+  private readonly ICurrentActor _currentActor;
   /// <summary>
   /// The event store.
   /// </summary>
@@ -26,14 +26,14 @@ internal class UpdateRealmCommandHandler : IRequestHandler<UpdateRealmCommand, R
   /// <summary>
   /// Initializes a new instance of the <see cref="UpdateRealmCommandHandler"/> class using the specified arguments.
   /// </summary>
+  /// <param name="currentActor">The current actor.</param>
   /// <param name="eventStore">The event store.</param>
-  /// <param name="actorContext">The actor context.</param>
   /// <param name="realmQuerier">The realm querier.</param>
-  public UpdateRealmCommandHandler(IActorContext actorContext,
+  public UpdateRealmCommandHandler(ICurrentActor currentActor,
     IEventStore eventStore,
     IRealmQuerier realmQuerier)
   {
-    _actorContext = actorContext;
+    _currentActor = currentActor;
     _eventStore = eventStore;
     _realmQuerier = realmQuerier;
   }
@@ -62,7 +62,7 @@ internal class UpdateRealmCommandHandler : IRequestHandler<UpdateRealmCommand, R
     Dictionary<ExternalProvider, ExternalProviderConfiguration> externalProviders = RealmHelper
       .GetExternalProviders(input.GoogleOAuth2Configuration);
 
-    realm.Update(_actorContext.ActorId, input.DisplayName, input.Description, defaultLocale, input.Url,
+    realm.Update(_currentActor.Id, input.DisplayName, input.Description, defaultLocale, input.Url,
       input.RequireConfirmedAccount, input.RequireUniqueEmail, usernameSettings, passwordSettings,
       input.JwtSecret, claimMappings, customAttributes, externalProviders);
 
