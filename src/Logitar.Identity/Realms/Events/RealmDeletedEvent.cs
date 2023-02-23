@@ -1,11 +1,12 @@
 ﻿using Logitar.EventSourcing;
+using MediatR;
 
 namespace Logitar.Identity.Realms.Events;
 
 /// <summary>
 /// The event raised when a <see cref="RealmAggregate"/> is deleted.
 /// </summary>
-internal record RealmDeletedEvent : DomainEvent
+public record RealmDeletedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Initializes a new instance of the <see cref="RealmDeletedEvent"/> class.

@@ -1,12 +1,12 @@
 ﻿namespace Logitar.Identity.Realms;
 
 /// <summary>
-/// Represents the settings used to validate an username in a realm.
+/// The output representation of the settings used to validate usernames in a realm.
 /// </summary>
-internal record UsernameSettings
+public record UsernameSettings
 {
   /// <summary>
   /// Gets or sets the list of allowed characters in an username.
   /// </summary>
-  public string? AllowedCharacters { get; init; }
+  public string? AllowedCharacters { get; set; }
 }

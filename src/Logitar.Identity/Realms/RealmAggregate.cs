@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Logitar.EventSourcing;
+using Logitar.Identity.Accounts;
 using Logitar.Identity.Realms.Events;
 using Logitar.Identity.Realms.Validators;
 using System.Globalization;
@@ -14,15 +15,31 @@ namespace Logitar.Identity.Realms;
 /// application, only one realm can be used. In a multi-tenant application, a realm could be used for
 /// each tenant, and an additional realm could be used as the administration identity database.
 /// </summary>
-internal class RealmAggregate : AggregateRoot
+public class RealmAggregate : AggregateRoot
 {
+  /// <summary>
+  /// The user claim mappings of the realm.
+  /// </summary>
+  private readonly Dictionary<string, ReadOnlyClaimMapping> _claimMappings = new();
   /// <summary>
   /// The custom attributes of the realm.
   /// </summary>
   private readonly Dictionary<string, string> _customAttributes = new();
+  /// <summary>
+  /// The external authentication provider configurations of the realm.
+  /// </summary>
+  private readonly Dictionary<ExternalProvider, ExternalProviderConfiguration> _externalProviders = new();
 
   /// <summary>
-  /// Initializes a new instance of the <see cref="RealmAggregate"/> class with the specified arguments.
+  /// Initializes a new instance of the <see cref="RealmAggregate"/> class using the specified arguments.
+  /// </summary>
+  /// <param name="id">The identifier of the realm.</param>
+  public RealmAggregate(AggregateId id) : base(id)
+  {
+  }
+
+  /// <summary>
+  /// Initializes a new instance of the <see cref="RealmAggregate"/> class using the specified arguments.
   /// </summary>
   /// <param name="actorId">The identifier of the actor creating the realm.</param>
   /// <param name="uniqueName">The unique name of the realm.</param>
@@ -30,18 +47,29 @@ internal class RealmAggregate : AggregateRoot
   /// <param name="description">The textual description of the realm.</param>
   /// <param name="defaultLocale">The default locale of the realm.</param>
   /// <param name="url">The URL of the realm, if it is used by an external Web application.</param>
-  /// <param name="requireConfirmedAccount">TODO(fpion): documentation</param>
-  /// <param name="requireUniqueEmail">TODO(fpion): documentation</param>
+  /// <param name="requireConfirmedAccount">Gets or sets a value indicating whether or not users in this realm need a verified contact to sign-in to their account.</param>
+  /// <param name="requireUniqueEmail">Gets or sets a value indicating whether or not email addresses can be used by users in this realm to sign-in to their account. Unicity will be enforced upon sign-in email addresses.</param>
   /// <param name="usernameSettings">The settings used to validate usernames in the realm.</param>
   /// <param name="passwordSettings">The settings used to validate passwords in the realm.</param>
   /// <param name="jwtSecret">The secret used to sign JSON Web tokens.</param>
+  /// <param name="claimMappings">The user claim mappings of the realm.</param>
   /// <param name="customAttributes">The custom attributes of the realm.</param>
+  /// <param name="externalProviders">The external authentication provider configurations of the realm.</param>
   public RealmAggregate(AggregateId actorId, string uniqueName, string? displayName = null,
     string? description = null, CultureInfo? defaultLocale = null, string? url = null,
     bool requireConfirmedAccount = false, bool requireUniqueEmail = false,
-    UsernameSettings? usernameSettings = null, PasswordSettings? passwordSettings = null,
-    string? jwtSecret = null, Dictionary<string, string>? customAttributes = null)
+    ReadOnlyUsernameSettings? usernameSettings = null, ReadOnlyPasswordSettings? passwordSettings = null,
+    string? jwtSecret = null, Dictionary<string, ReadOnlyClaimMapping>? claimMappings = null,
+    Dictionary<string, string>? customAttributes = null,
+    Dictionary<ExternalProvider, ExternalProviderConfiguration>? externalProviders = null)
   {
+    externalProviders ??= new();
+    ReadOnlyGoogleOAuth2Configuration? googleOAuth2Configuration = null;
+    if (externalProviders.TryGetValue(ExternalProvider.GoogleOAuth2, out ExternalProviderConfiguration? configuration))
+    {
+      googleOAuth2Configuration = (ReadOnlyGoogleOAuth2Configuration)configuration;
+    }
+
     RealmCreatedEvent e = new()
     {
       ActorId = actorId,
@@ -55,7 +83,9 @@ internal class RealmAggregate : AggregateRoot
       UsernameSettings = usernameSettings ?? new(),
       PasswordSettings = passwordSettings ?? new(),
       JwtSecret = jwtSecret ?? GenerateJwtSecret(),
-      CustomAttributes = customAttributes ?? new()
+      ClaimMappings = claimMappings ?? new(),
+      CustomAttributes = customAttributes ?? new(),
+      GoogleOAuth2Configuration = googleOAuth2Configuration
     };
     new RealmCreatedValidator().ValidateAndThrow(e);
 
@@ -85,36 +115,45 @@ internal class RealmAggregate : AggregateRoot
   public string? Url { get; private set; }
 
   /// <summary>
-  /// TODO(fpion): documentation
+  /// Gets or sets a value indicating whether or not users in this realm need a verified contact to
+  /// sign-in to their account.
   /// </summary>
   public bool RequireConfirmedAccount { get; private set; }
   /// <summary>
-  /// TODO(fpion): documentation
+  /// Gets or sets a value indicating whether or not email addresses can be used by users in this
+  /// realm to sign-in to their account. Unicity will be enforced upon sign-in email addresses.
+  /// sign-in
   /// </summary>
   public bool RequireUniqueEmail { get; private set; }
 
   /// <summary>
   /// Gets or sets the settings used to validate usernames in the realm.
   /// </summary>
-  public UsernameSettings UsernameSettings { get; private set; } = new();
+  public ReadOnlyUsernameSettings UsernameSettings { get; private set; } = new();
   /// <summary>
   /// Gets or sets the settings used to validate passwords in the realm.
   /// </summary>
-  public PasswordSettings PasswordSettings { get; private set; } = new();
+  public ReadOnlyPasswordSettings PasswordSettings { get; private set; } = new();
 
   /// <summary>
   /// Gets or sets the secret used to sign JSON Web tokens.
   /// </summary>
   public string JwtSecret { get; private set; } = string.Empty;
 
-  // TODO(fpion): ExternalProviders
-
-  // TODO(fpion): User CustomAttributes Claim Mappings
+  /// <summary>
+  /// Gets the user claim mappings of the realm.
+  /// </summary>
+  public IReadOnlyDictionary<string, ReadOnlyClaimMapping> ClaimMappings => _claimMappings.AsReadOnly();
 
   /// <summary>
   /// Gets the custom attributes of the realm.
   /// </summary>
   public IReadOnlyDictionary<string, string> CustomAttributes => _customAttributes.AsReadOnly();
+
+  /// <summary>
+  /// Gets the external authentication provider configurations of the realm.
+  /// </summary>
+  public IReadOnlyDictionary<ExternalProvider, ExternalProviderConfiguration> ExternalProviders => _externalProviders.AsReadOnly();
 
   /// <summary>
   /// Applies the specified event to the realm.
@@ -154,17 +193,28 @@ internal class RealmAggregate : AggregateRoot
   /// <param name="description">The textual description of the realm.</param>
   /// <param name="defaultLocale">The default locale of the realm.</param>
   /// <param name="url">The URL of the realm, if it is used by an external Web application.</param>
-  /// <param name="requireConfirmedAccount">TODO(fpion): documentation</param>
-  /// <param name="requireUniqueEmail">TODO(fpion): documentation</param>
+  /// <param name="requireConfirmedAccount">Gets or sets a value indicating whether or not users in this realm need a verified contact to sign-in to their account.</param>
+  /// <param name="requireUniqueEmail">Gets or sets a value indicating whether or not email addresses can be used by users in this realm to sign-in to their account. Unicity will be enforced upon sign-in email addresses.</param>
   /// <param name="usernameSettings">The settings used to validate usernames in the realm.</param>
   /// <param name="passwordSettings">The settings used to validate passwords in the realm.</param>
   /// <param name="jwtSecret">The secret used to sign JSON Web tokens.</param>
+  /// <param name="claimMappings">The user claim mappings of the realm.</param>
   /// <param name="customAttributes">The custom attributes of the realm.</param>
+  /// <param name="externalProviders">The external authentication provider configurations of the realm.</param>
   public void Update(AggregateId actorId, string? displayName, string? description,
     CultureInfo? defaultLocale, string? url, bool requireConfirmedAccount, bool requireUniqueEmail,
-    UsernameSettings? usernameSettings, PasswordSettings? passwordSettings,
-    string? jwtSecret, Dictionary<string, string>? customAttributes)
+    ReadOnlyUsernameSettings? usernameSettings, ReadOnlyPasswordSettings? passwordSettings,
+    string? jwtSecret, Dictionary<string, ReadOnlyClaimMapping>? claimMappings,
+    Dictionary<string, string>? customAttributes,
+    Dictionary<ExternalProvider, ExternalProviderConfiguration>? externalProviders)
   {
+    externalProviders ??= new();
+    ReadOnlyGoogleOAuth2Configuration? googleOAuth2Configuration = null;
+    if (externalProviders.TryGetValue(ExternalProvider.GoogleOAuth2, out ExternalProviderConfiguration? configuration))
+    {
+      googleOAuth2Configuration = (ReadOnlyGoogleOAuth2Configuration)configuration;
+    }
+
     RealmUpdatedEvent e = new()
     {
       ActorId = actorId,
@@ -177,7 +227,9 @@ internal class RealmAggregate : AggregateRoot
       UsernameSettings = usernameSettings ?? new(),
       PasswordSettings = passwordSettings ?? new(),
       JwtSecret = jwtSecret ?? GenerateJwtSecret(),
-      CustomAttributes = customAttributes ?? new()
+      ClaimMappings = claimMappings ?? new(),
+      CustomAttributes = customAttributes ?? new(),
+      GoogleOAuth2Configuration = googleOAuth2Configuration
     };
     new RealmUpdatedValidator().ValidateAndThrow(e);
 
@@ -212,8 +264,17 @@ internal class RealmAggregate : AggregateRoot
 
     JwtSecret = e.JwtSecret;
 
+    _claimMappings.Clear();
+    _claimMappings.AddRange(e.ClaimMappings);
+
     _customAttributes.Clear();
     _customAttributes.AddRange(e.CustomAttributes);
+
+    _externalProviders.Clear();
+    if (e.GoogleOAuth2Configuration != null)
+    {
+      _externalProviders[ExternalProvider.GoogleOAuth2] = e.GoogleOAuth2Configuration;
+    }
   }
 
   /// <summary>
