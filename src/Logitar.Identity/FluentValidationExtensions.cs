@@ -145,7 +145,7 @@ internal static class FluentValidationExtensions
   /// <returns>The rule builder.</returns>
   public static IRuleBuilder<T, string?> Url<T>(this IRuleBuilder<T, string?> ruleBuilder)
   {
-    return ruleBuilder.Must(u => Uri.IsWellFormedUriString(u, UriKind.RelativeOrAbsolute))
+    return ruleBuilder.Must(u => u == null || Uri.IsWellFormedUriString(u, UriKind.RelativeOrAbsolute))
       .WithErrorCode("UrlValidator")
       .WithMessage("'{PropertyName}' must be a well formed URL.");
   }
