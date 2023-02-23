@@ -102,6 +102,11 @@ internal class RealmEntity : AggregateEntity, ICustomAttributes
   public string? GoogleOAuth2Configuration { get; private set; }
 
   /// <summary>
+  /// Gets or sets the list of roles in this realm.
+  /// </summary>
+  public List<RoleEntity> Roles { get; private set; } = new();
+
+  /// <summary>
   /// Updates the realm to the state of the specified event.
   /// </summary>
   /// <param name="e">The update event.</param>

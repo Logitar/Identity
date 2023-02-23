@@ -3,6 +3,7 @@ using Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL;
 using Logitar.Identity.EntityFrameworkCore.PostgreSQL.Queriers;
 using Logitar.Identity.EntityFrameworkCore.PostgreSQL.Repositories;
 using Logitar.Identity.Realms;
+using Logitar.Identity.Roles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -55,7 +56,8 @@ public static class DependencyInjectionExtensions
   private static IServiceCollection AddQueriers(this IServiceCollection services)
   {
     return services
-      .AddScoped<IRealmQuerier, RealmQuerier>();
+      .AddScoped<IRealmQuerier, RealmQuerier>()
+      .AddScoped<IRoleQuerier, RoleQuerier>();
   }
 
   /// <summary>
@@ -66,6 +68,7 @@ public static class DependencyInjectionExtensions
   private static IServiceCollection AddRepositories(this IServiceCollection services)
   {
     return services
-      .AddScoped<IRealmRepository, RealmRepository>();
+      .AddScoped<IRealmRepository, RealmRepository>()
+      .AddScoped<IRoleRepository, RoleRepository>();
   }
 }
