@@ -9,7 +9,7 @@ namespace Logitar.Identity.Realms.Commands;
 internal class DeleteRealmCommandHandler : IRequestHandler<DeleteRealmCommand, Realm>
 {
   /// <summary>
-  /// The actor context.
+  /// The current actor.
   /// </summary>
   private readonly ICurrentActor _currentActor;
   /// <summary>
@@ -24,8 +24,8 @@ internal class DeleteRealmCommandHandler : IRequestHandler<DeleteRealmCommand, R
   /// <summary>
   /// Initializes a new instance of the <see cref="DeleteRealmCommandHandler"/> class using the specified arguments.
   /// </summary>
-  /// <param name="eventStore">The event store.</param>
   /// <param name="currentActor">The current actor.</param>
+  /// <param name="eventStore">The event store.</param>
   /// <param name="realmQuerier">The realm querier.</param>
   public DeleteRealmCommandHandler(ICurrentActor currentActor,
     IEventStore eventStore,

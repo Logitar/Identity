@@ -21,7 +21,7 @@ public record ReadOnlyGoogleOAuth2Configuration : ExternalProviderConfiguration
   }
 
   /// <summary>
-  /// Gets the client identifier used for the external provider.
+  /// Gets or sets the client identifier used for the external provider.
   /// </summary>
   public string ClientId { get; init; } = string.Empty;
 }

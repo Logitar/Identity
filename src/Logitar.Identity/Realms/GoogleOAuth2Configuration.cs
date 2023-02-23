@@ -6,7 +6,7 @@
 public record GoogleOAuth2Configuration
 {
   /// <summary>
-  /// Gets the client identifier used for the external provider.
+  /// Gets or sets the client identifier used for the external provider.
   /// </summary>
   public string ClientId { get; set; } = string.Empty;
 }

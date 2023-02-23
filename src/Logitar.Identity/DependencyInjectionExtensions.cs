@@ -1,4 +1,5 @@
 ﻿using Logitar.Identity.Realms;
+using Logitar.Identity.Roles;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -36,7 +37,7 @@ public static class DependencyInjectionExtensions
       .AddSingleton<ICacheService, CacheService>()
       .AddTransient<IRequestPipeline, TRequestPipeline>();
 
-    // TODO(fpion): IActorContext
+    // TODO(fpion): ICurrentActor
     // TODO(fpion): IMemoryCache
   }
 
@@ -48,6 +49,7 @@ public static class DependencyInjectionExtensions
   private static IServiceCollection AddFacades(this IServiceCollection services)
   {
     return services
-      .AddTransient<IRealmService, RealmService>();
+      .AddTransient<IRealmService, RealmService>()
+      .AddTransient<IRoleService, RoleService>();
   }
 }
