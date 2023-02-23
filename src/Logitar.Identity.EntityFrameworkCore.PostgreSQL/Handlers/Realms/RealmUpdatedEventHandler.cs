@@ -57,7 +57,7 @@ internal class RealmUpdatedEventHandler : INotificationHandler<RealmUpdatedEvent
         return;
       }
 
-      ActorEntity actor = _actorService.GetActor(notification.ActorId);
+      ActorEntity actor = await _actorService.GetActorAsync(notification.ActorId, cancellationToken);
       realm.Update(notification, actor);
       await _context.SaveChangesAsync(cancellationToken);
     }

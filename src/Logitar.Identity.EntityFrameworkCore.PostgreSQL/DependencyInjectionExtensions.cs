@@ -1,5 +1,6 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL;
+using Logitar.Identity.ApiKeys;
 using Logitar.Identity.EntityFrameworkCore.PostgreSQL.Queriers;
 using Logitar.Identity.EntityFrameworkCore.PostgreSQL.Repositories;
 using Logitar.Identity.Realms;
@@ -44,7 +45,7 @@ public static class DependencyInjectionExtensions
       .AddMediatR(config => config.RegisterServicesFromAssembly(assembly))
       .AddQueriers()
       .AddRepositories()
-      .AddSingleton<IActorService, ActorService>()
+      .AddScoped<IActorService, ActorService>()
       .AddScoped<IEventBus, TEventBus>();
   }
 
@@ -56,6 +57,7 @@ public static class DependencyInjectionExtensions
   private static IServiceCollection AddQueriers(this IServiceCollection services)
   {
     return services
+      .AddScoped<IApiKeyQuerier, ApiKeyQuerier>()
       .AddScoped<IRealmQuerier, RealmQuerier>()
       .AddScoped<IRoleQuerier, RoleQuerier>();
   }

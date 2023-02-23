@@ -48,7 +48,7 @@ internal class RealmCreatedEventHandler : INotificationHandler<RealmCreatedEvent
   {
     try
     {
-      ActorEntity actor = _actorService.GetActor(notification.ActorId);
+      ActorEntity actor = await _actorService.GetActorAsync(notification.ActorId, cancellationToken);
       RealmEntity realm = new(notification, actor);
 
       _context.Realms.Add(realm);

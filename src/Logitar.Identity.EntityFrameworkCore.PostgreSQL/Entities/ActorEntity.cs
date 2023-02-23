@@ -44,6 +44,19 @@ public class ActorEntity
   }
 
   /// <summary>
+  /// Initializes a new instance of the <see cref="ActorEntity"/> class using the specified API key actor.
+  /// </summary>
+  /// <param name="apiKey">The API key actor.</param>
+  /// <param name="isDeleted">A value indicating whether or not the actor is deleted.</param>
+  internal ActorEntity(ApiKeyEntity apiKey, bool isDeleted = false)
+  {
+    Type = ActorType.ApiKey;
+    IsDeleted = isDeleted;
+
+    DisplayName = apiKey.Title;
+  }
+
+  /// <summary>
   /// Gets or sets the type of the actor.
   /// </summary>
   public ActorType Type { get; set; }

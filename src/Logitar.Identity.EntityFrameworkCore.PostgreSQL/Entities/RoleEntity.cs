@@ -71,6 +71,11 @@ internal class RoleEntity : AggregateEntity, ICustomAttributes
   public string? CustomAttributes { get; private set; }
 
   /// <summary>
+  /// Gets or sets the API keys in this role.
+  /// </summary>
+  public List<ApiKeyEntity> ApiKeys { get; private set; } = new();
+
+  /// <summary>
   /// Updates the role to the state of the specified event.
   /// </summary>
   /// <param name="e">The update event.</param>

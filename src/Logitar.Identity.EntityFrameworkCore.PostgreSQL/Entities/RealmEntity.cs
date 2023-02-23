@@ -102,6 +102,11 @@ internal class RealmEntity : AggregateEntity, ICustomAttributes
   public string? GoogleOAuth2Configuration { get; private set; }
 
   /// <summary>
+  /// Gets or sets the list of API keys in this realm.
+  /// </summary>
+  public List<ApiKeyEntity> ApiKeys { get; private set; } = new();
+
+  /// <summary>
   /// Gets or sets the list of roles in this realm.
   /// </summary>
   public List<RoleEntity> Roles { get; private set; } = new();

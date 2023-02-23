@@ -1,15 +1,15 @@
-﻿using Logitar.Identity.EntityFrameworkCore.PostgreSQL.Entities;
-using Logitar.Identity.Roles.Events;
+﻿using Logitar.Identity.ApiKeys.Events;
+using Logitar.Identity.EntityFrameworkCore.PostgreSQL.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Logitar.Identity.EntityFrameworkCore.PostgreSQL.Handlers.Roles;
+namespace Logitar.Identity.EntityFrameworkCore.PostgreSQL.Handlers.ApiKeys;
 
 /// <summary>
-/// The handler for <see cref="RoleUpdatedEvent"/> events.
+/// The handler for <see cref="ApiKeyDeletedEvent"/> events.
 /// </summary>
-internal class RoleUpdatedEventHandler : INotificationHandler<RoleUpdatedEvent>
+internal class ApiKeyDeletedEventHandler : INotificationHandler<ApiKeyDeletedEvent>
 {
   /// <summary>
   /// The actor service.
@@ -22,17 +22,17 @@ internal class RoleUpdatedEventHandler : INotificationHandler<RoleUpdatedEvent>
   /// <summary>
   /// The logger instance.
   /// </summary>
-  private readonly ILogger<RoleUpdatedEventHandler> _logger;
+  private readonly ILogger<ApiKeyDeletedEventHandler> _logger;
 
   /// <summary>
-  /// Initializes a new instance of the <see cref="RoleUpdatedEventHandler"/> class with the specified arguments.
+  /// Initializes a new instance of the <see cref="ApiKeyDeletedEventHandler"/> class with the specified arguments.
   /// </summary>
   /// <param name="actorService">The actor service.</param>
   /// <param name="context">The identity database context.</param>
   /// <param name="logger">The logger instance.</param>
-  public RoleUpdatedEventHandler(IActorService actorService,
+  public ApiKeyDeletedEventHandler(IActorService actorService,
     IdentityContext context,
-    ILogger<RoleUpdatedEventHandler> logger)
+    ILogger<ApiKeyDeletedEventHandler> logger)
   {
     _actorService = actorService;
     _context = context;
@@ -45,21 +45,22 @@ internal class RoleUpdatedEventHandler : INotificationHandler<RoleUpdatedEvent>
   /// <param name="notification">The event to handle.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The asynchronous operation.</returns>
-  public async Task Handle(RoleUpdatedEvent notification, CancellationToken cancellationToken)
+  public async Task Handle(ApiKeyDeletedEvent notification, CancellationToken cancellationToken)
   {
     try
     {
-      RoleEntity? role = await _context.Roles
+      ApiKeyEntity? apiKey = await _context.ApiKeys
         .SingleOrDefaultAsync(x => x.AggregateId == notification.AggregateId.Value, cancellationToken);
-      if (role == null)
+      if (apiKey == null)
       {
-        _logger.LogError("The role 'AggregateId={id}' could not be found.", notification.AggregateId);
+        _logger.LogError("The API key 'AggregateId={id}' could not be found.", notification.AggregateId);
         return;
       }
 
-      ActorEntity actor = await _actorService.GetActorAsync(notification.ActorId, cancellationToken);
-      role.Update(notification, actor);
+      _context.ApiKeys.Remove(apiKey);
       await _context.SaveChangesAsync(cancellationToken);
+
+      await _actorService.DeleteAsync(apiKey, cancellationToken);
     }
     catch (Exception exception)
     {
