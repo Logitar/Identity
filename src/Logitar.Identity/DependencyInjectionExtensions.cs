@@ -37,7 +37,7 @@ public static class DependencyInjectionExtensions
       .AddSingleton<ICacheService, CacheService>()
       .AddTransient<IRequestPipeline, TRequestPipeline>();
 
-    // TODO(fpion): IActorContext
+    // TODO(fpion): ICurrentActor
     // TODO(fpion): IMemoryCache
   }
 

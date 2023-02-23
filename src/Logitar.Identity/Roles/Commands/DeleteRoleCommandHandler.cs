@@ -9,9 +9,9 @@ namespace Logitar.Identity.Roles.Commands;
 internal class DeleteRoleCommandHandler : IRequestHandler<DeleteRoleCommand, Role>
 {
   /// <summary>
-  /// The actor context.
+  /// The current actor.
   /// </summary>
-  private readonly IActorContext _actorContext;
+  private readonly ICurrentActor _currentActor;
   /// <summary>
   /// The event store.
   /// </summary>
@@ -24,14 +24,14 @@ internal class DeleteRoleCommandHandler : IRequestHandler<DeleteRoleCommand, Rol
   /// <summary>
   /// Initializes a new instance of the <see cref="DeleteRoleCommandHandler"/> class using the specified arguments.
   /// </summary>
-  /// <param name="actorContext">The actor context.</param>
+  /// <param name="currentActor">The current actor.</param>
   /// <param name="eventStore">The event store.</param>
   /// <param name="roleQuerier">The role querier.</param>
-  public DeleteRoleCommandHandler(IActorContext actorContext,
+  public DeleteRoleCommandHandler(ICurrentActor currentActor,
     IEventStore eventStore,
     IRoleQuerier roleQuerier)
   {
-    _actorContext = actorContext;
+    _currentActor = currentActor;
     _eventStore = eventStore;
     _roleQuerier = roleQuerier;
   }
@@ -52,7 +52,7 @@ internal class DeleteRoleCommandHandler : IRequestHandler<DeleteRoleCommand, Rol
     Role output = await _roleQuerier.GetAsync(role.Id, cancellationToken)
       ?? throw new InvalidOperationException($"The role output (Id={role.Id}) could not be found.");
 
-    role.Delete(_actorContext.ActorId);
+    role.Delete(_currentActor.Id);
 
     await _eventStore.SaveAsync(role, cancellationToken);
 

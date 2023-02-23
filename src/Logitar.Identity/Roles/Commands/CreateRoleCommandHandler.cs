@@ -10,9 +10,9 @@ namespace Logitar.Identity.Roles.Commands;
 internal class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, Role>
 {
   /// <summary>
-  /// The actor context.
+  /// The current actor.
   /// </summary>
-  private readonly IActorContext _actorContext;
+  private readonly ICurrentActor _currentActor;
   /// <summary>
   /// The event store.
   /// </summary>
@@ -29,16 +29,16 @@ internal class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, Rol
   /// <summary>
   /// Initializes a new instance of the <see cref="CreateRoleCommandHandler"/> class using the specified arguments.
   /// </summary>
-  /// <param name="actorContext">The actor context.</param>
+  /// <param name="currentActor">The current actor.</param>
   /// <param name="eventStore">The event store.</param>
   /// <param name="roleQuerier">The role querier.</param>
   /// <param name="roleRepository">The role repository.</param>
-  public CreateRoleCommandHandler(IActorContext actorContext,
+  public CreateRoleCommandHandler(ICurrentActor currentActor,
     IEventStore eventStore,
     IRoleQuerier roleQuerier,
     IRoleRepository roleRepository)
   {
-    _actorContext = actorContext;
+    _currentActor = currentActor;
     _eventStore = eventStore;
     _roleQuerier = roleQuerier;
     _roleRepository = roleRepository;
@@ -68,7 +68,7 @@ internal class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, Rol
 
     Dictionary<string, string>? customAttributes = input.CustomAttributes?.ToDictionary();
 
-    RoleAggregate role = new(_actorContext.ActorId, realm, input.UniqueName, input.DisplayName,
+    RoleAggregate role = new(_currentActor.Id, realm, input.UniqueName, input.DisplayName,
       input.Description, customAttributes);
 
     await _eventStore.SaveAsync(role, cancellationToken);
