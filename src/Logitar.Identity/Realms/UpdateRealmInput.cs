@@ -3,6 +3,4 @@
 /// <summary>
 /// The realm update input data.
 /// </summary>
-public record UpdateRealmInput : SaveRealmInput
-{
-}
+public record UpdateRealmInput : SaveRealmInput;

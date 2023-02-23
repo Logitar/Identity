@@ -3,6 +3,4 @@
 /// <summary>
 /// The role update input data.
 /// </summary>
-public record UpdateRoleInput : SaveRoleInput
-{
-}
+public record UpdateRoleInput : SaveRoleInput;
