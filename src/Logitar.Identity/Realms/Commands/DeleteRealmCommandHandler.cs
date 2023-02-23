@@ -11,7 +11,7 @@ internal class DeleteRealmCommandHandler : IRequestHandler<DeleteRealmCommand, R
   /// <summary>
   /// The actor context.
   /// </summary>
-  private readonly IActorContext _actorContext;
+  private readonly ICurrentActor _currentActor;
   /// <summary>
   /// The event store.
   /// </summary>
@@ -25,13 +25,13 @@ internal class DeleteRealmCommandHandler : IRequestHandler<DeleteRealmCommand, R
   /// Initializes a new instance of the <see cref="DeleteRealmCommandHandler"/> class using the specified arguments.
   /// </summary>
   /// <param name="eventStore">The event store.</param>
-  /// <param name="actorContext">The actor context.</param>
+  /// <param name="currentActor">The current actor.</param>
   /// <param name="realmQuerier">The realm querier.</param>
-  public DeleteRealmCommandHandler(IActorContext actorContext,
+  public DeleteRealmCommandHandler(ICurrentActor currentActor,
     IEventStore eventStore,
     IRealmQuerier realmQuerier)
   {
-    _actorContext = actorContext;
+    _currentActor = currentActor;
     _eventStore = eventStore;
     _realmQuerier = realmQuerier;
   }
@@ -52,7 +52,7 @@ internal class DeleteRealmCommandHandler : IRequestHandler<DeleteRealmCommand, R
     Realm output = await _realmQuerier.GetAsync(realm.Id, cancellationToken)
       ?? throw new InvalidOperationException($"The realm output (Id={realm.Id}) could not be found.");
 
-    realm.Delete(_actorContext.ActorId);
+    realm.Delete(_currentActor.Id);
 
     await _eventStore.SaveAsync(realm, cancellationToken);
 
