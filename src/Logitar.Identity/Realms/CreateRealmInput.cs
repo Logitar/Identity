@@ -6,7 +6,7 @@
 public record CreateRealmInput : SaveRealmInput
 {
   /// <summary>
-  /// Gets or sets the unique name of the realm (not case-sensitive).
+  /// Gets or sets the unique name of the realm (case-insensitive).
   /// </summary>
   public string UniqueName { get; set; } = string.Empty;
 }

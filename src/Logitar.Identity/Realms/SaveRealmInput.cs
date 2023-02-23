@@ -15,7 +15,7 @@ public abstract record SaveRealmInput
   public string? Description { get; set; }
 
   /// <summary>
-  /// Gets or setsS the default locale of the realm.
+  /// Gets or sets the default locale of the realm.
   /// </summary>
   public string? DefaultLocale { get; set; }
   /// <summary>
