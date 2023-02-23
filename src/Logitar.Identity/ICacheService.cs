@@ -24,6 +24,12 @@ public interface ICacheService
   CachedApiKey? GetApiKey(AggregateId id);
 
   /// <summary>
+  /// Removes a cached API key by its identifier.
+  /// </summary>
+  /// <param name="id"></param>
+  void RemoveApiKey(AggregateId id);
+
+  /// <summary>
   /// Stores an actor into the cache.
   /// </summary>
   /// <param name="actor">The actor to cache.</param>

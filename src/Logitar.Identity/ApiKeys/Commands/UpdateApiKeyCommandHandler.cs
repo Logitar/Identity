@@ -19,6 +19,10 @@ internal class UpdateApiKeyCommandHandler : IRequestHandler<UpdateApiKeyCommand,
   /// </summary>
   private readonly IApiKeyQuerier _apiKeyQuerier;
   /// <summary>
+  /// The cache service.
+  /// </summary>
+  private readonly ICacheService _cacheService;
+  /// <summary>
   /// The current actor.
   /// </summary>
   private readonly ICurrentActor _currentActor;
@@ -32,15 +36,18 @@ internal class UpdateApiKeyCommandHandler : IRequestHandler<UpdateApiKeyCommand,
   /// </summary>
   /// <param name="apiKeyHelper">The API key helper.</param>
   /// <param name="apiKeyQuerier">The API key querier.</param>
+  /// <param name="cacheService">The cache service.</param>
   /// <param name="currentActor">The current actor.</param>
   /// <param name="eventStore">The event store.</param>
   public UpdateApiKeyCommandHandler(IApiKeyHelper apiKeyHelper,
     IApiKeyQuerier apiKeyQuerier,
+    ICacheService cacheService,
     ICurrentActor currentActor,
     IEventStore eventStore)
   {
     _apiKeyHelper = apiKeyHelper;
     _apiKeyQuerier = apiKeyQuerier;
+    _cacheService = cacheService;
     _currentActor = currentActor;
     _eventStore = eventStore;
   }
@@ -69,6 +76,8 @@ internal class UpdateApiKeyCommandHandler : IRequestHandler<UpdateApiKeyCommand,
     apiKey.Update(_currentActor.Id, input.Title, input.Description, customAttributes, roles);
 
     await _eventStore.SaveAsync(apiKey, cancellationToken);
+
+    _cacheService.RemoveApiKey(apiKey.Id);
 
     return await _apiKeyQuerier.GetAsync(apiKey.Id, cancellationToken)
       ?? throw new InvalidOperationException($"The API key output (Id={apiKey.Id}) could not be found.");

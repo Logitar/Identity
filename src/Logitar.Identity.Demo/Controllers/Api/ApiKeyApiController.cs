@@ -50,6 +50,12 @@ public class ApiKeyApiController : ControllerBase
     return Ok(apiKey);
   }
 
+  [HttpGet("{apiKey}/authenticate")]
+  public async Task<ActionResult<ApiKey>> AuthenticateAsync(string apiKey, CancellationToken cancellationToken)
+  {
+    return Ok(await _apiKeyService.AuthenticateAsync(apiKey, Constants.ApiKeyPrefix, cancellationToken));
+  }
+
   [HttpPut("{id}")]
   public async Task<ActionResult<ApiKey>> UpdateAsync(Guid id, [FromBody] UpdateApiKeyInput input, CancellationToken cancellationToken)
   {

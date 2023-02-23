@@ -76,7 +76,7 @@ internal class AuthenticateApiKeyCommandHandler : IRequestHandler<AuthenticateAp
       throw new ApiKeyIsExpiredException(apiKey);
     }
 
-    ApiKey output = await _apiKeyQuerier.GetAsync(apiKey.Id, cancellationToken)
+    ApiKey output = cached?.Output ?? await _apiKeyQuerier.GetAsync(apiKey.Id, cancellationToken)
       ?? throw new InvalidOperationException($"The API key output (Id={apiKey.Id}) could not be found.");
 
     cached = new CachedApiKey(apiKey, output);

@@ -13,6 +13,10 @@ internal class DeleteApiKeyCommandHandler : IRequestHandler<DeleteApiKeyCommand,
   /// </summary>
   private readonly IApiKeyQuerier _apiKeyQuerier;
   /// <summary>
+  /// The cache service.
+  /// </summary>
+  private readonly ICacheService _cacheService;
+  /// <summary>
   /// The current actor.
   /// </summary>
   private readonly ICurrentActor _currentActor;
@@ -25,15 +29,18 @@ internal class DeleteApiKeyCommandHandler : IRequestHandler<DeleteApiKeyCommand,
   /// Initializes a new instance of the <see cref="DeleteApiKeyCommandHandler"/> class using the specified arguments.
   /// </summary>
   /// <param name="apiKeyQuerier">The API key querier.</param>
+  /// <param name="cacheService">The cache service.</param>
   /// <param name="currentActor">The current actor.</param>
   /// <param name="eventStore">The event store.</param>
   public DeleteApiKeyCommandHandler(IApiKeyQuerier apiKeyQuerier,
+    ICacheService cacheService,
     ICurrentActor currentActor,
     IEventStore eventStore)
   {
+    _apiKeyQuerier = apiKeyQuerier;
+    _cacheService = cacheService;
     _currentActor = currentActor;
     _eventStore = eventStore;
-    _apiKeyQuerier = apiKeyQuerier;
   }
 
   /// <summary>
@@ -55,6 +62,8 @@ internal class DeleteApiKeyCommandHandler : IRequestHandler<DeleteApiKeyCommand,
     apiKey.Delete(_currentActor.Id);
 
     await _eventStore.SaveAsync(apiKey, cancellationToken);
+
+    _cacheService.RemoveApiKey(apiKey.Id);
 
     return output;
   }

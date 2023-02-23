@@ -39,6 +39,16 @@ internal class CacheService : ICacheService
   public CachedApiKey? GetApiKey(AggregateId id) => GetItem<CachedApiKey>(GetApiKeyCacheKey(id));
 
   /// <summary>
+  /// Removes a cached API key by its identifier.
+  /// </summary>
+  /// <param name="id"></param>
+  public void RemoveApiKey(AggregateId id)
+  {
+    RemoveItem(GetActorCacheKey(id.Value));
+    RemoveItem(GetApiKeyCacheKey(id));
+  }
+
+  /// <summary>
   /// Stores an actor into the cache.
   /// </summary>
   /// <param name="actor">The actor to cache.</param>
@@ -61,6 +71,15 @@ internal class CacheService : ICacheService
     return _memoryCache.TryGetValue(key, out object? value)
       ? (T?)value
       : default;
+  }
+
+  /// <summary>
+  /// Removes an object from the cache.
+  /// </summary>
+  /// <param name="key">The key of the object.</param>
+  private void RemoveItem(object key)
+  {
+    _memoryCache.Remove(key);
   }
 
   /// <summary>
