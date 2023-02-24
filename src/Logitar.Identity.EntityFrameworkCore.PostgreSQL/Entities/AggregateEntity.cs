@@ -68,7 +68,7 @@ public abstract class AggregateEntity
   /// </summary>
   /// <param name="id">The identifier of the actor.</param>
   /// <param name="actor">The JSON serialized actor.</param>
-  public void UpdateActors(string id, string actor)
+  public virtual void UpdateActors(string id, string actor)
   {
     if (CreatedById == id)
     {

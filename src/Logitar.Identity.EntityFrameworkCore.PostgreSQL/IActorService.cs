@@ -25,10 +25,26 @@ internal interface IActorService
   Task DeleteAsync(ApiKeyEntity apiKey, CancellationToken cancellationToken = default);
 
   /// <summary>
+  /// Deletes the specified user actors.
+  /// </summary>
+  /// <param name="user">The user actor to delete.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The asynchronous operation.</returns>
+  Task DeleteAsync(UserEntity user, CancellationToken cancellationToken = default);
+
+  /// <summary>
   /// Updates the specified API key actors.
   /// </summary>
   /// <param name="apiKey">The API key actor to update.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The asynchronous operation.</returns>
   Task UpdateAsync(ApiKeyEntity apiKey, CancellationToken cancellationToken = default);
+
+  /// <summary>
+  /// Updates the specified user actors.
+  /// </summary>
+  /// <param name="apiKey">The user actor to update.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The asynchronous operation.</returns>
+  Task UpdateAsync(UserEntity user, CancellationToken cancellationToken = default);
 }

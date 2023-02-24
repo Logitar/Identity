@@ -112,6 +112,11 @@ internal class RealmEntity : AggregateEntity, ICustomAttributes
   public List<RoleEntity> Roles { get; private set; } = new();
 
   /// <summary>
+  /// Gets or sets the list of users in this realm.
+  /// </summary>
+  public List<UserEntity> Users { get; private set; } = new();
+
+  /// <summary>
   /// Updates the realm to the state of the specified event.
   /// </summary>
   /// <param name="e">The update event.</param>
