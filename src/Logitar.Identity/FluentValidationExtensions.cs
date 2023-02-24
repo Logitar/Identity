@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using Logitar.Identity.Realms;
+using NodaTime;
 using System.Globalization;
 
 namespace Logitar.Identity;
@@ -129,12 +131,12 @@ internal static class FluentValidationExtensions
   /// <typeparam name="T">The type of the object being validated.</typeparam>
   /// <param name="ruleBuilder">The rule builder.</param>
   /// <returns>The rule builder.</returns>
-  //public static IRuleBuilder<T, string?> TimeZone<T>(this IRuleBuilder<T, string?> ruleBuilder)
-  //{
-  //  return ruleBuilder.Must(t => t == null || DateTimeZoneProviders.Tzdb.GetZoneOrNull(t) != null)
-  //    .WithErrorCode("TimeZoneValidator")
-  //    .WithMessage("'{PropertyName}' must be the name of time zone in the tz database.");
-  //}
+  public static IRuleBuilder<T, string?> TimeZone<T>(this IRuleBuilder<T, string?> ruleBuilder)
+  {
+    return ruleBuilder.Must(t => t == null || DateTimeZoneProviders.Tzdb.GetZoneOrNull(t) != null)
+      .WithErrorCode("TimeZoneValidator")
+      .WithMessage("'{PropertyName}' must be the name of time zone in the tz database.");
+  }
 
   /// <summary>
   /// Defines an 'url' validator on the current rule builder. Validation will fail if the property is
@@ -158,10 +160,10 @@ internal static class FluentValidationExtensions
   /// <param name="ruleBuilder">The rule builder.</param>
   /// <param name="settings">The username settings.</param>
   /// <returns>The rule builder.</returns>
-  //public static IRuleBuilder<T, string?> Username<T>(this IRuleBuilder<T, string?> ruleBuilder, ReadOnlyUsernameSettings settings)
-  //{
-  //  return ruleBuilder.Must(u => u == null || settings.AllowedCharacters == null || u.All(settings.AllowedCharacters.Contains))
-  //    .WithErrorCode("UsernameValidator")
-  //    .WithMessage($"'{{PropertyName}}' can only contain the following characters: {settings.AllowedCharacters}");
-  //}
+  public static IRuleBuilder<T, string?> Username<T>(this IRuleBuilder<T, string?> ruleBuilder, ReadOnlyUsernameSettings settings)
+  {
+    return ruleBuilder.Must(u => u == null || settings.AllowedCharacters == null || u.All(settings.AllowedCharacters.Contains))
+      .WithErrorCode("UsernameValidator")
+      .WithMessage($"'{{PropertyName}}' can only contain the following characters: {settings.AllowedCharacters}");
+  }
 }
