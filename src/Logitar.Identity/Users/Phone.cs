@@ -23,5 +23,5 @@ public record Phone : Contact
   /// <summary>
   /// Gets or sets the E.164 formatted user's phone number.
   /// </summary>
-  public string? PhoneE164Formatted { get; set; }
+  public string? E164Formatted { get; set; }
 }

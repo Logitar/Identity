@@ -74,7 +74,7 @@ public record ReadOnlyAddress : ReadOnlyContact
       sb.AppendLine(Line2);
     }
 
-    sb.AppendLine(Locality);
+    sb.Append(Locality);
     if (Region != null)
     {
       sb.Append(' ').Append(Region);
@@ -85,7 +85,7 @@ public record ReadOnlyAddress : ReadOnlyContact
     }
     sb.AppendLine();
 
-    sb.AppendLine(Country);
+    sb.Append(Country);
 
     return sb.ToString();
   }

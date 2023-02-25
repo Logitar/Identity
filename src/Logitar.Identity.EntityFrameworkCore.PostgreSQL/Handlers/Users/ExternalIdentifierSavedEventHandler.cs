@@ -50,6 +50,7 @@ internal class ExternalIdentifierSavedEventHandler : INotificationHandler<Extern
     try
     {
       UserEntity? user = await _context.Users
+        .Include(x => x.ExternalIdentifiers)
         .SingleOrDefaultAsync(x => x.AggregateId == notification.AggregateId.Value, cancellationToken);
       if (user == null)
       {

@@ -317,6 +317,8 @@ internal class UserEntity : AggregateEntity, ICustomAttributes
   /// <param name="actor">The actor saving the external identifier.</param>
   public void SaveExternalIdentifier(ExternalIdentifierSavedEvent e, ActorEntity actor)
   {
+    Update(e, actor);
+
     ExternalIdentifierEntity? externalIdentifier = ExternalIdentifiers.SingleOrDefault(x => x.Key == e.Key);
 
     if (e.Value == null)

@@ -34,4 +34,9 @@ public record Address : Contact
   /// Gets or sets the region of the postal address.
   /// </summary>
   public string? Region { get; set; }
+
+  /// <summary>
+  /// Gets or sets the formatted postal address.
+  /// </summary>
+  public string Formatted { get; set; } = string.Empty;
 }

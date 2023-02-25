@@ -37,7 +37,8 @@ internal class UserProfile : Profile
   /// <returns>The postal address.</returns>
   private static Address? GetAddress(UserEntity entity, User user)
   {
-    if (entity.AddressLine1 == null || entity.AddressLocality == null || entity.AddressCountry == null)
+    if (entity.AddressLine1 == null || entity.AddressLocality == null
+      || entity.AddressCountry == null || entity.AddressFormatted == null)
     {
       return null;
     }
@@ -50,6 +51,7 @@ internal class UserProfile : Profile
       PostalCode = entity.AddressPostalCode,
       Country = entity.AddressCountry,
       Region = entity.AddressRegion,
+      Formatted = entity.AddressFormatted,
       VerifiedBy = MappingHelper.GetActor(entity.AddressVerifiedById, entity.AddressVerifiedBy),
       VerifiedOn = entity.AddressVerifiedOn,
       IsVerified = entity.IsAddressVerified
@@ -96,7 +98,7 @@ internal class UserProfile : Profile
       CountryCode = entity.PhoneCountryCode,
       Number = entity.PhoneNumber,
       Extension = entity.PhoneExtension,
-      PhoneE164Formatted = entity.PhoneE164Formatted,
+      E164Formatted = entity.PhoneE164Formatted,
       VerifiedBy = MappingHelper.GetActor(entity.PhoneVerifiedById, entity.PhoneVerifiedBy),
       VerifiedOn = entity.PhoneVerifiedOn,
       IsVerified = entity.IsPhoneVerified

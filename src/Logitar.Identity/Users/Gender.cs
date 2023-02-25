@@ -21,9 +21,9 @@ public readonly struct Gender
 
     Value = value.Trim().ToLower() switch
     {
-      "female" => Female.Value,
-      "male" => Male.Value,
-      "other" => Other.Value,
+      "female" => nameof(Female),
+      "male" => nameof(Male),
+      "other" => nameof(Other),
       _ => value,
     };
   }

@@ -50,6 +50,7 @@ internal class UserUpdatedEventHandler : INotificationHandler<UserUpdatedEvent>
     try
     {
       UserEntity? user = await _context.Users
+        .Include(x => x.Roles)
         .SingleOrDefaultAsync(x => x.AggregateId == notification.AggregateId.Value, cancellationToken);
       if (user == null)
       {

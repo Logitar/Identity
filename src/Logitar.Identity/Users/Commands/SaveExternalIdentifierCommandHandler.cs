@@ -64,7 +64,7 @@ internal class SaveExternalIdentifierCommandHandler : IRequestHandler<SaveExtern
     if (command.Value != null)
     {
       UserAggregate? otherUser = await _userRepository.LoadAsync(realm, command.Key, command.Value, cancellationToken);
-      if (!user.Equals(otherUser))
+      if (otherUser?.Equals(user) == false)
       {
         throw new ExternalIdentifierAlreadyUsed(user, command.Key, command.Value);
       }

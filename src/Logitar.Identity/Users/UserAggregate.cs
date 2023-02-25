@@ -461,6 +461,6 @@ public class UserAggregate : AggregateRoot
   {
     return string.Join(' ', names.Where(name => !string.IsNullOrWhiteSpace(name))
       .SelectMany(name => name!.Split())
-      .Where(name => !string.IsNullOrEmpty(name)));
+      .Where(name => !string.IsNullOrEmpty(name))).CleanTrim();
   }
 }

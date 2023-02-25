@@ -27,6 +27,7 @@ internal class ExternalIdentifierConfiguration : IEntityTypeConfiguration<Extern
     builder.HasIndex(x => x.CreatedById);
     builder.HasIndex(x => x.UpdatedById);
     builder.HasIndex(x => new { x.RealmId, x.Key, x.Value }).IsUnique();
+    builder.HasIndex(x => new { x.UserId, x.Key }).IsUnique();
 
     builder.Property(x => x.Key).HasMaxLength(byte.MaxValue);
     builder.Property(x => x.Value).HasMaxLength(byte.MaxValue);
