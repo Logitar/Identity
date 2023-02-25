@@ -10,11 +10,18 @@ namespace Logitar.Identity.Users.Validators;
 internal class UserSavedValidator<T> : AbstractValidator<T> where T : UserSavedEvent
 {
   /// <summary>
-  /// Initializes a new instance of the <see cref="UserSavedValidator"/> class.
+  /// Initializes a new instance of the <see cref="UserSavedValidator{T}"/> class.
   /// </summary>
-  public UserSavedValidator()
+  protected UserSavedValidator()
   {
     RuleFor(x => x.PasswordHash).NullOrNotEmpty();
+
+    When(x => x.Address == null, () => RuleFor(x => x.AddressVerification).Equal(VerificationAction.None))
+      .Otherwise(() => RuleFor(x => x.Address!).SetValidator(new ReadOnlyAddressValidator()));
+    When(x => x.Email == null, () => RuleFor(x => x.EmailVerification).Equal(VerificationAction.None))
+      .Otherwise(() => RuleFor(x => x.Email!).SetValidator(new ReadOnlyEmailValidator()));
+    When(x => x.Phone == null, () => RuleFor(x => x.PhoneVerification).Equal(VerificationAction.None))
+      .Otherwise(() => RuleFor(x => x.Phone!).SetValidator(new ReadOnlyPhoneValidator()));
 
     RuleFor(x => x.FirstName).NullOrNotEmpty()
       .MaximumLength(byte.MaxValue);

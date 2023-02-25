@@ -43,6 +43,9 @@ public class UserAggregate : AggregateRoot
   /// <param name="realm">The realm in which the user belongs.</param>
   /// <param name="username">The unique name of the user.</param>
   /// <param name="passwordHash">The salted and hashed password of the user.</param>
+  /// <param name="address">The postal address of the user.</param>
+  /// <param name="email">The email address of the user.</param>
+  /// <param name="phone">The phone number of the user.</param>
   /// <param name="firstName">The first name(s) or given name(s) of the user.</param>
   /// <param name="middleName">The middle name(s) of the user.</param>
   /// <param name="lastName">The last name(s) or surname(s) of the user.</param>
@@ -57,6 +60,7 @@ public class UserAggregate : AggregateRoot
   /// <param name="customAttributes">The custom attributes of the user.</param>
   /// <param name="roles">The roles of the user.</param>
   public UserAggregate(AggregateId actorId, RealmAggregate realm, string username, string? passwordHash = null,
+    ReadOnlyAddress? address = null, ReadOnlyEmail? email = null, ReadOnlyPhone? phone = null,
     string? firstName = null, string? middleName = null, string? lastName = null, string? nickname = null,
     DateTime? birthdate = null, Gender? gender = null, CultureInfo? locale = null, string? timeZone = null,
     string? picture = null, string? profile = null, string? website = null,
@@ -68,6 +72,12 @@ public class UserAggregate : AggregateRoot
       RealmId = realm.Id,
       Username = username.Trim(),
       PasswordHash = passwordHash,
+      Address = address,
+      AddressVerification = address?.IsVerified == true ? VerificationAction.Verify : VerificationAction.None,
+      Email = email,
+      EmailVerification = email?.IsVerified == true ? VerificationAction.Verify : VerificationAction.None,
+      Phone = phone,
+      PhoneVerification = phone?.IsVerified == true ? VerificationAction.Verify : VerificationAction.None,
       FirstName = firstName?.CleanTrim(),
       MiddleName = middleName?.CleanTrim(),
       LastName = lastName?.CleanTrim(),
@@ -106,6 +116,24 @@ public class UserAggregate : AggregateRoot
   /// Gets or sets a value indicating whether or not the user account is disabled.
   /// </summary>
   public bool IsDisabled { get; private set; }
+
+  /// <summary>
+  /// Gets or sets the postal address of the user.
+  /// </summary>
+  public ReadOnlyAddress? Address { get; private set; }
+  /// <summary>
+  /// Gets or sets the email address of the user.
+  /// </summary>
+  public ReadOnlyEmail? Email { get; private set; }
+  /// <summary>
+  /// Gets or sets the phone number of the user.
+  /// </summary>
+  public ReadOnlyPhone? Phone { get; private set; }
+
+  /// <summary>
+  /// Gets or sets a value indicating whether or not the user account is confirmed.
+  /// </summary>
+  public bool IsConfirmed => Address?.IsVerified == true || Email?.IsVerified == true || Phone?.IsVerified == true;
 
   /// <summary>
   /// Gets or sets the first name(s) or given name(s) of the user.
@@ -306,6 +334,9 @@ public class UserAggregate : AggregateRoot
   /// </summary>
   /// <param name="actorId">The identifier of the actor creating the user.</param>
   /// <param name="passwordHash">The salted and hashed password of the user. If null, the password won't be changed.</param>
+  /// <param name="address">The postal address of the user.</param>
+  /// <param name="email">The email address of the user.</param>
+  /// <param name="phone">The phone number of the user.</param>
   /// <param name="firstName">The first name(s) or given name(s) of the user.</param>
   /// <param name="middleName">The middle name(s) of the user.</param>
   /// <param name="lastName">The last name(s) or surname(s) of the user.</param>
@@ -319,15 +350,36 @@ public class UserAggregate : AggregateRoot
   /// <param name="website">The link (URL) to the website of the user.</param>
   /// <param name="customAttributes">The custom attributes of the user.</param>
   /// <param name="roles">The roles of the user.</param>
-  public void Update(AggregateId actorId, string? passwordHash, string? firstName, string? middleName,
-    string? lastName, string? nickname, DateTime? birthdate, Gender? gender, CultureInfo? locale,
+  public void Update(AggregateId actorId, string? passwordHash,
+    ReadOnlyAddress? address, ReadOnlyEmail? email, ReadOnlyPhone? phone,
+    string? firstName, string? middleName, string? lastName, string? nickname,
+    DateTime? birthdate, Gender? gender, CultureInfo? locale,
     string? timeZone, string? picture, string? profile, string? website,
     Dictionary<string, string>? customAttributes, IEnumerable<RoleAggregate>? roles)
   {
+    bool isAddressModified = Address?.Line1 != address?.Line1 || Address?.Line2 != address?.Line2
+      || Address?.Locality != address?.Locality || Address?.PostalCode != address?.PostalCode
+      || Address?.Country != address?.Country || Address?.Region != address?.Region;
+    VerificationAction addressVerification = email?.IsVerified == true ? VerificationAction.Verify
+      : (isAddressModified ? VerificationAction.Unverify : VerificationAction.None);
+    bool isEmailModified = Email?.Address != email?.Address;
+    VerificationAction emailVerification = email?.IsVerified == true ? VerificationAction.Verify
+      : (isEmailModified ? VerificationAction.Unverify : VerificationAction.None);
+    bool isPhoneModified = Phone?.CountryCode != phone?.CountryCode
+      || Phone?.Number != phone?.Number || Phone?.Extension != phone?.Extension;
+    VerificationAction phoneVerification = phone?.IsVerified == true ? VerificationAction.Verify
+      : (isPhoneModified ? VerificationAction.Unverify : VerificationAction.None);
+
     UserUpdatedEvent e = new()
     {
       ActorId = actorId,
       PasswordHash = passwordHash,
+      Address = address,
+      AddressVerification = addressVerification,
+      Email = email,
+      EmailVerification = emailVerification,
+      Phone = phone,
+      PhoneVerification = phoneVerification,
       FirstName = firstName?.CleanTrim(),
       MiddleName = middleName?.CleanTrim(),
       LastName = lastName?.CleanTrim(),
@@ -353,32 +405,7 @@ public class UserAggregate : AggregateRoot
   /// <param name="e">The domain event.</param>
   protected virtual void Apply(UserUpdatedEvent e)
   {
-    if (e.PasswordHash != null)
-    {
-      PasswordHash = e.PasswordHash;
-    }
-
-    FirstName = e.FirstName;
-    MiddleName = e.MiddleName;
-    LastName = e.LastName;
-    FullName = e.FullName;
-    Nickname = e.Nickname;
-
-    Birthdate = e.Birthdate;
-    Gender = e.Gender;
-
-    Locale = e.Locale;
-    TimeZone = e.TimeZone;
-
-    Picture = e.Picture;
-    Profile = e.Profile;
-    Website = e.Website;
-
-    _customAttributes.Clear();
-    _customAttributes.AddRange(e.CustomAttributes);
-
-    _roles.Clear();
-    _roles.AddRange(e.Roles);
+    Apply((UserSavedEvent)e);
   }
 
   /// <summary>
@@ -391,6 +418,10 @@ public class UserAggregate : AggregateRoot
     {
       PasswordHash = e.PasswordHash;
     }
+
+    Address = e.Address;
+    Email = e.Email;
+    Phone = e.Phone;
 
     FirstName = e.FirstName;
     MiddleName = e.MiddleName;

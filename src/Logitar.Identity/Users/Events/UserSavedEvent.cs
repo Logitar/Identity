@@ -15,6 +15,33 @@ public abstract record UserSavedEvent : DomainEvent, INotification
   public string? PasswordHash { get; init; }
 
   /// <summary>
+  /// Gets or sets the postal address of the user.
+  /// </summary>
+  public ReadOnlyAddress? Address { get; init; }
+  /// <summary>
+  /// Gets or sets the postal address verification action performed by the event.
+  /// </summary>
+  public VerificationAction AddressVerification { get; init; }
+
+  /// <summary>
+  /// Gets or sets the email address of the user.
+  /// </summary>
+  public ReadOnlyEmail? Email { get; init; }
+  /// <summary>
+  /// Gets or sets the email address verification action performed by the event.
+  /// </summary>
+  public VerificationAction EmailVerification { get; init; }
+
+  /// <summary>
+  /// Gets or sets the phone nunber of the user.
+  /// </summary>
+  public ReadOnlyPhone? Phone { get; init; }
+  /// <summary>
+  /// Gets or sets the phone number verification action performed by the event.
+  /// </summary>
+  public VerificationAction PhoneVerification { get; init; }
+
+  /// <summary>
   /// Gets or sets the first name(s) or given name(s) of the user.
   /// </summary>
   public string? FirstName { get; init; }

@@ -7,4 +7,10 @@ namespace Logitar.Identity.Users.Validators;
 /// </summary>
 internal class UserUpdatedValidator : UserSavedValidator<UserUpdatedEvent>
 {
+  /// <summary>
+  /// Initializes a new instance of the <see cref="UserUpdatedValidator"/> class.
+  /// </summary>
+  public UserUpdatedValidator() : base()
+  {
+  }
 }

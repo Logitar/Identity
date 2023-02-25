@@ -58,7 +58,7 @@ internal class UserUpdatedEventHandler : INotificationHandler<UserUpdatedEvent>
       }
 
       bool updateActors = user.FullName != notification.FullName
-        // TODO(fpion): Email
+        || user.EmailAddress != notification.Email?.Address
         || user.Picture != notification.Picture;
 
       ActorEntity actor = await _actorService.GetActorAsync(notification.ActorId, cancellationToken);

@@ -1,4 +1,5 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Identity.Users;
 using Logitar.Identity.Users.Events;
 using System.Text.Json;
 
@@ -101,6 +102,118 @@ internal class UserEntity : AggregateEntity, ICustomAttributes
   public DateTime? SignedInOn { get; private set; }
 
   /// <summary>
+  /// Gets or sets the primary line of the user's postal address.
+  /// </summary>
+  public string? AddressLine1 { get; private set; }
+  /// <summary>
+  /// Gets or sets the secondary line of the user's postal address.
+  /// </summary>
+  public string? AddressLine2 { get; private set; }
+  /// <summary>
+  /// Gets or sets the locality of the user's postal address.
+  /// </summary>
+  public string? AddressLocality { get; private set; }
+  /// <summary>
+  /// Gets or sets the postal code of the user's postal address.
+  /// </summary>
+  public string? AddressPostalCode { get; private set; }
+  /// <summary>
+  /// Gets or sets the country of the user's postal address.
+  /// </summary>
+  public string? AddressCountry { get; private set; }
+  /// <summary>
+  /// Gets or sets the region of the user's postal address.
+  /// </summary>
+  public string? AddressRegion { get; private set; }
+  /// <summary>
+  /// Gets or sets the formatted user's postal address.
+  /// </summary>
+  public string? AddressFormatted { get; private set; }
+  /// <summary>
+  /// Gets or sets the identifier of the actor who verified the postal address.
+  /// </summary>
+  public string? AddressVerifiedById { get; private set; }
+  /// <summary>
+  /// Gets or sets the serialized actor who verified the postal address.
+  /// </summary>
+  public string? AddressVerifiedBy { get; private set; }
+  /// <summary>
+  /// Gets or sets the date and time when the postal address was verified.
+  /// </summary>
+  public DateTime? AddressVerifiedOn { get; private set; }
+  /// <summary>
+  /// Gets or sets a value indicating whether or not the postal address is verified.
+  /// </summary>
+  public bool IsAddressVerified { get; private set; }
+
+  /// <summary>
+  /// Gets or sets the email address of the user.
+  /// </summary>
+  public string? EmailAddress { get; private set; }
+  /// <summary>
+  /// Gets or sets the normalized value of the user's email address.
+  /// </summary>
+  public string? EmailAddressNormalized { get; private set; }
+  /// <summary>
+  /// Gets or sets the identifier of the actor who verified the email address.
+  /// </summary>
+  public string? EmailVerifiedById { get; private set; }
+  /// <summary>
+  /// Gets or sets the serialized actor who verified the email address.
+  /// </summary>
+  public string? EmailVerifiedBy { get; private set; }
+  /// <summary>
+  /// Gets or sets the date and time when the email address was verified.
+  /// </summary>
+  public DateTime? EmailVerifiedOn { get; private set; }
+  /// <summary>
+  /// Gets or sets a value indicating whether or not the email address is verified.
+  /// </summary>
+  public bool IsEmailVerified { get; private set; }
+
+  /// <summary>
+  /// Gets or sets the country code of the user's phone number.
+  /// </summary>
+  public string? PhoneCountryCode { get; set; }
+  /// <summary>
+  /// Gets or sets the phone number of the user.
+  /// </summary>
+  public string? PhoneNumber { get; private set; }
+  /// <summary>
+  /// Gets or sets the extension of the user's phone number.
+  /// </summary>
+  public string? PhoneExtension { get; set; }
+  /// <summary>
+  /// Gets or sets the E.164 formatted user's phone number.
+  /// </summary>
+  public string? PhoneE164Formatted { get; private set; }
+  /// <summary>
+  /// Gets or sets the identifier of the actor who verified the phone number.
+  /// </summary>
+  public string? PhoneVerifiedById { get; private set; }
+  /// <summary>
+  /// Gets or sets the serialized actor who verified the phone number.
+  /// </summary>
+  public string? PhoneVerifiedBy { get; private set; }
+  /// <summary>
+  /// Gets or sets the date and time when the phone number was verified.
+  /// </summary>
+  public DateTime? PhoneVerifiedOn { get; private set; }
+  /// <summary>
+  /// Gets or sets a value indicating whether or not the phone number is verified.
+  /// </summary>
+  public bool IsPhoneVerified { get; private set; }
+
+  /// <summary>
+  /// Gets or sets a value indicating whether or not the user account is confirmed.
+  /// </summary>
+  public bool IsConfirmed
+  {
+    get => IsAddressVerified || IsEmailVerified || IsPhoneVerified;
+    private set { }
+  }
+
+  /// <summary>
   /// Gets or sets the first name(s) or given name(s) of the user.
   /// </summary>
   public string? FirstName { get; private set; }
@@ -156,10 +269,12 @@ internal class UserEntity : AggregateEntity, ICustomAttributes
   /// Gets or sets the custom attributes of the user.
   /// </summary>
   public string? CustomAttributes { get; private set; }
+
   /// <summary>
   /// Gets or sets the list of external identifiers of the user.
   /// </summary>
   public List<ExternalIdentifierEntity> ExternalIdentifiers { get; private set; } = new();
+
   /// <summary>
   /// Gets or sets the list of roles of the user.
   /// </summary>
@@ -252,6 +367,21 @@ internal class UserEntity : AggregateEntity, ICustomAttributes
     {
       DisabledBy = actor;
     }
+
+    if (AddressVerifiedById != id)
+    {
+      AddressVerifiedBy = actor;
+    }
+
+    if (EmailVerifiedById != id)
+    {
+      EmailVerifiedBy = actor;
+    }
+
+    if (PhoneVerifiedById == id)
+    {
+      PhoneVerifiedBy = actor;
+    }
   }
 
   /// <summary>
@@ -262,6 +392,67 @@ internal class UserEntity : AggregateEntity, ICustomAttributes
   private void Apply(UserSavedEvent e, ActorEntity actor)
   {
     SetPassword(e, e.PasswordHash, actor);
+
+    AddressLine1 = e.Address?.Line1;
+    AddressLine2 = e.Address?.Line2;
+    AddressLocality = e.Address?.Locality;
+    AddressPostalCode = e.Address?.PostalCode;
+    AddressCountry = e.Address?.Country;
+    AddressRegion = e.Address?.Region;
+    AddressFormatted = e.Address?.ToFormattedString();
+    switch (e.AddressVerification)
+    {
+      case VerificationAction.Verify:
+        AddressVerifiedById = e.ActorId.Value;
+        AddressVerifiedBy = actor.Serialize();
+        AddressVerifiedOn = e.OccurredOn;
+        IsAddressVerified = true;
+        break;
+      case VerificationAction.Unverify:
+        AddressVerifiedById = null;
+        AddressVerifiedBy = null;
+        AddressVerifiedOn = null;
+        IsAddressVerified = false;
+        break;
+    }
+
+    EmailAddress = e.Email?.Address;
+    EmailAddressNormalized = e.Email?.Address.ToUpper();
+    switch (e.EmailVerification)
+    {
+      case VerificationAction.Verify:
+        EmailVerifiedById = e.ActorId.Value;
+        EmailVerifiedBy = actor.Serialize();
+        EmailVerifiedOn = e.OccurredOn;
+        IsEmailVerified = true;
+        break;
+      case VerificationAction.Unverify:
+        EmailVerifiedById = null;
+        EmailVerifiedBy = null;
+        EmailVerifiedOn = null;
+        IsEmailVerified = false;
+        break;
+    }
+
+    PhoneCountryCode = e.Phone?.CountryCode;
+    PhoneNumber = e.Phone?.Number;
+    PhoneExtension = e.Phone?.Extension;
+    PhoneE164Formatted = e.Phone?.ToE164String();
+    switch (e.PhoneVerification)
+    {
+      case VerificationAction.Verify:
+        PhoneVerifiedById = e.ActorId.Value;
+        PhoneVerifiedBy = actor.Serialize();
+        PhoneVerifiedOn = e.OccurredOn;
+        IsPhoneVerified = true;
+        break;
+      case VerificationAction.Unverify:
+        PhoneVerifiedById = null;
+        PhoneVerifiedBy = null;
+        PhoneVerifiedOn = null;
+        IsPhoneVerified = false;
+        break;
+    }
 
     FirstName = e.FirstName;
     MiddleName = e.MiddleName;

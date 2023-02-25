@@ -7,4 +7,10 @@ namespace Logitar.Identity.Realms.Validators;
 /// </summary>
 internal class RealmUpdatedValidator : RealmSavedValidator<RealmUpdatedEvent>
 {
+  /// <summary>
+  /// Initializes a new instance of the <see cref="RealmCreatedValidator"/> class.
+  /// </summary>
+  public RealmUpdatedValidator() : base()
+  {
+  }
 }

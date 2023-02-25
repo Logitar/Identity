@@ -6,9 +6,19 @@
 public enum UserSort
 {
   /// <summary>
+  /// The users will be sorted by their formatted postal address.
+  /// </summary>
+  AddressFormatted,
+
+  /// <summary>
   /// The users will be sorted by the date and time they were disabled.
   /// </summary>
   DisabledOn,
+
+  /// <summary>
+  /// The users will be sorted by their email address.
+  /// </summary>
+  EmailAddress,
 
   /// <summary>
   /// The users will be sorted by their full name.
@@ -24,6 +34,11 @@ public enum UserSort
   /// The users will be sorted by their latest password change date and time.
   /// </summary>
   PasswordChangedOn,
+
+  /// <summary>
+  /// The users will be sorted by their E.164 formatted phone number.
+  /// </summary>
+  PhoneE164Formatted,
 
   /// <summary>
   /// The users will be sorted by their latest successful sign-in date and time.

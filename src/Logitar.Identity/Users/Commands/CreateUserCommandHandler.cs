@@ -72,16 +72,30 @@ internal class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Use
 
     if (await _userRepository.LoadAsync(realm, input.Username, cancellationToken) != null)
     {
-      throw new UniqueNameAlreadyUsedException(input.Username, nameof(input.Username));
+      throw new UsernameAlreadyUsedException(realm, input.Username, nameof(input.Username));
+    }
+
+    if (realm.RequireUniqueEmail && input.Email != null)
+    {
+      if ((await _userRepository.LoadByEmailAsync(realm, input.Email.Address, cancellationToken)).Any())
+      {
+        throw new EmailAddressAlreadyUsedException(realm, input.Email.Address, nameof(input.Email));
+      }
     }
 
     string? passwordHash = input.Password == null ? null : _userHelper.ValidateAndHashPassword(realm, input.Password);
+    ReadOnlyAddress? address = input.Address == null ? null : new ReadOnlyAddress(input.Address.Line1,
+      input.Address.Locality, input.Address.Country, input.Address.Line2, input.Address.PostalCode,
+      input.Address.Region, input.Address.IsVerified);
+    ReadOnlyEmail? email = input.Email == null ? null : new ReadOnlyEmail(input.Email.Address, input.Email.IsVerified);
+    ReadOnlyPhone? phone = input.Phone == null ? null
+      : new ReadOnlyPhone(input.Phone.Number, input.Phone.CountryCode, input.Phone.Extension, input.Phone.IsVerified);
     Gender? gender = input.Gender == null ? null : new Gender(input.Gender);
     CultureInfo? locale = input.Locale?.GetCultureInfo();
     Dictionary<string, string>? customAttributes = input.CustomAttributes?.ToDictionary();
     IEnumerable<RoleAggregate>? roles = await _userHelper.GetRolesAsync(realm, input, cancellationToken);
 
-    UserAggregate user = new(_currentActor.Id, realm, input.Username, passwordHash,
+    UserAggregate user = new(_currentActor.Id, realm, input.Username, passwordHash, address, email, phone,
       input.FirstName, input.MiddleName, input.LastName, input.Nickname, input.Birthdate, gender,
       locale, input.TimeZone, input.Picture, input.Profile, input.Website, customAttributes, roles);
 

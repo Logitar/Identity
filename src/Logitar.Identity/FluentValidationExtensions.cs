@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Logitar.Identity.Realms;
+using Logitar.Identity.Users;
 using NodaTime;
 using System.Globalization;
 
@@ -31,12 +32,12 @@ internal static class FluentValidationExtensions
   /// <typeparam name="T">The type of the object being validated.</typeparam>
   /// <param name="ruleBuilder">The rule builder.</param>
   /// <returns>The rule builder.</returns>
-  //public static IRuleBuilder<T, string?> Country<T>(this IRuleBuilder<T, string?> ruleBuilder)
-  //{
-  //  return ruleBuilder.Must(x => x == null || PostalAddressHelper.GetCountry(x) != null)
-  //    .WithErrorCode("CountryValidator")
-  //    .WithMessage(x => $"'{{PropertyName}}' must be one of the following: {string.Join(", ", PostalAddressHelper.SupportedCountries)}");
-  //}
+  public static IRuleBuilder<T, string?> Country<T>(this IRuleBuilder<T, string?> ruleBuilder)
+  {
+    return ruleBuilder.Must(x => x == null || PostalAddressHelper.GetCountry(x) != null)
+      .WithErrorCode("CountryValidator")
+      .WithMessage(x => $"'{{PropertyName}}' must be one of the following: {string.Join(", ", PostalAddressHelper.SupportedCountries)}");
+  }
 
   /// <summary>
   /// Defines an 'identifier' validator on the current rule builder. Validation will fail if the
@@ -88,41 +89,13 @@ internal static class FluentValidationExtensions
   /// </summary>
   /// <typeparam name="T">The type of the object being validated.</typeparam>
   /// <param name="ruleBuilder">The rule builder.</param>
-  /// <param name="defaultRegion">The default region used to validate phone numbers.</param>
   /// <returns>The rule builder.</returns>
-  //public static IRuleBuilder<T, IPhoneNumber?> PhoneNumber<T>(this IRuleBuilder<T, IPhoneNumber> ruleBuilder, string? defaultRegion = null)
-  //{
-  //  return ruleBuilder.Must(p =>
-  //  {
-  //    StringBuilder phone = new();
-
-  //    if (!string.IsNullOrEmpty(p.CountryCode))
-  //    {
-  //      phone.Append(p.CountryCode);
-  //      phone.Append(' ');
-  //    }
-
-  //    phone.Append(p.Number);
-
-  //    if (!string.IsNullOrEmpty(p.Extension))
-  //    {
-  //      phone.Append(" x");
-  //      phone.Append(p.Extension);
-  //    }
-
-  //    try
-  //    {
-  //      _ = PhoneNumberUtil.GetInstance().Parse(phone.ToString(), defaultRegion);
-  //    }
-  //    catch (NumberParseException)
-  //    {
-  //      return false;
-  //    }
-
-  //    return true;
-  //  }).WithErrorCode("PhoneNumberValidator")
-  //    .WithMessage("The phone number is not valid.");
-  //}
+  public static IRuleBuilder<T, IPhoneNumber?> PhoneNumber<T>(this IRuleBuilder<T, IPhoneNumber> ruleBuilder)
+  {
+    return ruleBuilder.Must(p => p.IsValid())
+      .WithErrorCode("PhoneNumberValidator")
+      .WithMessage("The phone number is not valid.");
+  }
 
   /// <summary>
   /// Defines a 'time zone' validator on the current rule builder. Validation will fail if the property

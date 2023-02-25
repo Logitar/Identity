@@ -101,6 +101,7 @@ internal class UserQuerier : IUserQuerier
   /// <summary>
   /// Retrieves a list of users using the specified filters, sorting and paging arguments.
   /// </summary>
+  /// <param name="isConfirmed">The value filtering users on their account confirmation status.</param>
   /// <param name="isDisabled">The value filtering users on their disabled status.</param>
   /// <param name="realm">The identifier or unique name of the realm to filter by.</param>
   /// <param name="search">The text to search.</param>
@@ -110,7 +111,7 @@ internal class UserQuerier : IUserQuerier
   /// <param name="take">The number of users to return.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The list of users, or empty if none found.</returns>
-  public async Task<PagedList<User>> GetAsync(bool? isDisabled, string? realm, string? search,
+  public async Task<PagedList<User>> GetAsync(bool? isConfirmed, bool? isDisabled, string? realm, string? search,
     UserSort? sort, bool isDescending, int? skip, int? take, CancellationToken cancellationToken)
   {
     IQueryable<UserEntity> query = _users.AsNoTracking()
@@ -118,6 +119,10 @@ internal class UserQuerier : IUserQuerier
       .Include(x => x.Realm)
       .Include(x => x.Roles);
 
+    if (isConfirmed.HasValue)
+    {
+      query = query.Where(x => x.IsConfirmed == isConfirmed.Value);
+    }
     if (isDisabled.HasValue)
     {
       query = query.Where(x => x.IsDisabled == isDisabled.Value);
@@ -139,6 +144,9 @@ internal class UserQuerier : IUserQuerier
           string pattern = $"%{term}%";
 
           query = query.Where(x => EF.Functions.ILike(x.Username, pattern)
+            || (x.AddressFormatted != null && EF.Functions.ILike(x.AddressFormatted, pattern))
+            || (x.EmailAddress != null && EF.Functions.ILike(x.EmailAddress, pattern))
+            || (x.PhoneE164Formatted != null && EF.Functions.ILike(x.PhoneE164Formatted, pattern))
             || (x.FullName != null && EF.Functions.ILike(x.FullName, pattern))
             || (x.Nickname != null && EF.Functions.ILike(x.Nickname, pattern)));
         }
@@ -151,8 +159,14 @@ internal class UserQuerier : IUserQuerier
     {
       switch (sort.Value)
       {
+        case UserSort.AddressFormatted:
+          query = isDescending ? query.OrderByDescending(x => x.AddressFormatted) : query.OrderBy(x => x.AddressFormatted);
+          break;
         case UserSort.DisabledOn:
           query = isDescending ? query.OrderByDescending(x => x.DisabledOn) : query.OrderBy(x => x.DisabledOn);
+          break;
+        case UserSort.EmailAddress:
+          query = isDescending ? query.OrderByDescending(x => x.EmailAddress) : query.OrderBy(x => x.EmailAddress);
           break;
         case UserSort.FullName:
           query = isDescending ? query.OrderByDescending(x => x.FullName) : query.OrderBy(x => x.FullName);
@@ -164,6 +178,9 @@ internal class UserQuerier : IUserQuerier
           break;
         case UserSort.PasswordChangedOn:
           query = isDescending ? query.OrderByDescending(x => x.PasswordChangedOn) : query.OrderBy(x => x.PasswordChangedOn);
+          break;
+        case UserSort.PhoneE164Formatted:
+          query = isDescending ? query.OrderByDescending(x => x.PhoneE164Formatted) : query.OrderBy(x => x.PhoneE164Formatted);
           break;
         case UserSort.SignedInOn:
           query = isDescending ? query.OrderByDescending(x => x.SignedInOn) : query.OrderBy(x => x.SignedInOn);

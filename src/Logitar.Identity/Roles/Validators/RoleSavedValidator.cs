@@ -12,7 +12,7 @@ internal abstract class RoleSavedValidator<T> : AbstractValidator<T> where T : R
   /// <summary>
   /// Initializes a new instance of the <see cref="RoleSavedValidator{T}"/> class.
   /// </summary>
-  public RoleSavedValidator()
+  protected RoleSavedValidator()
   {
     RuleFor(x => x.DisplayName).NullOrNotEmpty()
       .MaximumLength(byte.MaxValue);

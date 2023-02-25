@@ -59,4 +59,23 @@ internal class UserRepository : EventStore, IUserRepository
 
     return Load<UserAggregate>(events).SingleOrDefault();
   }
+
+  /// <summary>
+  /// Retrieves a list of users by their realm and email address.
+  /// </summary>
+  /// <param name="realm">The realm of the users.</param>
+  /// <param name="emailAddress">The email address of the users.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The list of users, or empty if none.</returns>
+  public async Task<IEnumerable<UserAggregate>> LoadByEmailAsync(RealmAggregate realm, string emailAddress, CancellationToken cancellationToken)
+  {
+    string aggregateType = typeof(UserAggregate).GetName();
+
+    EventEntity[] events = await Context.Events.FromSqlRaw($@"SELECT e.* FROM ""Events"" e JOIN ""Users"" u on u.""AggregateId"" = e.""AggregateId"" JOIN ""Realms"" r ON r.""RealmId"" = u.""RealmId"" WHERE e.""AggregateType"" = {aggregateType} AND r.""AggregateId"" = {realm.Id.Value} AND u.""EmailAddressNormalized"" = {emailAddress.ToUpper()}")
+      .AsNoTracking()
+      .OrderBy(x => x.Version)
+      .ToArrayAsync(cancellationToken);
+
+    return Load<UserAggregate>(events);
+  }
 }

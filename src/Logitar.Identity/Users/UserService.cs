@@ -86,6 +86,7 @@ internal class UserService : IUserService
   /// <summary>
   /// Retrieves a list of users using the specified filters, sorting and paging arguments.
   /// </summary>
+  /// <param name="isConfirmed">The value filtering users on their account confirmation status.</param>
   /// <param name="isDisabled">The value filtering users on their disabled status.</param>
   /// <param name="realm">The identifier or unique name of the realm to filter by.</param>
   /// <param name="search">The text to search.</param>
@@ -95,10 +96,10 @@ internal class UserService : IUserService
   /// <param name="take">The number of users to return.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The list of users, or empty if none found.</returns>
-  public async Task<PagedList<User>> GetAsync(bool? isDisabled, string? realm, string? search,
+  public async Task<PagedList<User>> GetAsync(bool? isConfirmed, bool? isDisabled, string? realm, string? search,
     UserSort? sort, bool isDescending, int? skip, int? take, CancellationToken cancellationToken)
   {
-    return await _requestPipeline.ExecuteAsync(new GetUsersQuery(isDisabled, realm, search,
+    return await _requestPipeline.ExecuteAsync(new GetUsersQuery(isConfirmed, isDisabled, realm, search,
       sort, isDescending, skip, take), cancellationToken);
   }
 

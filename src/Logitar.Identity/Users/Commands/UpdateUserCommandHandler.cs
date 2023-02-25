@@ -27,6 +27,10 @@ internal class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Use
   /// The user querier.
   /// </summary>
   private readonly IUserQuerier _userQuerier;
+  /// <summary>
+  /// The user repository.
+  /// </summary>
+  private readonly IUserRepository _userRepository;
 
   /// <summary>
   /// Initializes a new instance of the <see cref="UpdateUserCommandHandler"/> class using the specified arguments.
@@ -35,15 +39,18 @@ internal class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Use
   /// <param name="eventStore">The event store.</param>
   /// <param name="userHelper">The user helper.</param>
   /// <param name="userQuerier">The user querier.</param>
+  /// <param name="userRepository">The user repository.</param>
   public UpdateUserCommandHandler(ICurrentActor currentActor,
     IEventStore eventStore,
     IUserHelper userHelper,
-    IUserQuerier userQuerier)
+    IUserQuerier userQuerier,
+    IUserRepository userRepository)
   {
     _currentActor = currentActor;
     _eventStore = eventStore;
     _userHelper = userHelper;
     _userQuerier = userQuerier;
+    _userRepository = userRepository;
   }
 
   /// <summary>
@@ -64,15 +71,30 @@ internal class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Use
 
     UpdateUserInput input = command.Input;
 
+    if (realm.RequireUniqueEmail && input.Email != null)
+    {
+      IEnumerable<UserAggregate> users = await _userRepository.LoadByEmailAsync(realm, input.Email.Address, cancellationToken);
+      if (users.Any(u => !u.Equals(user)))
+      {
+        throw new EmailAddressAlreadyUsedException(realm, input.Email.Address, nameof(input.Email));
+      }
+    }
+
+    string? passwordHash = input.Password == null ? null : _userHelper.ValidateAndHashPassword(realm, input.Password);
+    ReadOnlyAddress? address = input.Address == null ? null : new ReadOnlyAddress(input.Address.Line1,
+      input.Address.Locality, input.Address.Country, input.Address.Line2, input.Address.PostalCode,
+      input.Address.Region, input.Address.Verify);
+    ReadOnlyEmail? email = input.Email == null ? null : new ReadOnlyEmail(input.Email.Address, input.Email.Verify);
+    ReadOnlyPhone? phone = input.Phone == null ? null
+      : new ReadOnlyPhone(input.Phone.Number, input.Phone.CountryCode, input.Phone.Extension, input.Phone.Verify);
     Gender? gender = input.Gender == null ? null : new Gender(input.Gender);
     CultureInfo? locale = input.Locale?.GetCultureInfo();
-    string? passwordHash = input.Password == null ? null : _userHelper.ValidateAndHashPassword(realm, input.Password);
     Dictionary<string, string>? customAttributes = input.CustomAttributes?.ToDictionary();
     IEnumerable<RoleAggregate>? roles = await _userHelper.GetRolesAsync(realm, input, cancellationToken);
 
-    user.Update(_currentActor.Id, passwordHash, input.FirstName, input.MiddleName, input.LastName,
-      input.Nickname, input.Birthdate, gender, locale, input.TimeZone, input.Picture, input.Profile,
-      input.Website, customAttributes, roles);
+    user.Update(_currentActor.Id, passwordHash, address, email, phone, input.FirstName, input.MiddleName,
+      input.LastName, input.Nickname, input.Birthdate, gender, locale, input.TimeZone, input.Picture,
+      input.Profile, input.Website, customAttributes, roles);
 
     await _eventStore.SaveAsync(user, cancellationToken);
 

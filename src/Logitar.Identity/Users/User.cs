@@ -55,6 +55,24 @@ public record User : Aggregate
   public DateTime? SignedInOn { get; set; }
 
   /// <summary>
+  /// Gets or sets the postal address of the user.
+  /// </summary>
+  public Address? Address { get; set; }
+  /// <summary>
+  /// Gets or sets the email address of the user.
+  /// </summary>
+  public Email? Email { get; set; }
+  /// <summary>
+  /// Gets or sets the phone number of the user.
+  /// </summary>
+  public Phone? Phone { get; set; }
+
+  /// <summary>
+  /// Gets or sets a value indicating whether or not the user account is confirmed.
+  /// </summary>
+  public bool IsConfirmed { get; set; }
+
+  /// <summary>
   /// Gets or sets the first name(s) or given name(s) of the user.
   /// </summary>
   public string? FirstName { get; set; }

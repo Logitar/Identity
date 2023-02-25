@@ -60,7 +60,7 @@ internal class ActorService : IActorService
           Id = user.AggregateId,
           Type = ActorType.User,
           DisplayName = user.FullName ?? user.Username,
-          Email = null, // TODO(fpion): implement
+          Email = user.EmailAddress,
           Picture = user.Picture
         };
       }
@@ -177,7 +177,9 @@ internal class ActorService : IActorService
     }
 
     UserEntity[] users = await _context.Users
-      .Where(x => x.CreatedById == id || x.UpdatedById == id || x.PasswordChangedById == id || x.DisabledById == id)
+      .Where(x => x.CreatedById == id || x.UpdatedById == id
+        || x.PasswordChangedById == id || x.DisabledById == id
+        || x.AddressVerifiedById == id || x.EmailVerifiedById == id || x.PhoneVerifiedById == id)
       .ToArrayAsync(cancellationToken);
     foreach (UserEntity user in users)
     {

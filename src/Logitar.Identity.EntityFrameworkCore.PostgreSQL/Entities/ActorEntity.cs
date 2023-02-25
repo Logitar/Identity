@@ -67,7 +67,7 @@ public class ActorEntity
     IsDeleted = isDeleted;
 
     DisplayName = user.FullName ?? user.Username;
-    Email = null; // TODO(fpion): implement
+    Email = user.EmailAddress;
     Picture = user.Picture;
   }
 

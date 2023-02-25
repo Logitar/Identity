@@ -14,4 +14,19 @@ public record CreateUserInput : SaveUserInput
   /// Gets or sets the unique name of the user (not case-sensitive).
   /// </summary>
   public string Username { get; set; } = string.Empty;
+
+  /// <summary>
+  /// Gets or sets the postal address of the user.
+  /// </summary>
+  public CreateAddressInput? Address { get; set; }
+
+  /// <summary>
+  /// Gets or sets the email address of the user.
+  /// </summary>
+  public CreateEmailInput? Email { get; set; }
+
+  /// <summary>
+  /// Gets or sets the phone number of the user.
+  /// </summary>
+  public CreatePhoneInput? Phone { get; set; }
 }

@@ -56,7 +56,7 @@ internal class RealmProfile : Profile
   /// </summary>
   /// <param name="entity">The realm entity.</param>
   /// <param name="realm">The realm output model.</param>
-  /// <param name="member">The source memberl.</param>
+  /// <param name="member">The source member.</param>
   /// <param name="context">The mapping context.</param>
   /// <returns>The Google OAuth 2.0 configuration.</returns>
   /// <exception cref="InvalidOperationException">The external provider configuration could not be deserialized.</exception>

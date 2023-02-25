@@ -24,4 +24,12 @@ public interface IUserRepository
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The user or null if not found.</returns>
   Task<UserAggregate?> LoadAsync(RealmAggregate realm, string externalKey, string externalValue, CancellationToken cancellationToken = default);
+  /// <summary>
+  /// Retrieves a list of users by their realm and email address.
+  /// </summary>
+  /// <param name="realm">The realm of the users.</param>
+  /// <param name="emailAddress">The email address of the users.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The list of users, or empty if none.</returns>
+  Task<IEnumerable<UserAggregate>> LoadByEmailAsync(RealmAggregate realm, string emailAddress, CancellationToken cancellationToken = default);
 }
