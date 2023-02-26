@@ -71,6 +71,14 @@ internal class ExternalIdentifierEntity
   /// Gets or sets the value of the external identifier.
   /// </summary>
   public string Value { get; private set; } = string.Empty;
+  /// <summary>
+  /// Gets or sets the normalized value of the external identifier for unicity purposes.
+  /// </summary>
+  public string ValueNormalized
+  {
+    get => Value.ToUpper();
+    private set { }
+  }
 
   /// <summary>
   /// Gets or sets the identifier of the actor who created the external identifier.

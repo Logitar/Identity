@@ -93,7 +93,7 @@ internal class UserQuerier : IUserQuerier
       .Include(x => x.Realm)
       .Include(x => x.Roles)
       .SingleOrDefaultAsync(x => (x.Realm!.AggregateId == realm || x.Realm.UniqueNameNormalized == realm.ToUpper())
-        && x.ExternalIdentifiers.Any(y => y.Key == externalKey && y.Value == externalValue), cancellationToken);
+        && x.ExternalIdentifiers.Any(y => y.Key == externalKey && y.ValueNormalized == externalValue.ToUpper()), cancellationToken);
 
     return _mapper.Map<User>(user);
   }

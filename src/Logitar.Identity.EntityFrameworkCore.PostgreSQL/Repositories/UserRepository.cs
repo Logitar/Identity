@@ -52,7 +52,7 @@ internal class UserRepository : EventStore, IUserRepository
   {
     string aggregateType = typeof(UserAggregate).GetName();
 
-    EventEntity[] events = await Context.Events.FromSqlInterpolated($@"SELECT e.* FROM ""Events"" e JOIN ""Users"" u on u.""AggregateId"" = e.""AggregateId"" JOIN ""Realms"" r ON r.""RealmId"" = u.""RealmId"" JOIN ""ExternalIdentifiers"" i on i.""UserId"" = u.""UserId"" WHERE e.""AggregateType"" = {aggregateType} AND r.""AggregateId"" = {realm.Id.Value} AND i.""Key"" = {externalKey} AND i.""Value"" = {externalValue}")
+    EventEntity[] events = await Context.Events.FromSqlInterpolated($@"SELECT e.* FROM ""Events"" e JOIN ""Users"" u on u.""AggregateId"" = e.""AggregateId"" JOIN ""Realms"" r ON r.""RealmId"" = u.""RealmId"" JOIN ""ExternalIdentifiers"" i on i.""UserId"" = u.""UserId"" WHERE e.""AggregateType"" = {aggregateType} AND r.""AggregateId"" = {realm.Id.Value} AND i.""Key"" = {externalKey} AND i.""ValueNormalized"" = {externalValue.ToUpper()}")
       .AsNoTracking()
       .OrderBy(x => x.Version)
       .ToArrayAsync(cancellationToken);
