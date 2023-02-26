@@ -50,9 +50,10 @@ internal class DisableUserCommandHandler : IRequestHandler<DisableUserCommand, U
     UserAggregate user = await _eventStore.LoadAsync<UserAggregate>(id, cancellationToken)
       ?? throw new AggregateNotFoundException<UserAggregate>(id);
 
-    user.Disable(_currentActor.Id);
-
-    await _eventStore.SaveAsync(user, cancellationToken);
+    if (user.Disable(_currentActor.Id))
+    {
+      await _eventStore.SaveAsync(user, cancellationToken);
+    }
 
     return await _userQuerier.GetAsync(user.Id, cancellationToken)
       ?? throw new InvalidOperationException($"The user output (Id={user.Id}) could not be found.");

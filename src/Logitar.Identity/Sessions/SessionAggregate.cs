@@ -110,7 +110,6 @@ public class SessionAggregate : AggregateRoot
 
     ApplyChange(e);
   }
-
   /// <summary>
   /// Applies the specified event to the user session.
   /// </summary>
@@ -118,6 +117,34 @@ public class SessionAggregate : AggregateRoot
   protected virtual void Apply(SessionRefreshedEvent e)
   {
     Apply((SessionSavedEvent)e);
+  }
+
+  /// <summary>
+  /// Signs-out the user session.
+  /// </summary>
+  /// <param name="actorId">The identifier of the user who is signing-out the session.</param>
+  /// <returns>False if the user session is already signed-out, true otherwise.</returns>
+  public bool SignOut(AggregateId actorId)
+  {
+    if (!IsActive)
+    {
+      return false;
+    }
+
+    ApplyChange(new SessionSignedOutEvent
+    {
+      ActorId = actorId
+    });
+
+    return true;
+  }
+  /// <summary>
+  /// Applies the specified event to the user session.
+  /// </summary>
+  /// <param name="e">The domain event.</param>
+  protected virtual void Apply(SessionSignedOutEvent e)
+  {
+    IsActive = false;
   }
 
   /// <summary>
