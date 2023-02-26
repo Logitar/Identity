@@ -109,7 +109,7 @@ public readonly struct XApiKey
   /// </summary>
   /// <param name="x">The first API key.</param>
   /// <param name="y">The second API key.</param>
-  /// <returns>True if the API keys are different</returns>
+  /// <returns>True if the API keys are different.</returns>
   public static bool operator !=(XApiKey x, XApiKey y) => !x.Equals(y);
 
   /// <summary>
@@ -120,7 +120,7 @@ public readonly struct XApiKey
   public override bool Equals([NotNullWhen(true)] object? obj) => obj is XApiKey apiKey
     && apiKey.Prefix == Prefix
     && apiKey.Id == Id
-    && apiKey.Secret == Secret;
+    && apiKey.Secret.SequenceEqual(Secret);
   /// <summary>
   /// Returns an integer representing the current API key hash code, derived from its values.
   /// </summary>

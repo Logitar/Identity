@@ -8,14 +8,14 @@ namespace Logitar.Identity.ApiKeys;
 public interface IApiKeyQuerier
 {
   /// <summary>
-  /// Retrieves a API key by its aggregate identifier.
+  /// Retrieves an API key by its aggregate identifier.
   /// </summary>
   /// <param name="id">The aggregate identifier.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The API key or null if not found.</returns>
   Task<ApiKey?> GetAsync(AggregateId id, CancellationToken cancellationToken = default);
   /// <summary>
-  /// Retrieves a API key by its <see cref="Guid"/>.
+  /// Retrieves an API key by its <see cref="Guid"/>.
   /// </summary>
   /// <param name="id">The Guid.</param>
   /// <param name="cancellationToken">The cancellation token.</param>

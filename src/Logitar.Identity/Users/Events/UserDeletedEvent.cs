@@ -4,7 +4,7 @@ using MediatR;
 namespace Logitar.Identity.Users.Events;
 
 /// <summary>
-/// Represents the event raised when a <see cref="UserAggregate"/> is deleted.
+/// Represents the event raised when an <see cref="UserAggregate"/> is deleted.
 /// </summary>
 public record UserDeletedEvent : DomainEvent, INotification
 {

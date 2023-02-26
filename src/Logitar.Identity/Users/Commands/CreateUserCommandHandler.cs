@@ -59,7 +59,7 @@ internal class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Use
   /// <param name="command">The command to handle.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The created user.</returns>
-  /// /// <exception cref="AggregateNotFoundException">The specified realm could not be found.</exception>
+  /// <exception cref="AggregateNotFoundException{RealmAggregate}">The specified realm could not be found.</exception>
   /// <exception cref="UniqueNameAlreadyUsedException">The specified unique name is already used.</exception>
   /// <exception cref="InvalidOperationException">The user output could not be found.</exception>
   public async Task<User> Handle(CreateUserCommand command, CancellationToken cancellationToken)

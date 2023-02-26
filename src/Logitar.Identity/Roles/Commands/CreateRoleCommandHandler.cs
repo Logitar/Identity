@@ -50,7 +50,7 @@ internal class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, Rol
   /// <param name="command">The command to handle.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The created role.</returns>
-  /// <exception cref="AggregateNotFoundException">The specified realm could not be found.</exception>
+  /// <exception cref="AggregateNotFoundException{RealmAggregate}">The specified realm could not be found.</exception>
   /// <exception cref="UniqueNameAlreadyUsedException">The specified unique name is already used.</exception>
   /// <exception cref="InvalidOperationException">The role output could not be found.</exception>
   public async Task<Role> Handle(CreateRoleCommand command, CancellationToken cancellationToken)

@@ -111,11 +111,20 @@ public class UserAggregate : AggregateRoot
   /// Gets or sets the salted and hashed password of the user.
   /// </summary>
   public string? PasswordHash { get; private set; }
+  /// <summary>
+  /// Gets a value indicating whether or not the user has a password.
+  /// </summary>
+  public bool HasPassword => PasswordHash != null;
 
   /// <summary>
   /// Gets or sets a value indicating whether or not the user account is disabled.
   /// </summary>
   public bool IsDisabled { get; private set; }
+
+  /// <summary>
+  /// Gets or sets the date and time when the user signed-in lastly.
+  /// </summary>
+  public DateTime? SignedInOn { get; private set; }
 
   /// <summary>
   /// Gets or sets the postal address of the user.
@@ -327,6 +336,27 @@ public class UserAggregate : AggregateRoot
     {
       _externalIdentifiers[e.Key] = e.Value;
     }
+  }
+
+  /// <summary>
+  /// Signs-in the user at the specified date and time.
+  /// </summary>
+  /// <param name="signedInOn">The date and time when the user signed-in.</param>
+  public void SignIn(DateTime signedInOn)
+  {
+    ApplyChange(new UserSignedInEvent
+    {
+      ActorId = Id,
+      OccurredOn = signedInOn
+    });
+  }
+  /// <summary>
+  /// Applies the specified event to the user.
+  /// </summary>
+  /// <param name="e">The domain event.</param>
+  protected virtual void Apply(UserSignedInEvent e)
+  {
+    SignedInOn = e.OccurredOn;
   }
 
   /// <summary>

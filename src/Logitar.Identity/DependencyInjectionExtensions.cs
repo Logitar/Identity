@@ -1,6 +1,7 @@
 ﻿using Logitar.Identity.ApiKeys;
 using Logitar.Identity.Realms;
 using Logitar.Identity.Roles;
+using Logitar.Identity.Sessions;
 using Logitar.Identity.Users;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -39,6 +40,7 @@ public static class DependencyInjectionExtensions
       .AddSingleton<ICacheService, CacheService>()
       .AddTransient<IApiKeyHelper, ApiKeyHelper>()
       .AddTransient<IRequestPipeline, TRequestPipeline>()
+      .AddTransient<ISessionHelper, SessionHelper>()
       .AddTransient<IUserHelper, UserHelper>();
 
     // TODO(fpion): ICurrentActor
@@ -56,6 +58,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IApiKeyService, ApiKeyService>()
       .AddTransient<IRealmService, RealmService>()
       .AddTransient<IRoleService, RoleService>()
+      .AddTransient<ISessionService, SessionService>()
       .AddTransient<IUserService, UserService>();
   }
 }

@@ -5,7 +5,7 @@ using Logitar.Identity.Roles;
 namespace Logitar.Identity.Users;
 
 /// <summary>
-/// The output representation of a user.
+/// The output representation of an user.
 /// </summary>
 public record User : Aggregate
 {

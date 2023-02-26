@@ -72,7 +72,7 @@ internal class UserService : IUserService
   /// <param name="id">The identifier of the user.</param>
   /// <param name="realm">The identifier or unique name of the realm in which to search the unique name.</param>
   /// <param name="username">The unique name of the user.</param>
-  /// /// <param name="externalKey">The key of an external identifier.</param>
+  /// <param name="externalKey">The key of an external identifier.</param>
   /// <param name="externalValue">The value of an external identifier.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The user, or null if not found.</returns>
