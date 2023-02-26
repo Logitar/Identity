@@ -1,5 +1,4 @@
 ﻿using Logitar.EventSourcing;
-using Logitar.Identity.Accounts;
 using MediatR;
 using System.Globalization;
 

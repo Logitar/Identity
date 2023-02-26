@@ -1,6 +1,4 @@
-﻿using Logitar.Identity.Accounts;
-
-namespace Logitar.Identity.Realms;
+﻿namespace Logitar.Identity.Realms;
 
 /// <summary>
 /// Provides methods to help managing realms.
