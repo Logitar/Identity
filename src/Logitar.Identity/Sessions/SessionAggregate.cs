@@ -53,13 +53,13 @@ public class SessionAggregate : AggregateRoot
   /// </summary>
   public string? KeyHash { get; private set; }
   /// <summary>
-  /// Gets or sets a value indicating whether or not the session is persistent. A session is
-  /// persistent if a refresh token has been issued.
+  /// Gets a value indicating whether or not the session is persistent. A session is persistent if a
+  /// refresh token has been issued.
   /// </summary>
   public bool IsPersistent => KeyHash != null;
 
   /// <summary>
-  /// Gets a value indicating whether or not the session is active. A session is unactive if
+  /// Gets or sets a value indicating whether or not the session is active. A session is unactive if
   /// it has been signed-out.
   /// </summary>
   public bool IsActive { get; private set; }
@@ -76,6 +76,8 @@ public class SessionAggregate : AggregateRoot
   protected virtual void Apply(SessionCreatedEvent e)
   {
     KeyHash = e.KeyHash;
+
+    IsActive = true;
 
     _customAttributes.Clear();
     _customAttributes.AddRange(e.CustomAttributes);

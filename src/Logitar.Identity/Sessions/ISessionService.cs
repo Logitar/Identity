@@ -1,6 +1,4 @@
-﻿using Logitar.Identity.Accounts;
-
-namespace Logitar.Identity.Sessions;
+﻿namespace Logitar.Identity.Sessions;
 
 /// <summary>
 /// Exposes methods to manage user sessions in the identity system.

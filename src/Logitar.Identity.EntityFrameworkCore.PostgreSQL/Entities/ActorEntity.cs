@@ -63,7 +63,7 @@ public class ActorEntity
   /// <param name="isDeleted">A value indicating whether or not the actor is deleted.</param>
   internal ActorEntity(UserEntity user, bool isDeleted = false)
   {
-    Type = ActorType.ApiKey;
+    Type = ActorType.User;
     IsDeleted = isDeleted;
 
     DisplayName = user.FullName ?? user.Username;

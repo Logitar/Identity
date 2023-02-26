@@ -281,6 +281,11 @@ internal class UserEntity : AggregateEntity, ICustomAttributes
   public List<RoleEntity> Roles { get; private set; } = new();
 
   /// <summary>
+  /// Gets or sets the list of sessions of the user.
+  /// </summary>
+  public List<SessionEntity> Sessions { get; private set; } = new();
+
+  /// <summary>
   /// Disables the user account to the state of the specified event.
   /// </summary>
   /// <param name="e">The disable event.</param>
@@ -337,6 +342,15 @@ internal class UserEntity : AggregateEntity, ICustomAttributes
     {
       externalIdentifier.Update(e, actor);
     }
+  }
+
+  /// <summary>
+  /// Signs-in the user to the state of the specified event.
+  /// </summary>
+  /// <param name="e">The sign-in event.</param>
+  public void SignIn(UserSignedInEvent e)
+  {
+    SignedInOn = e.OccurredOn;
   }
 
   /// <summary>

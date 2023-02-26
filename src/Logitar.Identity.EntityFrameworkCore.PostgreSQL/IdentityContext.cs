@@ -37,6 +37,10 @@ public class IdentityContext : DbContext
   /// </summary>
   internal DbSet<RoleEntity> Roles { get; private set; } = null!;
   /// <summary>
+  /// Gets or sets the data set of sessions.
+  /// </summary>
+  internal DbSet<SessionEntity> Sessions { get; private set; } = null!;
+  /// <summary>
   /// Gets or sets the data set of user roles.
   /// </summary>
   internal DbSet<UserRoleEntity> UserRoles { get; private set; } = null!;
