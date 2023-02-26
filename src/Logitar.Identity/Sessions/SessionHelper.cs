@@ -18,4 +18,22 @@ internal class SessionHelper : ISessionHelper
 
     return new Pbkdf2(Convert.ToBase64String(key)).ToString();
   }
+
+  /// <summary>
+  /// Returns a value indicating whether or not the specified key matches the specified session.
+  /// </summary>
+  /// <param name="session">The session to compare.</param>
+  /// <param name="key">The key to match.</param>
+  /// <returns>True if the key matches the session's salted and hashed key.</returns>
+  public bool IsMatch(SessionAggregate session, byte[] key)
+  {
+    if (!session.IsPersistent)
+    {
+      return false;
+    }
+
+    Pbkdf2 pbkdf2 = Pbkdf2.Parse(session.KeyHash!);
+
+    return pbkdf2.IsMatch(Convert.ToBase64String(key));
+  }
 }

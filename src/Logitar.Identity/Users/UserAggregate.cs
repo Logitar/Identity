@@ -341,9 +341,21 @@ public class UserAggregate : AggregateRoot
   /// <summary>
   /// Signs-in the user at the specified date and time.
   /// </summary>
+  /// <param name="realm">The realm in which the user belongs.</param>
   /// <param name="signedInOn">The date and time when the user signed-in.</param>
-  public void SignIn(DateTime signedInOn)
+  /// <exception cref="AccountIsDisabledException">The user account is disabled.</exception>
+  /// <exception cref="AccountIsNotConfirmedException">The user account is not confirmed.</exception>
+  public void SignIn(RealmAggregate realm, DateTime signedInOn)
   {
+    if (IsDisabled)
+    {
+      throw new AccountIsDisabledException(this);
+    }
+    else if (realm.RequireConfirmedAccount && !IsConfirmed)
+    {
+      throw new AccountIsNotConfirmedException(this);
+    }
+
     ApplyChange(new UserSignedInEvent
     {
       ActorId = Id,

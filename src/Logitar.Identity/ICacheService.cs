@@ -26,7 +26,7 @@ public interface ICacheService
   /// <summary>
   /// Removes a cached API key by its identifier.
   /// </summary>
-  /// <param name="id"></param>
+  /// <param name="id">The identifier of the API key.</param>
   void RemoveApiKey(AggregateId id);
 
   /// <summary>

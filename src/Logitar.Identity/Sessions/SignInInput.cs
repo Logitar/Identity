@@ -3,7 +3,7 @@
 /// <summary>
 /// The account sign-in input data.
 /// </summary>
-public record SignInInput
+public record SignInInput : SaveSessionInput
 {
   /// <summary>
   /// Gets or sets the identifier or unique name of the realm in which the user resides.
@@ -25,9 +25,4 @@ public record SignInInput
   /// Gets or sets a value indicating whether or not the resulting user session will be persistent.
   /// </summary>
   public bool Remember { get; set; }
-
-  /// <summary>
-  /// Gets or sets the custom attributes of the user session.
-  /// </summary>
-  public IEnumerable<CustomAttribute>? CustomAttributes { get; set; }
 }

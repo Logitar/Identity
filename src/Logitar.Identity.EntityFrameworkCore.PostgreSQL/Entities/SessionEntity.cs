@@ -18,11 +18,9 @@ internal class SessionEntity : AggregateEntity, ICustomAttributes
     User = user;
     UserId = user.UserId;
 
-    KeyHash = e.KeyHash;
-
     IsActive = true;
 
-    CustomAttributes = e.CustomAttributes.Any() ? JsonSerializer.Serialize(e.CustomAttributes) : null;
+    Apply(e);
   }
   /// <summary>
   /// Initializes a new instance of the <see cref="SessionEntity"/> class.
@@ -83,6 +81,22 @@ internal class SessionEntity : AggregateEntity, ICustomAttributes
   public string? CustomAttributes { get; private set; }
 
   /// <summary>
+  /// Refreshes the user session to the state of the specified event.
+  /// </summary>
+  /// <param name="e">The refresh event.</param>
+  public void Refresh(SessionRefreshedEvent e)
+  {
+    if (User == null)
+    {
+      throw new InvalidOperationException($"The {nameof(User)} is required.");
+    }
+
+    Update(e, new ActorEntity(User));
+
+    Apply(e);
+  }
+
+  /// <summary>
   /// Update the actors of the user session.
   /// </summary>
   /// <param name="id">The identifier of the actor.</param>
@@ -95,5 +109,16 @@ internal class SessionEntity : AggregateEntity, ICustomAttributes
     {
       SignedOutBy = actor;
     }
+  }
+
+  /// <summary>
+  /// Applies the specified event to the user session.
+  /// </summary>
+  /// <param name="e">The event to apply.</param>
+  private void Apply(SessionSavedEvent e)
+  {
+    KeyHash = e.KeyHash;
+
+    CustomAttributes = e.CustomAttributes.Any() ? JsonSerializer.Serialize(e.CustomAttributes) : null;
   }
 }

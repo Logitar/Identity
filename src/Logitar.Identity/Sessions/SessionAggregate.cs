@@ -49,6 +49,11 @@ public class SessionAggregate : AggregateRoot
   }
 
   /// <summary>
+  /// Gets or sets the identifier of the user to whom the session belongs.
+  /// </summary>
+  public AggregateId UserId { get; private set; }
+
+  /// <summary>
   /// Gets or sets the salted and hashed key of the session.
   /// </summary>
   public string? KeyHash { get; private set; }
@@ -75,9 +80,53 @@ public class SessionAggregate : AggregateRoot
   /// <param name="e">The domain event.</param>
   protected virtual void Apply(SessionCreatedEvent e)
   {
-    KeyHash = e.KeyHash;
+    UserId = e.UserId;
 
     IsActive = true;
+
+    Apply((SessionSavedEvent)e);
+  }
+
+  /// <summary>
+  /// Refreshes the user session.
+  /// </summary>
+  /// <param name="keyHash">The salted and hashed key of the session.</param>
+  /// <param name="customAttributes">The custom attributes of the session.</param>
+  /// <exception cref="SessionIsNotActiveException">The current session has been signed-out.</exception>
+  public void Refresh(string? keyHash, Dictionary<string, string>? customAttributes)
+  {
+    if (!IsActive)
+    {
+      throw new SessionIsNotActiveException(this);
+    }
+
+    SessionRefreshedEvent e = new()
+    {
+      ActorId = UserId,
+      KeyHash = keyHash,
+      CustomAttributes = customAttributes ?? new()
+    };
+    new SessionRefreshedValidator().ValidateAndThrow(e);
+
+    ApplyChange(e);
+  }
+
+  /// <summary>
+  /// Applies the specified event to the user session.
+  /// </summary>
+  /// <param name="e">The domain event.</param>
+  protected virtual void Apply(SessionRefreshedEvent e)
+  {
+    Apply((SessionSavedEvent)e);
+  }
+
+  /// <summary>
+  /// Applies the specified event to the user session.
+  /// </summary>
+  /// <param name="e">The domain event.</param>
+  private void Apply(SessionSavedEvent e)
+  {
+    KeyHash = e.KeyHash;
 
     _customAttributes.Clear();
     _customAttributes.AddRange(e.CustomAttributes);

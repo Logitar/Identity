@@ -8,7 +8,6 @@ namespace Logitar.Identity.EntityFrameworkCore.PostgreSQL.Configurations;
 /// <summary>
 /// The model configuration used to configure classes inheriting the <see cref="ExternalIdentifierEntity"/> class.
 /// </summary>
-/// <typeparam name="T"></typeparam>
 internal class ExternalIdentifierConfiguration : IEntityTypeConfiguration<ExternalIdentifierEntity>
 {
   /// <summary>

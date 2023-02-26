@@ -36,7 +36,7 @@ internal class SignInCommandHandler : IRequestHandler<SignInCommand, Session>
   private readonly IUserRepository _userRepository;
 
   /// <summary>
-  /// Initializes a new instance of the <see cref="AccountService"/> class using the specified arguments.
+  /// Initializes a new instance of the <see cref="SignInCommandHandler"/> class using the specified arguments.
   /// </summary>
   /// <param name="eventStore">The event store.</param>
   /// <param name="realmRepository">The realm repository.</param>
@@ -66,8 +66,8 @@ internal class SignInCommandHandler : IRequestHandler<SignInCommand, Session>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The newly opened session.</returns>
   /// <exception cref="AggregateNotFoundException{RealmAggregate}">The specified realm could not be found.</exception>
-  /// <exception cref="InvalidCredentialsException"></exception>
-  /// <exception cref="NotImplementedException"></exception>
+  /// <exception cref="InvalidCredentialsException">The specified credentials did not match a single user.</exception>
+  /// <exception cref="InvalidOperationException">The user session output could not be found.</exception>
   public async Task<Session> Handle(SignInCommand request, CancellationToken cancellationToken)
   {
     SignInInput input = request.Input;
@@ -92,26 +92,18 @@ internal class SignInCommandHandler : IRequestHandler<SignInCommand, Session>
     {
       throw new InvalidCredentialsException();
     }
-    else if (user.IsDisabled)
-    {
-      throw new AccountIsDisabledException(user);
-    }
-    else if (realm.RequireConfirmedAccount && !user.IsConfirmed)
-    {
-      throw new AccountIsNotConfirmedException(user);
-    }
 
-    Dictionary<string, string>? customAttributes = input.CustomAttributes?.ToDictionary();
     byte[]? keyBytes = null;
     string? keyHash = input.Remember ? _sessionHelper.GenerateKey(out keyBytes) : null;
+    Dictionary<string, string>? customAttributes = input.CustomAttributes?.ToDictionary();
 
     SessionAggregate session = new(user, keyHash, customAttributes);
-    user.SignIn(session.CreatedOn);
+    user.SignIn(realm, session.CreatedOn);
 
     await _eventStore.SaveAsync(new AggregateRoot[] { user, session }, cancellationToken);
 
     Session output = await _sessionQuerier.GetAsync(session.Id, cancellationToken)
-      ?? throw new InvalidOperationException($"The user session output (Id={user.Id}) could not be found.");
+      ?? throw new InvalidOperationException($"The user session output (Id={session.Id}) could not be found.");
 
     if (keyBytes != null)
     {
