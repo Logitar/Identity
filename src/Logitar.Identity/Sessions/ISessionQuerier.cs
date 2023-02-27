@@ -14,4 +14,11 @@ public interface ISessionQuerier
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The user session or null if not found.</returns>
   Task<Session?> GetAsync(AggregateId id, CancellationToken cancellationToken = default);
+  /// <summary>
+  /// Retrieves a list of user sessions by their aggregate identifier.
+  /// </summary>
+  /// <param name="ids">The list of aggregate identifiers.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The list of user sessions, or empty if none.</returns>
+  Task<IEnumerable<Session>> GetAsync(IEnumerable<AggregateId> ids, CancellationToken cancellationToken = default);
 }

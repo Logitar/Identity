@@ -47,4 +47,21 @@ internal class SessionQuerier : ISessionQuerier
 
     return _mapper.Map<Session>(session);
   }
+
+  /// <summary>
+  /// Retrieves a list of user sessions by their aggregate identifier.
+  /// </summary>
+  /// <param name="ids">The list of aggregate identifiers.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The list of user sessions, or empty if none.</returns>
+  public async Task<IEnumerable<Session>> GetAsync(IEnumerable<AggregateId> ids, CancellationToken cancellationToken)
+  {
+    IEnumerable<string> aggregateIds = ids.Select(id => id.Value).Distinct();
+
+    IEnumerable<SessionEntity> sessions = await _sessions.AsNoTracking()
+      .Where(x => aggregateIds.Contains(x.AggregateId))
+      .ToArrayAsync(cancellationToken);
+
+    return _mapper.Map<IEnumerable<Session>>(sessions);
+  }
 }
