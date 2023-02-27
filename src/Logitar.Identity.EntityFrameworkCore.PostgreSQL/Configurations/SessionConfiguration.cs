@@ -21,7 +21,10 @@ internal class SessionConfiguration : AggregateConfiguration<SessionEntity>, IEn
 
     builder.HasOne(x => x.User).WithMany(x => x.Sessions).OnDelete(DeleteBehavior.Restrict);
 
+    builder.HasIndex(x => x.IsPersistent);
     builder.HasIndex(x => x.SignedOutById);
+    builder.HasIndex(x => x.SignedOutOn);
+    builder.HasIndex(x => x.IsActive);
 
     builder.Property(x => x.KeyHash).HasMaxLength(ushort.MaxValue);
     builder.Property(x => x.IsPersistent).HasDefaultValue(false);
