@@ -23,6 +23,18 @@ internal class UserService : IUserService
   }
 
   /// <summary>
+  /// Changes the password of an user.
+  /// </summary>
+  /// <param name="id">The identifier of the user.</param>
+  /// <param name="input">The password change input.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The updated user.</returns>
+  public async Task<User> ChangePasswordAsync(Guid id, ChangePasswordInput input, CancellationToken cancellationToken)
+  {
+    return await _requestPipeline.ExecuteAsync(new ChangePasswordCommand(id, input), cancellationToken);
+  }
+
+  /// <summary>
   /// Creates a new user.
   /// </summary>
   /// <param name="input">The input creation arguments.</param>

@@ -225,6 +225,30 @@ public class UserAggregate : AggregateRoot
   }
 
   /// <summary>
+  /// Changes the password of the user.
+  /// </summary>
+  /// <param name="passwordHash">The new salted and hashed password.</param>
+  public void ChangePassword(string passwordHash)
+  {
+    UserChangedPasswordEvent e = new()
+    {
+      ActorId = Id,
+      PasswordHash = passwordHash
+    };
+    new UserChangedPasswordValidator().ValidateAndThrow(e);
+
+    ApplyChange(e);
+  }
+  /// <summary>
+  /// Applies the specified event to the user.
+  /// </summary>
+  /// <param name="e">The domain event.</param>
+  protected virtual void Apply(UserChangedPasswordEvent e)
+  {
+    PasswordHash = e.PasswordHash;
+  }
+
+  /// <summary>
   /// Deletes the user.
   /// </summary>
   /// <param name="actorId">The identifier of the actor deleting the user.</param>

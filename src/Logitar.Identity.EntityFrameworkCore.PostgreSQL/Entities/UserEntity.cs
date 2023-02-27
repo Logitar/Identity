@@ -286,6 +286,19 @@ internal class UserEntity : AggregateEntity, ICustomAttributes
   public List<SessionEntity> Sessions { get; private set; } = new();
 
   /// <summary>
+  /// Changes the user's password to the state of the specified event.
+  /// </summary>
+  /// <param name="e">The password change event.</param>
+  public void ChangePassword(UserChangedPasswordEvent e)
+  {
+    ActorEntity actor = new(this);
+
+    Update(e, actor);
+
+    SetPassword(e, e.PasswordHash, actor);
+  }
+
+  /// <summary>
   /// Disables the user account to the state of the specified event.
   /// </summary>
   /// <param name="e">The disable event.</param>
