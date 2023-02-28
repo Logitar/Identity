@@ -57,7 +57,7 @@ internal class RoleUpdatedEventHandler : INotificationHandler<RoleUpdatedEvent>
         return;
       }
 
-      ActorEntity actor = _actorService.GetActor(notification.ActorId);
+      ActorEntity actor = await _actorService.GetActorAsync(notification.ActorId, cancellationToken);
       role.Update(notification, actor);
       await _context.SaveChangesAsync(cancellationToken);
     }

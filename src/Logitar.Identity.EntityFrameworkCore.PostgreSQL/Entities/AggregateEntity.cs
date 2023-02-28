@@ -64,6 +64,24 @@ public abstract class AggregateEntity
   public DateTime? UpdatedOn { get; private set; }
 
   /// <summary>
+  /// Update the actors of the aggregate.
+  /// </summary>
+  /// <param name="id">The identifier of the actor.</param>
+  /// <param name="actor">The JSON serialized actor.</param>
+  public void UpdateActors(string id, string actor)
+  {
+    if (CreatedById == id)
+    {
+      CreatedBy = actor;
+    }
+
+    if (UpdatedById == id)
+    {
+      UpdatedBy = actor;
+    }
+  }
+
+  /// <summary>
   /// Sets the version of the aggregate to the version of the specified event.
   /// </summary>
   /// <param name="e">The domain event.</param>

@@ -1,5 +1,6 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Actors;
+using Logitar.Identity.ApiKeys;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Logitar.Identity;
@@ -28,13 +29,36 @@ internal class CacheService : ICacheService
   /// </summary>
   /// <param name="id">The identifier of the actor.</param>
   /// <returns>The cached actor, of null if not found.</returns>
-  public Actor? GetActor(AggregateId id) => GetItem<Actor>(GetActorKey(id.Value));
+  public Actor? GetActor(AggregateId id) => GetItem<Actor>(GetActorCacheKey(id.Value));
+
+  /// <summary>
+  /// Loads a cached API key by its identifier.
+  /// </summary>
+  /// <param name="id">The identifier of the API key.</param>
+  /// <returns>The cached API key, or null if not found.</returns>
+  public CachedApiKey? GetApiKey(AggregateId id) => GetItem<CachedApiKey>(GetApiKeyCacheKey(id));
+
+  /// <summary>
+  /// Removes a cached API key by its identifier.
+  /// </summary>
+  /// <param name="id"></param>
+  public void RemoveApiKey(AggregateId id)
+  {
+    RemoveItem(GetActorCacheKey(id.Value));
+    RemoveItem(GetApiKeyCacheKey(id));
+  }
 
   /// <summary>
   /// Stores an actor into the cache.
   /// </summary>
   /// <param name="actor">The actor to cache.</param>
-  public void SetActor(Actor actor) => SetItem(GetActorKey(actor.Id), actor, TimeSpan.FromHours(1));
+  public void SetActor(Actor actor) => SetItem(GetActorCacheKey(actor.Id), actor, TimeSpan.FromHours(1));
+
+  /// <summary>
+  /// Stores an API key into the cache.
+  /// </summary>
+  /// <param name="apiKey">The API key to cache.</param>
+  public void SetApiKey(CachedApiKey apiKey) => SetItem(GetApiKeyCacheKey(apiKey.Aggregate.Id), apiKey, TimeSpan.FromHours(1));
 
   /// <summary>
   /// Loads an object from the cache.
@@ -47,6 +71,15 @@ internal class CacheService : ICacheService
     return _memoryCache.TryGetValue(key, out object? value)
       ? (T?)value
       : default;
+  }
+
+  /// <summary>
+  /// Removes an object from the cache.
+  /// </summary>
+  /// <param name="key">The key of the object.</param>
+  private void RemoveItem(object key)
+  {
+    _memoryCache.Remove(key);
   }
 
   /// <summary>
@@ -66,5 +99,12 @@ internal class CacheService : ICacheService
   /// </summary>
   /// <param name="id">The identifier of the actor.</param>
   /// <returns>The cache key.</returns>
-  private static string GetActorKey(string id) => $"Actor_{id}";
+  private static string GetActorCacheKey(string id) => $"Actor_{id}";
+
+  /// <summary>
+  /// Builds the key used to store and load API keys in the cache.
+  /// </summary>
+  /// <param name="id">The identifier of the API key.</param>
+  /// <returns>The cache key.</returns>
+  private static string GetApiKeyCacheKey(AggregateId id) => $"ApiKey_{id}";
 }

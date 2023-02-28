@@ -57,7 +57,7 @@ internal class RoleCreatedEventHandler : INotificationHandler<RoleCreatedEvent>
         return;
       }
 
-      ActorEntity actor = _actorService.GetActor(notification.ActorId);
+      ActorEntity actor = await _actorService.GetActorAsync(notification.ActorId, cancellationToken);
       RoleEntity role = new(notification, realm, actor);
 
       _context.Roles.Add(role);

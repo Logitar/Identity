@@ -17,6 +17,14 @@ public class IdentityContext : DbContext
   }
 
   /// <summary>
+  /// Gets or sets the data set of API key roles.
+  /// </summary>
+  internal DbSet<ApiKeyRoleEntity> ApiKeyRoles { get; private set; } = null!;
+  /// <summary>
+  /// Gets or sets the data set of API keys.
+  /// </summary>
+  internal DbSet<ApiKeyEntity> ApiKeys { get; private set; } = null!;
+  /// <summary>
   /// Gets or sets the data set of realms.
   /// </summary>
   internal DbSet<RealmEntity> Realms { get; private set; } = null!;

@@ -22,6 +22,111 @@ namespace Logitar.Identity.EntityFrameworkCore.PostgreSQL.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Logitar.Identity.EntityFrameworkCore.PostgreSQL.Entities.ApiKeyEntity", b =>
+                {
+                    b.Property<int>("ApiKeyId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ApiKeyId"));
+
+                    b.Property<string>("AggregateId")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasDefaultValue("{\"Type\":\"System\",\"IsDeleted\":false,\"DisplayName\":\"System\",\"Email\":null,\"Picture\":null}");
+
+                    b.Property<string>("CreatedById")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasDefaultValue("SYSTEM");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("CustomAttributes")
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ExpiresOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("RealmId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SecretHash")
+                        .IsRequired()
+                        .HasMaxLength(65535)
+                        .HasColumnType("character varying(65535)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("UpdatedById")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("Version")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasDefaultValue(0L);
+
+                    b.HasKey("ApiKeyId");
+
+                    b.HasIndex("AggregateId")
+                        .IsUnique();
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("CreatedOn");
+
+                    b.HasIndex("ExpiresOn");
+
+                    b.HasIndex("RealmId");
+
+                    b.HasIndex("Title");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.HasIndex("UpdatedOn");
+
+                    b.ToTable("ApiKeys");
+                });
+
+            modelBuilder.Entity("Logitar.Identity.EntityFrameworkCore.PostgreSQL.Entities.ApiKeyRoleEntity", b =>
+                {
+                    b.Property<int>("ApiKeyId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ApiKeyId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("ApiKeyRoles");
+                });
+
             modelBuilder.Entity("Logitar.Identity.EntityFrameworkCore.PostgreSQL.Entities.RealmEntity", b =>
                 {
                     b.Property<int>("RealmId")
@@ -242,6 +347,36 @@ namespace Logitar.Identity.EntityFrameworkCore.PostgreSQL.Migrations
                     b.ToTable("Roles");
                 });
 
+            modelBuilder.Entity("Logitar.Identity.EntityFrameworkCore.PostgreSQL.Entities.ApiKeyEntity", b =>
+                {
+                    b.HasOne("Logitar.Identity.EntityFrameworkCore.PostgreSQL.Entities.RealmEntity", "Realm")
+                        .WithMany("ApiKeys")
+                        .HasForeignKey("RealmId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Realm");
+                });
+
+            modelBuilder.Entity("Logitar.Identity.EntityFrameworkCore.PostgreSQL.Entities.ApiKeyRoleEntity", b =>
+                {
+                    b.HasOne("Logitar.Identity.EntityFrameworkCore.PostgreSQL.Entities.ApiKeyEntity", "ApiKey")
+                        .WithMany()
+                        .HasForeignKey("ApiKeyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Logitar.Identity.EntityFrameworkCore.PostgreSQL.Entities.RoleEntity", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApiKey");
+
+                    b.Navigation("Role");
+                });
+
             modelBuilder.Entity("Logitar.Identity.EntityFrameworkCore.PostgreSQL.Entities.RoleEntity", b =>
                 {
                     b.HasOne("Logitar.Identity.EntityFrameworkCore.PostgreSQL.Entities.RealmEntity", "Realm")
@@ -255,6 +390,8 @@ namespace Logitar.Identity.EntityFrameworkCore.PostgreSQL.Migrations
 
             modelBuilder.Entity("Logitar.Identity.EntityFrameworkCore.PostgreSQL.Entities.RealmEntity", b =>
                 {
+                    b.Navigation("ApiKeys");
+
                     b.Navigation("Roles");
                 });
 #pragma warning restore 612, 618
