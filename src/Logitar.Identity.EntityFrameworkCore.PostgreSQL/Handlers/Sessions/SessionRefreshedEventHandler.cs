@@ -42,6 +42,7 @@ internal class SessionRefreshedEventHandler : INotificationHandler<SessionRefres
     try
     {
       SessionEntity? session = await _context.Sessions
+        .Include(x => x.User)
         .SingleOrDefaultAsync(x => x.AggregateId == notification.AggregateId.Value, cancellationToken);
       if (session == null)
       {

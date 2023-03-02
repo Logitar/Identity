@@ -103,6 +103,8 @@ internal class SessionEntity : AggregateEntity, ICustomAttributes
   /// <param name="actor">The actor signing-out the user session.</param>
   public void SignOut(SessionSignedOutEvent e, ActorEntity actor)
   {
+    SetVersion(e);
+
     SignedOutById = e.ActorId.Value;
     SignedOutBy = actor.Serialize();
     SignedOutOn = e.OccurredOn;
