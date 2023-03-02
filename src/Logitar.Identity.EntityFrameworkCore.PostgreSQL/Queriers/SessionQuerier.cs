@@ -70,6 +70,7 @@ internal class SessionQuerier : ISessionQuerier
     IEnumerable<string> aggregateIds = ids.Select(id => id.Value).Distinct();
 
     IEnumerable<SessionEntity> sessions = await _sessions.AsNoTracking()
+      .Include(x => x.User).ThenInclude(x => x!.Realm)
       .Where(x => aggregateIds.Contains(x.AggregateId))
       .ToArrayAsync(cancellationToken);
 
