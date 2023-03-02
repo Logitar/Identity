@@ -6,4 +6,4 @@ namespace Logitar.Identity.Sessions.Queries;
 /// The query raised to retrieve a single user session.
 /// </summary>
 /// <param name="Id">The identifier of the user session.</param>
-internal record GetSessionQuery(Guid? Id) : IRequest<Session>;
+internal record GetSessionQuery(Guid? Id) : IRequest<Session?>;
