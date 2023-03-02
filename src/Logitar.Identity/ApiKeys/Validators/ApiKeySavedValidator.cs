@@ -12,7 +12,7 @@ internal abstract class ApiKeySavedValidator<T> : AbstractValidator<T> where T :
   /// <summary>
   /// Initializes a new instance of the <see cref="ApiKeySavedValidator{T}"/> class.
   /// </summary>
-  public ApiKeySavedValidator()
+  protected ApiKeySavedValidator()
   {
     RuleFor(x => x.Title).NullOrNotEmpty()
       .MaximumLength(byte.MaxValue);

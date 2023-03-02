@@ -12,7 +12,7 @@ internal abstract class RealmSavedValidator<T> : AbstractValidator<T> where T : 
   /// <summary>
   /// Initializes a new instance of the <see cref="RealmSavedValidator{T}"/> class.
   /// </summary>
-  public RealmSavedValidator()
+  protected RealmSavedValidator()
   {
     RuleFor(x => x.DisplayName).NullOrNotEmpty()
       .MaximumLength(byte.MaxValue);

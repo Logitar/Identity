@@ -7,4 +7,10 @@ namespace Logitar.Identity.ApiKeys.Validators;
 /// </summary>
 internal class ApiKeyCreatedValidator : ApiKeySavedValidator<ApiKeyCreatedEvent>
 {
+  /// <summary>
+  /// Initializes a new instance of the <see cref="ApiKeyCreatedValidator"/> class.
+  /// </summary>
+  public ApiKeyCreatedValidator() : base()
+  {
+  }
 }

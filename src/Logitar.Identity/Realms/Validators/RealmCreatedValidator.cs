@@ -11,7 +11,7 @@ internal class RealmCreatedValidator : RealmSavedValidator<RealmCreatedEvent>
   /// <summary>
   /// Initializes a new instance of the <see cref="RealmCreatedValidator"/> class.
   /// </summary>
-  public RealmCreatedValidator()
+  public RealmCreatedValidator() : base()
   {
     RuleFor(x => x.UniqueName).NotEmpty()
       .MaximumLength(byte.MaxValue)

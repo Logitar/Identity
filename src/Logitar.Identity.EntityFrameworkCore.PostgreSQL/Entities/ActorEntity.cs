@@ -57,6 +57,21 @@ public class ActorEntity
   }
 
   /// <summary>
+  /// Initializes a new instance of the <see cref="ActorEntity"/> class using the specified user actor.
+  /// </summary>
+  /// <param name="user">The user actor.</param>
+  /// <param name="isDeleted">A value indicating whether or not the actor is deleted.</param>
+  internal ActorEntity(UserEntity user, bool isDeleted = false)
+  {
+    Type = ActorType.ApiKey;
+    IsDeleted = isDeleted;
+
+    DisplayName = user.FullName ?? user.Username;
+    Email = user.EmailAddress;
+    Picture = user.Picture;
+  }
+
+  /// <summary>
   /// Gets or sets the type of the actor.
   /// </summary>
   public ActorType Type { get; set; }

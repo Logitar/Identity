@@ -11,7 +11,7 @@ internal class RoleCreatedValidator : RoleSavedValidator<RoleCreatedEvent>
   /// <summary>
   /// Initializes a new instance of the <see cref="RoleCreatedValidator"/> class.
   /// </summary>
-  public RoleCreatedValidator()
+  public RoleCreatedValidator() : base()
   {
     RuleFor(x => x.UniqueName).NotEmpty()
       .MaximumLength(byte.MaxValue)
