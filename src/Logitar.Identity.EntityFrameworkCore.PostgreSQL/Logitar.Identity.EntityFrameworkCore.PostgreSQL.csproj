@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
-    <PackageReference Include="Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL" Version="2.0.1" />
+    <PackageReference Include="Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL" Version="2.0.2" />
   </ItemGroup>
 
   <ItemGroup>
