@@ -111,11 +111,20 @@ public class UserAggregate : AggregateRoot
   /// Gets or sets the salted and hashed password of the user.
   /// </summary>
   public string? PasswordHash { get; private set; }
+  /// <summary>
+  /// Gets a value indicating whether or not the user has a password.
+  /// </summary>
+  public bool HasPassword => PasswordHash != null;
 
   /// <summary>
   /// Gets or sets a value indicating whether or not the user account is disabled.
   /// </summary>
   public bool IsDisabled { get; private set; }
+
+  /// <summary>
+  /// Gets or sets the date and time when the user signed-in lastly.
+  /// </summary>
+  public DateTime? SignedInOn { get; private set; }
 
   /// <summary>
   /// Gets or sets the postal address of the user.
@@ -213,6 +222,30 @@ public class UserAggregate : AggregateRoot
     Username = e.Username;
 
     Apply((UserSavedEvent)e);
+  }
+
+  /// <summary>
+  /// Changes the password of the user.
+  /// </summary>
+  /// <param name="passwordHash">The new salted and hashed password.</param>
+  public void ChangePassword(string passwordHash)
+  {
+    UserChangedPasswordEvent e = new()
+    {
+      ActorId = Id,
+      PasswordHash = passwordHash
+    };
+    new UserChangedPasswordValidator().ValidateAndThrow(e);
+
+    ApplyChange(e);
+  }
+  /// <summary>
+  /// Applies the specified event to the user.
+  /// </summary>
+  /// <param name="e">The domain event.</param>
+  protected virtual void Apply(UserChangedPasswordEvent e)
+  {
+    PasswordHash = e.PasswordHash;
   }
 
   /// <summary>
@@ -327,6 +360,39 @@ public class UserAggregate : AggregateRoot
     {
       _externalIdentifiers[e.Key] = e.Value;
     }
+  }
+
+  /// <summary>
+  /// Signs-in the user at the specified date and time.
+  /// </summary>
+  /// <param name="realm">The realm in which the user belongs.</param>
+  /// <param name="signedInOn">The date and time when the user signed-in.</param>
+  /// <exception cref="AccountIsDisabledException">The user account is disabled.</exception>
+  /// <exception cref="AccountIsNotConfirmedException">The user account is not confirmed.</exception>
+  public void SignIn(RealmAggregate realm, DateTime signedInOn)
+  {
+    if (IsDisabled)
+    {
+      throw new AccountIsDisabledException(this);
+    }
+    else if (realm.RequireConfirmedAccount && !IsConfirmed)
+    {
+      throw new AccountIsNotConfirmedException(this);
+    }
+
+    ApplyChange(new UserSignedInEvent
+    {
+      ActorId = Id,
+      OccurredOn = signedInOn
+    });
+  }
+  /// <summary>
+  /// Applies the specified event to the user.
+  /// </summary>
+  /// <param name="e">The domain event.</param>
+  protected virtual void Apply(UserSignedInEvent e)
+  {
+    SignedInOn = e.OccurredOn;
   }
 
   /// <summary>

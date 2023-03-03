@@ -14,6 +14,12 @@ public class UserApiController : ControllerBase
     _userService = userService;
   }
 
+  [HttpPut("{id}/password/change")]
+  public async Task<ActionResult<User>> ChangePasswordAsync(Guid id, [FromBody] ChangePasswordInput input, CancellationToken cancellationToken)
+  {
+    return Ok(await _userService.ChangePasswordAsync(id, input, cancellationToken));
+  }
+
   [HttpPost]
   public async Task<ActionResult<User>> CreateAsync([FromBody] CreateUserInput input, CancellationToken cancellationToken)
   {

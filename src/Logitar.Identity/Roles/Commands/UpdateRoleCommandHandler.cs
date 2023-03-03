@@ -24,7 +24,7 @@ internal class UpdateRoleCommandHandler : IRequestHandler<UpdateRoleCommand, Rol
   /// <summary>
   /// Initializes a new instance of the <see cref="UpdateRoleCommandHandler"/> class using the specified arguments.
   /// </summary>
-  /// /// <param name="currentActor">The current actor.</param>
+  /// <param name="currentActor">The current actor.</param>
   /// <param name="eventStore">The event store.</param>
   /// <param name="roleQuerier">The role querier.</param>
   public UpdateRoleCommandHandler(ICurrentActor currentActor,

@@ -32,6 +32,14 @@ internal interface IUserHelper
     CancellationToken cancellationToken = default);
 
   /// <summary>
+  /// Returns a value indicating whether or not the specified password matches the specified user.
+  /// </summary>
+  /// <param name="user">The user to compare.</param>
+  /// <param name="password">The password to match.</param>
+  /// <returns>True if the password matches the user's salted and hashed password.</returns>
+  bool IsMatch(UserAggregate user, string password);
+
+  /// <summary>
   /// Validates the specified password in the specified realm. If the password matches the realm
   /// password constraints, a salted and hashed password will be returned. If the password does not
   /// match the realm password constraints, a <see cref="ValidationException"/> will be thrown.

@@ -5,6 +5,7 @@ using Logitar.Identity.EntityFrameworkCore.PostgreSQL.Queriers;
 using Logitar.Identity.EntityFrameworkCore.PostgreSQL.Repositories;
 using Logitar.Identity.Realms;
 using Logitar.Identity.Roles;
+using Logitar.Identity.Sessions;
 using Logitar.Identity.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -61,6 +62,7 @@ public static class DependencyInjectionExtensions
       .AddScoped<IApiKeyQuerier, ApiKeyQuerier>()
       .AddScoped<IRealmQuerier, RealmQuerier>()
       .AddScoped<IRoleQuerier, RoleQuerier>()
+      .AddScoped<ISessionQuerier, SessionQuerier>()
       .AddScoped<IUserQuerier, UserQuerier>();
   }
 
@@ -74,6 +76,7 @@ public static class DependencyInjectionExtensions
     return services
       .AddScoped<IRealmRepository, RealmRepository>()
       .AddScoped<IRoleRepository, RoleRepository>()
+      .AddScoped<ISessionRepository, SessionRepository>()
       .AddScoped<IUserRepository, UserRepository>();
   }
 }

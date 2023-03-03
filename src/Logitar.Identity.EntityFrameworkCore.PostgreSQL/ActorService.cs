@@ -176,6 +176,14 @@ internal class ActorService : IActorService
       role.UpdateActors(id, serializedActor);
     }
 
+    SessionEntity[] sessions = await _context.Sessions
+      .Where(x => x.CreatedById == id || x.UpdatedById == id || x.SignedOutById == id)
+      .ToArrayAsync(cancellationToken);
+    foreach (SessionEntity session in sessions)
+    {
+      session.UpdateActors(id, serializedActor);
+    }
+
     UserEntity[] users = await _context.Users
       .Where(x => x.CreatedById == id || x.UpdatedById == id
         || x.PasswordChangedById == id || x.DisabledById == id

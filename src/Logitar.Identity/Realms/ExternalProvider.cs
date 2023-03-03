@@ -1,4 +1,4 @@
-﻿namespace Logitar.Identity.Accounts;
+﻿namespace Logitar.Identity.Realms;
 
 /**************************************************************************************************/
 /* WARNING - DO NOT CHANGE THE NAMES AND VALUES OF EXISTING PROVIDERS SINCE THEY WILL BE          */

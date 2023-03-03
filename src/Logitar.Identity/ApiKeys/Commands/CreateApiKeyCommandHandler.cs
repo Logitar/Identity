@@ -51,7 +51,7 @@ internal class CreateApiKeyCommandHandler : IRequestHandler<CreateApiKeyCommand,
   /// <param name="command">The command to handle.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The created API key.</returns>
-  /// <exception cref="AggregateNotFoundException">The specified realm could not be found.</exception>
+  /// <exception cref="AggregateNotFoundException{RealmAggregate}">The specified realm could not be found.</exception>
   /// <exception cref="UniqueNameAlreadyUsedException">The specified unique name is already used.</exception>
   /// <exception cref="InvalidOperationException">The API key output could not be found.</exception>
   public async Task<ApiKey> Handle(CreateApiKeyCommand command, CancellationToken cancellationToken)

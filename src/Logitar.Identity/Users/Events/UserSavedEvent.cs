@@ -5,7 +5,7 @@ using System.Globalization;
 namespace Logitar.Identity.Users.Events;
 
 /// <summary>
-/// The base <see cref="UserSavedEvent"/> save event.
+/// The base <see cref="UserAggregate"/> save event.
 /// </summary>
 public abstract record UserSavedEvent : DomainEvent, INotification
 {

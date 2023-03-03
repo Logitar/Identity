@@ -39,9 +39,10 @@ internal class Startup : StartupBase
       if (application.Environment.IsDevelopment())
       {
         application.UseSwagger();
-        application.UseSwaggerUI();
+        application.UseSwaggerUI(options => options.InjectStylesheet("/swagger-ui/SwaggerDark.css"));
       }
 
+      application.UseStaticFiles();
       application.UseHttpsRedirection();
       application.MapControllers();
     }

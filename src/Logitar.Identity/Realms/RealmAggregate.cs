@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using Logitar.EventSourcing;
-using Logitar.Identity.Accounts;
 using Logitar.Identity.Realms.Events;
 using Logitar.Identity.Realms.Validators;
 using System.Globalization;

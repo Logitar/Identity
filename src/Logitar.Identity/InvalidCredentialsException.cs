@@ -8,7 +8,7 @@ public class InvalidCredentialsException : Exception
   /// <summary>
   /// The default exception message.
   /// </summary>
-  private const string DefaultMessage = "The specified credentials did not match";
+  private const string DefaultMessage = "The specified credentials did not match.";
 
   /// <summary>
   /// Initializes a new instance of the <see cref="InvalidCredentialsException"/> class.

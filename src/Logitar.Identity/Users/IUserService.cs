@@ -6,6 +6,14 @@
 public interface IUserService
 {
   /// <summary>
+  /// Changes the password of an user.
+  /// </summary>
+  /// <param name="id">The identifier of the user.</param>
+  /// <param name="input">The password change input.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The updated user.</returns>
+  Task<User> ChangePasswordAsync(Guid id, ChangePasswordInput input, CancellationToken cancellationToken = default);
+  /// <summary>
   /// Creates a new user.
   /// </summary>
   /// <param name="input">The input creation arguments.</param>

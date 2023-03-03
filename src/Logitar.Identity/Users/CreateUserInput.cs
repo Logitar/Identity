@@ -11,7 +11,7 @@ public record CreateUserInput : SaveUserInput
   public Guid RealmId { get; set; }
 
   /// <summary>
-  /// Gets or sets the unique name of the user (not case-sensitive).
+  /// Gets or sets the unique name of the user (case-insensitive).
   /// </summary>
   public string Username { get; set; } = string.Empty;
 

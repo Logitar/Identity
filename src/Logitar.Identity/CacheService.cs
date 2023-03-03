@@ -41,7 +41,7 @@ internal class CacheService : ICacheService
   /// <summary>
   /// Removes a cached API key by its identifier.
   /// </summary>
-  /// <param name="id"></param>
+  /// <param name="id">The identifier of the API key.</param>
   public void RemoveApiKey(AggregateId id)
   {
     RemoveItem(GetActorCacheKey(id.Value));

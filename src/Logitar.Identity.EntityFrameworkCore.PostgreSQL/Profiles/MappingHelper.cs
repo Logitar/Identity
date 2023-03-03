@@ -43,7 +43,7 @@ internal static class MappingHelper
   /// <param name="entity">The source entity.</param>
   /// <param name="destination">The destination object.</param>
   /// <returns>The list of custom attributes.</returns>
-  /// <exception cref="InvalidOperationException"></exception>
+  /// <exception cref="InvalidOperationException">The custom attributes could not be deserialized.</exception>
   public static IEnumerable<CustomAttribute> GetCustomAttributes(ICustomAttributes entity, object _)
   {
     if (entity.CustomAttributes == null)

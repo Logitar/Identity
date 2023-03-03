@@ -1,5 +1,4 @@
 ﻿using Logitar.EventSourcing;
-using Logitar.Identity.Accounts;
 using MediatR;
 using System.Globalization;
 
@@ -57,7 +56,7 @@ internal class CreateRealmCommandHandler : IRequestHandler<CreateRealmCommand, R
   {
     CreateRealmInput input = command.Input;
 
-    if (await _realmRepository.LoadAsync(input.UniqueName, cancellationToken) != null)
+    if (await _realmRepository.LoadByUniqueNameAsync(input.UniqueName, cancellationToken) != null)
     {
       throw new UniqueNameAlreadyUsedException(input.UniqueName, nameof(input.UniqueName));
     }
