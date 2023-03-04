@@ -20,6 +20,10 @@ internal class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Use
   /// </summary>
   private readonly IEventStore _eventStore;
   /// <summary>
+  /// The realm repository.
+  /// </summary>
+  private readonly IRealmRepository _realmRepository;
+  /// <summary>
   /// The user helper.
   /// </summary>
   private readonly IUserHelper _userHelper;
@@ -37,17 +41,20 @@ internal class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Use
   /// </summary>
   /// <param name="currentActor">The current actor.</param>
   /// <param name="eventStore">The event store.</param>
+  /// <param name="realmRepository">The realm repository.</param>
   /// <param name="userHelper">The user helper.</param>
   /// <param name="userQuerier">The user querier.</param>
   /// <param name="userRepository">The user repository.</param>
   public CreateUserCommandHandler(ICurrentActor currentActor,
     IEventStore eventStore,
+    IRealmRepository realmRepository,
     IUserHelper userHelper,
     IUserQuerier userQuerier,
     IUserRepository userRepository)
   {
     _currentActor = currentActor;
     _eventStore = eventStore;
+    _realmRepository = realmRepository;
     _userHelper = userHelper;
     _userQuerier = userQuerier;
     _userRepository = userRepository;
@@ -66,9 +73,8 @@ internal class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Use
   {
     CreateUserInput input = command.Input;
 
-    AggregateId realmId = new(input.RealmId);
-    RealmAggregate realm = await _eventStore.LoadAsync<RealmAggregate>(realmId, cancellationToken)
-      ?? throw new AggregateNotFoundException<RealmAggregate>(realmId, nameof(input.RealmId));
+    RealmAggregate realm = await _realmRepository.LoadAsync(input.Realm, cancellationToken)
+      ?? throw new AggregateNotFoundException<RealmAggregate>(new AggregateId(input.Realm), nameof(input.Realm));
 
     if (await _userRepository.LoadAsync(realm, input.Username, cancellationToken) != null)
     {
