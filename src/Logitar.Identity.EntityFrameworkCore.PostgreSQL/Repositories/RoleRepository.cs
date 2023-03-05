@@ -22,6 +22,24 @@ internal class RoleRepository : EventStore, IRoleRepository
   }
 
   /// <summary>
+  /// Retrieves the list of roles in the specified realm.
+  /// </summary>
+  /// <param name="realm">The realm of the roles.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The list of roles, or empty if none.</returns>
+  public async Task<IEnumerable<RoleAggregate>> LoadAsync(RealmAggregate realm, CancellationToken cancellationToken)
+  {
+    string aggregateType = typeof(RoleAggregate).GetName();
+
+    EventEntity[] events = await Context.Events.FromSqlInterpolated($@"SELECT e.* FROM ""Events"" e JOIN ""Roles"" r on r.""AggregateId"" = e.""AggregateId"" JOIN ""Realms"" a ON a.""RealmId"" = r.""RealmId"" WHERE e.""AggregateType"" = {aggregateType} AND a.""AggregateId"" = {realm.Id.Value}")
+      .AsNoTracking()
+      .OrderBy(x => x.Version)
+      .ToArrayAsync(cancellationToken);
+
+    return Load<RoleAggregate>(events);
+  }
+
+  /// <summary>
   /// Retrieves a role by its realm and unique name.
   /// </summary>
   /// <param name="realm">The realm of the role.</param>
