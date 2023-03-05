@@ -12,17 +12,17 @@ namespace Logitar.Identity.Users;
 internal class UserHelper : IUserHelper
 {
   /// <summary>
-  /// The event store.
+  /// The role repository.
   /// </summary>
-  private readonly IEventStore _eventStore;
+  private readonly IRoleRepository _roleRepository;
 
   /// <summary>
-  /// Initializes a new instance of the <see cref="UserHelper"/> class using the specified roles.
+  /// Initializes a new instance of the <see cref="UserHelper"/> class using the specified arguments.
   /// </summary>
-  /// <param name="eventStore">The event store.</param>
-  public UserHelper(IEventStore eventStore)
+  /// <param name="roleRepository">The role repository.</param>
+  public UserHelper(IRoleRepository roleRepository)
   {
-    _eventStore = eventStore;
+    _roleRepository = roleRepository;
   }
 
   /// <summary>
@@ -91,14 +91,13 @@ internal class UserHelper : IUserHelper
   /// Resolves a list of roles using the specified arguments.
   /// </summary>
   /// <param name="realm">The realm that the roles should belong to.</param>
-  /// <param name="ids">The list of role identifiers.</param>
+  /// <param name="ids">The list of role identifiers and unique names.</param>
   /// <param name="paramName">The name of the role list parameter.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The list of the roles.</returns>
   /// <exception cref="AggregatesNotFoundException{RoleAggregate}">At least one role could not be found.</exception>
-  /// <exception cref="RolesNotInRealmException">At least one role did not belong to the specified realm.</exception>
   private async Task<IEnumerable<RoleAggregate>?> GetRolesAsync(RealmAggregate realm,
-    IEnumerable<Guid>? ids,
+    IEnumerable<string>? ids,
     string paramName,
     CancellationToken cancellationToken)
   {
@@ -107,21 +106,27 @@ internal class UserHelper : IUserHelper
       return null;
     }
 
-    IEnumerable<AggregateId> aggregateIds = ids.Select(id => new AggregateId(id)).Distinct();
-    List<AggregateId> missingRoles = new(capacity: aggregateIds.Count());
-    List<RoleAggregate> notInRealm = new(capacity: missingRoles.Count);
+    List<AggregateId> missingRoles = new(capacity: ids.Count());
 
-    Dictionary<AggregateId, RoleAggregate> roles = (await _eventStore.LoadAsync<RoleAggregate>(aggregateIds, cancellationToken))
-      .ToDictionary(x => x.Id, x => x);
-    foreach (AggregateId id in aggregateIds)
+    IEnumerable<RoleAggregate> realmRoles = await _roleRepository.LoadAsync(realm, cancellationToken);
+    Dictionary<AggregateId, RoleAggregate> rolesById = realmRoles.ToDictionary(x => x.Id, x => x);
+    Dictionary<string, RoleAggregate> rolesByUniqueName = realmRoles.ToDictionary(x => x.UniqueName.ToUpper(), x => x);
+    List<RoleAggregate> roles = new(capacity: missingRoles.Count);
+
+    foreach (string id in ids)
     {
-      if (!roles.TryGetValue(id, out RoleAggregate? role))
+      AggregateId aggregateId = Guid.TryParse(id, out Guid roleId)
+        ? new AggregateId(roleId)
+        : new AggregateId(id);
+
+      if (!rolesById.TryGetValue(aggregateId, out RoleAggregate? role) || role == null)
       {
-        missingRoles.Add(id);
+        rolesByUniqueName.TryGetValue(id.ToUpper(), out role);
       }
-      else if (role.RealmId != realm.Id)
+
+      if (!roles.AddIfNotNull(role))
       {
-        notInRealm.Add(role);
+        missingRoles.Add(aggregateId);
       }
     }
 
@@ -129,11 +134,7 @@ internal class UserHelper : IUserHelper
     {
       throw new AggregatesNotFoundException<RoleAggregate>(missingRoles, paramName);
     }
-    else if (notInRealm.Any())
-    {
-      throw new RolesNotInRealmException(notInRealm, realm, paramName);
-    }
 
-    return roles.Values;
+    return realmRoles;
   }
 }
