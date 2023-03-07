@@ -65,7 +65,7 @@ public abstract record SaveUserInput
   public IEnumerable<CustomAttribute>? CustomAttributes { get; set; }
 
   /// <summary>
-  /// Gets or sets the role identifiers of the user.
+  /// Gets or sets the unique names and identifiers of the user's roles.
   /// </summary>
-  public IEnumerable<Guid>? Roles { get; set; }
+  public IEnumerable<string>? Roles { get; set; }
 }

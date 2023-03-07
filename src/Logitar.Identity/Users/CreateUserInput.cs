@@ -6,9 +6,9 @@
 public record CreateUserInput : SaveUserInput
 {
   /// <summary>
-  /// Gets or sets the identifier of the realm in which this user belongs.
+  /// Gets or sets the identifier or unique name of the realm in which the user belongs.
   /// </summary>
-  public Guid RealmId { get; set; }
+  public string Realm { get; set; } = string.Empty;
 
   /// <summary>
   /// Gets or sets the unique name of the user (case-insensitive).

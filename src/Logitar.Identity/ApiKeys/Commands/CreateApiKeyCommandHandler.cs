@@ -26,6 +26,10 @@ internal class CreateApiKeyCommandHandler : IRequestHandler<CreateApiKeyCommand,
   /// The event store.
   /// </summary>
   private readonly IEventStore _eventStore;
+  /// <summary>
+  /// The realm repository.
+  /// </summary>
+  private readonly IRealmRepository _realmRepository;
 
   /// <summary>
   /// Initializes a new instance of the <see cref="CreateApiKeyCommandHandler"/> class using the specified arguments.
@@ -34,15 +38,18 @@ internal class CreateApiKeyCommandHandler : IRequestHandler<CreateApiKeyCommand,
   /// <param name="apiKeyQuerier">The API key querier.</param>
   /// <param name="currentActor">The current actor.</param>
   /// <param name="eventStore">The event store.</param>
+  /// <param name="realmRepository">The realm repository.</param>
   public CreateApiKeyCommandHandler(IApiKeyHelper apiKeyHelper,
     IApiKeyQuerier apiKeyQuerier,
     ICurrentActor currentActor,
-    IEventStore eventStore)
+    IEventStore eventStore,
+    IRealmRepository realmRepository)
   {
     _apiKeyHelper = apiKeyHelper;
     _apiKeyQuerier = apiKeyQuerier;
     _currentActor = currentActor;
     _eventStore = eventStore;
+    _realmRepository = realmRepository;
   }
 
   /// <summary>
@@ -58,9 +65,8 @@ internal class CreateApiKeyCommandHandler : IRequestHandler<CreateApiKeyCommand,
   {
     CreateApiKeyInput input = command.Input;
 
-    AggregateId realmId = new(input.RealmId);
-    RealmAggregate realm = await _eventStore.LoadAsync<RealmAggregate>(realmId, cancellationToken)
-      ?? throw new AggregateNotFoundException<RealmAggregate>(realmId, nameof(input.RealmId));
+    RealmAggregate realm = await _realmRepository.LoadAsync(input.Realm, cancellationToken)
+      ?? throw new AggregateNotFoundException<RealmAggregate>(new AggregateId(input.Realm), nameof(input.Realm));
 
     string secretHash = _apiKeyHelper.GenerateSecret(out byte[] secret);
     Dictionary<string, string>? customAttributes = input.CustomAttributes?.ToDictionary();

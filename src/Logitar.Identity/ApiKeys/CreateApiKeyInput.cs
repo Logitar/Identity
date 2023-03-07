@@ -6,9 +6,9 @@
 public record CreateApiKeyInput : SaveApiKeyInput
 {
   /// <summary>
-  /// Gets or sets the identifier of the realm in which this API key belongs.
+  /// Gets or sets the identifier or unique name of the realm in which the API key belongs.
   /// </summary>
-  public Guid RealmId { get; set; }
+  public string Realm { get; set; } = string.Empty;
 
   /// <summary>
   /// Gets or sets the prefix of the API key, typically two characters.

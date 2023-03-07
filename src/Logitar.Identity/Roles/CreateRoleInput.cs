@@ -6,9 +6,9 @@
 public record CreateRoleInput : SaveRoleInput
 {
   /// <summary>
-  /// Gets or sets the identifier of the realm in which this role belongs.
+  /// Gets or sets the identifier or unique name of the realm in which the role belongs.
   /// </summary>
-  public Guid RealmId { get; set; }
+  public string Realm { get; set; } = string.Empty;
 
   /// <summary>
   /// Gets or sets the unique name of the role (case-insensitive).

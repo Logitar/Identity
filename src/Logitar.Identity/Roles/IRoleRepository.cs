@@ -8,6 +8,13 @@ namespace Logitar.Identity.Roles;
 public interface IRoleRepository
 {
   /// <summary>
+  /// Retrieves the list of roles in the specified realm.
+  /// </summary>
+  /// <param name="realm">The realm of the roles.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The list of roles, or empty if none.</returns>
+  Task<IEnumerable<RoleAggregate>> LoadAsync(RealmAggregate realm, CancellationToken cancellationToken = default);
+  /// <summary>
   /// Retrieves a role by its realm and unique name.
   /// </summary>
   /// <param name="realm">The realm of the role.</param>
