@@ -58,6 +58,67 @@ internal class JwtTokenManager : ITokenManager
   }
 
   /// <summary>
+  /// Validates the specified security token using the specified arguments.
+  /// </summary>
+  /// <param name="token">The security token to validate.</param>
+  /// <param name="secret">The secret used to sign the token.</param>
+  /// <param name="audience">The audience of the token.</param>
+  /// <param name="issuer">The issuer of the token.</param>
+  /// <param name="purpose">The purpose of the token.</param>
+  /// <param name="consume">If true, the token will be consumed. A consumed cannot be used again.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The claims principal.</returns>
+  public async Task<ClaimsPrincipal> ValidateAsync(string token, string? secret, string? audience, string? issuer, string? purpose, bool consume, CancellationToken cancellationToken)
+  {
+    SecurityKey? key = secret == null ? null : GetSecurityKey(secret);
+
+    TokenValidationParameters validationParameters = new()
+    {
+      IssuerSigningKey = key,
+      ValidAudience = audience,
+      ValidIssuer = issuer,
+      ValidateAudience = audience != null,
+      ValidateIssuer = issuer != null,
+      ValidateIssuerSigningKey = key != null
+    };
+
+    ClaimsPrincipal principal = _tokenHandler.ValidateToken(token, validationParameters, out _);
+
+    // TODO(fpion): token consuming
+    //IEnumerable<Guid> ids = principal.FindAll(Rfc7519ClaimTypes.JwtId).Select(x => Guid.Parse(x.Value));
+    //if (ids.Any())
+    //{
+    //  IEnumerable<Guid> blacklisted = await _blacklist.GetBlacklistedAsync(ids, cancellationToken);
+    //  if (blacklisted.Any())
+    //  {
+    //    throw new SecurityTokenBlacklistedException(blacklisted);
+    //  }
+    //}
+
+    if (purpose != null)
+    {
+      IEnumerable<System.Security.Claims.Claim> claims = principal.FindAll(CustomClaimTypes.Purpose);
+      HashSet<string> purposes = claims.SelectMany(x => x.Value.Split().Select(y => y.ToLower())).ToHashSet();
+      if (!purposes.Contains(purpose.ToLower()))
+      {
+        throw new InvalidSecurityTokenPurposeException(purpose, purposes);
+      }
+    }
+
+    // TODO(fpion): token consuming
+    //if (consume)
+    //{
+    //  DateTime? expiresOn = principal.FindFirst(Rfc7519ClaimTypes.Expires)
+    //    ?.GetDateTime()
+    //    .Add(validationParameters.ClockSkew);
+
+    //  await _blacklist.BlacklistAsync(ids, expiresOn, cancellationToken);
+    //}
+
+    return principal;
+  }
+
+  /// <summary>
   /// Resolves a security key using the specified secret.
   /// </summary>
   /// <param name="secret">The secret of the key.</param>
