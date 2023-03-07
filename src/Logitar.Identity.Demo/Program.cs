@@ -1,5 +1,4 @@
-﻿
-using Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL;
+﻿using Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL;
 using Logitar.Identity.EntityFrameworkCore.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 

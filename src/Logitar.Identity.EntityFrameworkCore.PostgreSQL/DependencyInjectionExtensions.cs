@@ -3,9 +3,11 @@ using Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL;
 using Logitar.Identity.ApiKeys;
 using Logitar.Identity.EntityFrameworkCore.PostgreSQL.Queriers;
 using Logitar.Identity.EntityFrameworkCore.PostgreSQL.Repositories;
+using Logitar.Identity.EntityFrameworkCore.PostgreSQL.Tokens;
 using Logitar.Identity.Realms;
 using Logitar.Identity.Roles;
 using Logitar.Identity.Sessions;
+using Logitar.Identity.Tokens;
 using Logitar.Identity.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,6 +49,7 @@ public static class DependencyInjectionExtensions
       .AddMediatR(config => config.RegisterServicesFromAssembly(assembly))
       .AddQueriers()
       .AddRepositories()
+      .AddSingleton<ITokenManager, JwtTokenManager>()
       .AddScoped<IActorService, ActorService>()
       .AddScoped<IEventBus, TEventBus>();
   }

@@ -15,7 +15,7 @@ public class ActorEntity
   private static readonly JsonSerializerOptions _serializerOptions = new();
 
   /// <summary>
-  /// Initializes the static instance of the <see cref="ActorEntity"/> class.
+  /// Initializes the static <see cref="ActorEntity"/> class members.
   /// </summary>
   static ActorEntity()
   {
