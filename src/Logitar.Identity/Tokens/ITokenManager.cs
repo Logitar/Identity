@@ -31,3 +31,5 @@ public interface ITokenManager
   /// <returns>The claims principal.</returns>
   Task<ClaimsPrincipal> ValidateAsync(string token, string? secret = null, string? audience = null, string? issuer = null, string? purpose = null, bool consume = false, CancellationToken cancellationToken = default);
 }
+
+// TODO(fpion): secret should never be null.
