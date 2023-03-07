@@ -1,4 +1,5 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Identity.Sessions;
 using MediatR;
 
 namespace Logitar.Identity.Users.Commands;
@@ -17,6 +18,10 @@ internal class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, Use
   /// </summary>
   private readonly IEventStore _eventStore;
   /// <summary>
+  /// The session repository.
+  /// </summary>
+  private readonly ISessionRepository _sessionRepository;
+  /// <summary>
   /// The user querier.
   /// </summary>
   private readonly IUserQuerier _userQuerier;
@@ -26,13 +31,16 @@ internal class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, Use
   /// </summary>
   /// <param name="currentActor">The current actor.</param>
   /// <param name="eventStore">The event store.</param>
+  /// <param name="sessionRepository">The session repository.</param>
   /// <param name="userQuerier">The user querier.</param>
   public DeleteUserCommandHandler(ICurrentActor currentActor,
     IEventStore eventStore,
+    ISessionRepository sessionRepository,
     IUserQuerier userQuerier)
   {
     _currentActor = currentActor;
     _eventStore = eventStore;
+    _sessionRepository = sessionRepository;
     _userQuerier = userQuerier;
   }
 
@@ -52,10 +60,30 @@ internal class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, Use
     User output = await _userQuerier.GetAsync(user.Id, cancellationToken)
       ?? throw new InvalidOperationException($"The user output (Id={user.Id}) could not be found.");
 
+    await DeleteSessionsAsync(user, cancellationToken);
+
     user.Delete(_currentActor.Id);
 
     await _eventStore.SaveAsync(user, cancellationToken);
 
     return output;
+  }
+
+  /// <summary>
+  /// Deletes the sessions of the specified user.
+  /// </summary>
+  /// <param name="user">The user to delete its sessions.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The asynchronous operation.</returns>
+  private async Task DeleteSessionsAsync(UserAggregate user, CancellationToken cancellationToken)
+  {
+    IEnumerable<SessionAggregate> sessions = await _sessionRepository.LoadAsync(user, cancellationToken);
+
+    foreach (SessionAggregate session in sessions)
+    {
+      session.Delete(_currentActor.Id);
+    }
+
+    await _eventStore.SaveAsync(sessions, cancellationToken);
   }
 }

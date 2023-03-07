@@ -88,6 +88,25 @@ public class SessionAggregate : AggregateRoot
   }
 
   /// <summary>
+  /// Deletes the user session.
+  /// </summary>
+  /// <param name="actorId">The identifier of the actor deleting the user session.</param>
+  public void Delete(AggregateId actorId)
+  {
+    ApplyChange(new SessionDeletedEvent
+    {
+      ActorId = actorId
+    });
+  }
+  /// <summary>
+  /// Applies the specified event to the user session.
+  /// </summary>
+  /// <param name="e">The domain event.</param>
+  protected virtual void Apply(SessionDeletedEvent e)
+  {
+  }
+
+  /// <summary>
   /// Refreshes the user session.
   /// </summary>
   /// <param name="keyHash">The salted and hashed key of the session.</param>

@@ -8,6 +8,13 @@ namespace Logitar.Identity.Sessions;
 public interface ISessionRepository
 {
   /// <summary>
+  /// Retrieves the list of sessions of the specified user.
+  /// </summary>
+  /// <param name="user">The user to retrieve its sessions.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The list of sessions, or empty if none.</returns>
+  Task<IEnumerable<SessionAggregate>> LoadAsync(UserAggregate user, CancellationToken cancellationToken = default);
+  /// <summary>
   /// Retrieves the list of the active sessions of the specified user.
   /// </summary>
   /// <param name="user">The user to retrieve its sessions.</param>
