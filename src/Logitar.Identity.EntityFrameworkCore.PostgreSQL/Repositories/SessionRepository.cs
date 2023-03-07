@@ -22,6 +22,24 @@ internal class SessionRepository : EventStore, ISessionRepository
   }
 
   /// <summary>
+  /// Retrieves the list of sessions of the specified user.
+  /// </summary>
+  /// <param name="user">The user to retrieve its sessions.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The list of sessions, or empty if none.</returns>
+  public async Task<IEnumerable<SessionAggregate>> LoadAsync(UserAggregate user, CancellationToken cancellationToken)
+  {
+    string aggregateType = typeof(SessionAggregate).GetName();
+
+    EventEntity[] events = await Context.Events.FromSqlInterpolated($@"SELECT e.* FROM ""Events"" e JOIN ""Sessions"" s ON s.""AggregateId"" = e.""AggregateId"" JOIN ""Users"" u on u.""UserId"" = s.""UserId"" WHERE e.""AggregateType"" = {aggregateType} AND u.""AggregateId"" = {user.Id.Value}")
+      .AsNoTracking()
+      .OrderBy(x => x.Version)
+      .ToArrayAsync(cancellationToken);
+
+    return Load<SessionAggregate>(events);
+  }
+
+  /// <summary>
   /// Retrieves the list of the active sessions of the specified user.
   /// </summary>
   /// <param name="user">The user to retrieve its sessions.</param>
