@@ -85,4 +85,11 @@ public interface IUserService
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The updated user.</returns>
   Task<User> UpdateAsync(Guid id, UpdateUserInput input, CancellationToken cancellationToken = default);
+  /// <summary>
+  /// Verifies the email address of an user.
+  /// </summary>
+  /// <param name="id">The identifier of the user.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The updated user.</returns>
+  Task<User> VerifyEmailAsync(Guid id, CancellationToken cancellationToken = default);
 }

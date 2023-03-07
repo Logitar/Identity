@@ -363,6 +363,36 @@ public class UserAggregate : AggregateRoot
   }
 
   /// <summary>
+  /// Sets the email address of the user.
+  /// </summary>
+  /// <param name="actorId">The identifier of the actor setting the email address.</param>
+  /// <param name="email">The email address of the user.</param>
+  public void SetEmail(AggregateId actorId, ReadOnlyEmail? email)
+  {
+    bool isEmailModified = Email?.Address != email?.Address;
+    VerificationAction emailVerification = email?.IsVerified == true ? VerificationAction.Verify
+      : (isEmailModified ? VerificationAction.Unverify : VerificationAction.None);
+
+    EmailUpdatedEvent e = new()
+    {
+      ActorId = actorId,
+      Email = email,
+      EmailVerification = emailVerification
+    };
+    new EmailUpdatedValidator().ValidateAndThrow(e);
+
+    ApplyChange(e);
+  }
+  /// <summary>
+  /// Applies the specified event to the user.
+  /// </summary>
+  /// <param name="e">The domain event.</param>
+  protected virtual void Apply(EmailUpdatedEvent e)
+  {
+    Email = e.Email;
+  }
+
+  /// <summary>
   /// Signs-in the user at the specified date and time.
   /// </summary>
   /// <param name="realm">The realm in which the user belongs.</param>
