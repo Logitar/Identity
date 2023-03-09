@@ -1,7 +1,7 @@
 ﻿namespace Logitar.Identity;
 
 /// <summary>
-/// The output representation of a custom attribute.
+/// The representation of a custom attribute.
 /// </summary>
 public record CustomAttribute
 {

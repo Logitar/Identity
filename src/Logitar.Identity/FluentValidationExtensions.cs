@@ -98,6 +98,20 @@ internal static class FluentValidationExtensions
   }
 
   /// <summary>
+  /// Defines a 'purpose' validator on the current rule builder. Validation will fail if the if the
+  /// property is not a string composed of non-empty letter-only words separated by underscores (_).
+  /// </summary>
+  /// <typeparam name="T">The type of the object being validated.</typeparam>
+  /// <param name="ruleBuilder">The rule builder.</param>
+  /// <returns>The rule builder.</returns>
+  public static IRuleBuilder<T, string?> Purpose<T>(this IRuleBuilder<T, string?> ruleBuilder)
+  {
+    return ruleBuilder.Must(p => p == null || p.Split('_').All(w => !string.IsNullOrEmpty(w) && w.All(char.IsLetter)))
+      .WithErrorCode("PurposeValidator")
+      .WithMessage("'{PropertyName}' must be composed of non-empty letter-only words, separated by underscores '_'.");
+  }
+
+  /// <summary>
   /// Defines a 'time zone' validator on the current rule builder. Validation will fail if the property
   /// is not a time zone in the tz database.
   /// </summary>
