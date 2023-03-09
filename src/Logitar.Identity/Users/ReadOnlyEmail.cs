@@ -19,4 +19,11 @@ public record ReadOnlyEmail : ReadOnlyContact
   /// Gets the email address.
   /// </summary>
   public string Address { get; }
+
+  /// <summary>
+  /// Returns a new instance of the <see cref="ReadOnlyEmail"/> record using the current instance
+  /// properties. The new instance will be verified.
+  /// </summary>
+  /// <returns>The new record verified instance.</returns>
+  public ReadOnlyEmail Verify() => new(Address, isVerified: true);
 }

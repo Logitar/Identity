@@ -329,9 +329,9 @@ internal class UserEntity : AggregateEntity, ICustomAttributes
   }
 
   /// <summary>
-  /// Adds, removes or updates an external identifier of the user.
+  /// Adds, removes or updates an external identifier of the user to the state of the specified event.
   /// </summary>
-  /// <param name="e">The external identifier event.</param>
+  /// <param name="e">The external identifier save event.</param>
   /// <param name="actor">The actor saving the external identifier.</param>
   public void SaveExternalIdentifier(ExternalIdentifierSavedEvent e, ActorEntity actor)
   {
@@ -354,6 +354,32 @@ internal class UserEntity : AggregateEntity, ICustomAttributes
     else
     {
       externalIdentifier.Update(e, actor);
+    }
+  }
+
+  /// <summary>
+  /// Sets the email address of the user.
+  /// </summary>
+  /// <param name="e">The email address update event.</param>
+  /// <param name="actor">The actor setting the user's email address.</param>
+  public void SetEmail(ISetEmail e, ActorEntity actor)
+  {
+    EmailAddress = e.Email?.Address;
+    EmailAddressNormalized = e.Email?.Address.ToUpper();
+    switch (e.EmailVerification)
+    {
+      case VerificationAction.Verify:
+        EmailVerifiedById = e.ActorId.Value;
+        EmailVerifiedBy = actor.Serialize();
+        EmailVerifiedOn = e.OccurredOn;
+        IsEmailVerified = true;
+        break;
+      case VerificationAction.Unverify:
+        EmailVerifiedById = null;
+        EmailVerifiedBy = null;
+        EmailVerifiedOn = null;
+        IsEmailVerified = false;
+        break;
     }
   }
 
@@ -445,23 +471,7 @@ internal class UserEntity : AggregateEntity, ICustomAttributes
         break;
     }
 
-    EmailAddress = e.Email?.Address;
-    EmailAddressNormalized = e.Email?.Address.ToUpper();
-    switch (e.EmailVerification)
-    {
-      case VerificationAction.Verify:
-        EmailVerifiedById = e.ActorId.Value;
-        EmailVerifiedBy = actor.Serialize();
-        EmailVerifiedOn = e.OccurredOn;
-        IsEmailVerified = true;
-        break;
-      case VerificationAction.Unverify:
-        EmailVerifiedById = null;
-        EmailVerifiedBy = null;
-        EmailVerifiedOn = null;
-        IsEmailVerified = false;
-        break;
-    }
+    SetEmail(e, actor);
 
     PhoneCountryCode = e.Phone?.CountryCode;
     PhoneNumber = e.Phone?.Number;
@@ -506,7 +516,7 @@ internal class UserEntity : AggregateEntity, ICustomAttributes
   /// Sets the password the user.
   /// </summary>
   /// <param name="e">The password change event.</param>
-  /// <param name="passwordHash">The new password the user.</param>
+  /// <param name="passwordHash">The new password of the user.</param>
   /// <param name="actor">The actor setting the user's password.</param>
   private void SetPassword(DomainEvent e, string? passwordHash, ActorEntity actor)
   {
