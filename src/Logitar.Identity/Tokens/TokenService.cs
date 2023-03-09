@@ -31,4 +31,15 @@ internal class TokenService : ITokenService
   {
     return await _requestPipeline.ExecuteAsync(new CreateTokenCommand(input), cancellationToken);
   }
+
+  /// <summary>
+  /// Validates a security token.
+  /// </summary>
+  /// <param name="input">The input validation arguments.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The validated token claims.</returns>
+  public async Task<IEnumerable<Claim>> ValidateAsync(ValidateTokenInput input, CancellationToken cancellationToken)
+  {
+    return await _requestPipeline.ExecuteAsync(new ValidateTokenCommand(input, Consume: false), cancellationToken);
+  }
 }

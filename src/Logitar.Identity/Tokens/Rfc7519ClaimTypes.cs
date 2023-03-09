@@ -6,6 +6,10 @@
 public static class Rfc7519ClaimTypes
 {
   /// <summary>
+  /// The expiration date and time of the token.
+  /// </summary>
+  public const string Expires = "exp";
+  /// <summary>
   /// The identifier of the token.
   /// </summary>
   public const string JwtId = "jti";

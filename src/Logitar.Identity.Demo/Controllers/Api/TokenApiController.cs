@@ -19,4 +19,10 @@ public class TokenApiController : ControllerBase
   {
     return Ok(await _tokenService.CreateAsync(input, cancellationToken));
   }
+
+  [HttpPost("validate")]
+  public async Task<ActionResult<IEnumerable<Claim>>> ValidateAsync([FromBody] ValidateTokenInput input, CancellationToken cancellationToken)
+  {
+    return Ok(await _tokenService.ValidateAsync(input, cancellationToken));
+  }
 }
