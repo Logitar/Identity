@@ -3,16 +3,16 @@
 namespace Logitar.Identity.Tokens.Validators;
 
 /// <summary>
-/// The validator used to validate instances of the <see cref="CreateTokenInput"/> class.
+/// The validator used to validate instances of the <see cref="ValidateTokenInput"/> class.
 /// </summary>
-internal class CreateTokenValidator : AbstractValidator<CreateTokenInput>
+internal class ValidateTokenValidator : AbstractValidator<ValidateTokenInput>
 {
   /// <summary>
-  /// Initializes a new instance of the <see cref="CreateTokenValidator"/> class.
+  /// Initializes a new instance of the <see cref="ValidateTokenValidator"/> class.
   /// </summary>
-  public CreateTokenValidator()
+  public ValidateTokenValidator()
   {
-    RuleFor(x => x.Lifetime).GreaterThan(0);
+    RuleFor(x => x.Token).NotEmpty();
 
     RuleFor(x => x.Purpose).Purpose();
 
@@ -24,7 +24,5 @@ internal class CreateTokenValidator : AbstractValidator<CreateTokenInput>
     RuleFor(x => x.Audience).NullOrNotEmpty();
 
     RuleFor(x => x.Issuer).NullOrNotEmpty();
-
-    RuleForEach(x => x.Claims).SetValidator(new ClaimValidator());
   }
 }

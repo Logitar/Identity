@@ -43,10 +43,6 @@ internal class CreateTokenCommandHandler : IRequestHandler<CreateTokenCommand, s
   {
     CreateTokenInput input = request.Input;
     new CreateTokenValidator().ValidateAndThrow(input);
-    if (input.Realm == null)
-    {
-      throw new NotImplementedException(); // TODO(fpion): allow customization (Secret)
-    }
 
     RealmAggregate? realm = input.Realm == null ? null
       : await _realmRepository.LoadAsync(input.Realm, cancellationToken)
@@ -78,12 +74,11 @@ internal class CreateTokenCommandHandler : IRequestHandler<CreateTokenCommand, s
       identity.AddClaims(input.Claims.Select(CreateClaim));
     }
 
-    string? algorithm = null; // TODO(fpion): allow customization (Algorithm)
-    string? audience = realm?.GetAudience(); // TODO(fpion): allow customization (AudienceFormat)
-    string? issuer = realm?.GetIssuer(); // TODO(fpion): allow customization (IssuerFormat)
-    string? secret = realm?.JwtSecret; // TODO(fpion): allow customization (Secret)
+    string? audience = input.Audience?.Format(realm) ?? realm?.GetAudience();
+    string? issuer = input.Issuer?.Format(realm) ?? realm?.GetIssuer();
+    string? secret = realm?.JwtSecret ?? input.Secret ?? string.Empty;
 
-    return _tokenManager.Create(identity, secret, algorithm, expires, audience, issuer);
+    return _tokenManager.Create(identity, secret, input.Algorithm, expires, audience, issuer);
   }
 
   /// <summary>

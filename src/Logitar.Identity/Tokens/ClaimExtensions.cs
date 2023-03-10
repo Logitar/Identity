@@ -23,6 +23,15 @@ public static class ClaimExtensions
     => DateTimeOffset.FromUnixTimeSeconds(long.Parse(claim.Value)).UtcDateTime;
 
   /// <summary>
+  /// Formats the specified audience or issuer string value using the properties in the specified realm.
+  /// </summary>
+  /// <param name="value">The string to format.</param>
+  /// <param name="realm">The realm to use.</param>
+  /// <returns>The formatted string value.</returns>
+  public static string Format(this string value, RealmAggregate? realm)
+    => (realm == null ? value : value.Replace("{UNIQUE_NAME}", realm.UniqueName).Replace("{URL}", realm.Url)).ToLower();
+
+  /// <summary>
   /// Returns the isuer claim of the specified realm.
   /// </summary>
   /// <param name="realm">The realm.</param>

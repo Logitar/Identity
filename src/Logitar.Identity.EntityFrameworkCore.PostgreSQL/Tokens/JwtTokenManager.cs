@@ -52,9 +52,9 @@ internal class JwtTokenManager : ITokenManager
   /// <param name="audience">The audience of the token.</param>
   /// <param name="issuer">The issuer of the token.</param>
   /// <returns>The token string.</returns>
-  public string Create(ClaimsIdentity subject, string? secret, string? algorithm, DateTime? expires, string? audience, string? issuer)
+  public string Create(ClaimsIdentity subject, string secret, string? algorithm, DateTime? expires, string? audience, string? issuer)
   {
-    SigningCredentials? signingCredentials = secret == null ? null : new(GetSecurityKey(secret), algorithm ?? DefaultAlgorithm);
+    SigningCredentials signingCredentials = new(GetSecurityKey(secret), algorithm ?? DefaultAlgorithm);
 
     SecurityTokenDescriptor tokenDescriptor = new()
     {
@@ -81,9 +81,9 @@ internal class JwtTokenManager : ITokenManager
   /// <param name="consume">If true, the token will be consumed. A consumed cannot be used again.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The claims principal.</returns>
-  public async Task<ClaimsPrincipal> ValidateAsync(string token, string? secret, string? audience, string? issuer, string? purpose, bool consume, CancellationToken cancellationToken)
+  public async Task<ClaimsPrincipal> ValidateAsync(string token, string secret, string? audience, string? issuer, string? purpose, bool consume, CancellationToken cancellationToken)
   {
-    SecurityKey? key = secret == null ? null : GetSecurityKey(secret);
+    SecurityKey key = GetSecurityKey(secret);
 
     TokenValidationParameters validationParameters = new()
     {
@@ -92,7 +92,7 @@ internal class JwtTokenManager : ITokenManager
       ValidIssuer = issuer,
       ValidateAudience = audience != null,
       ValidateIssuer = issuer != null,
-      ValidateIssuerSigningKey = key != null
+      ValidateIssuerSigningKey = true
     };
 
     ClaimsPrincipal principal = _tokenHandler.ValidateToken(token, validationParameters, out _);

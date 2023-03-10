@@ -1,5 +1,7 @@
-﻿using Logitar.EventSourcing;
+﻿using FluentValidation;
+using Logitar.EventSourcing;
 using Logitar.Identity.Realms;
+using Logitar.Identity.Tokens.Validators;
 using MediatR;
 using System.Security.Claims;
 
@@ -40,18 +42,15 @@ internal class ValidateTokenCommandHandler : IRequestHandler<ValidateTokenComman
   public async Task<IEnumerable<Claim>> Handle(ValidateTokenCommand request, CancellationToken cancellationToken)
   {
     ValidateTokenInput input = request.Input;
-    if (input.Realm == null)
-    {
-      throw new NotImplementedException(); // TODO(fpion): allow customization (Secret)
-    }
+    new ValidateTokenValidator().ValidateAndThrow(input);
 
     RealmAggregate? realm = input.Realm == null ? null
      : await _realmRepository.LoadAsync(input.Realm, cancellationToken)
        ?? throw new AggregateNotFoundException<RealmAggregate>(new AggregateId(input.Realm), nameof(input.Realm));
 
-    string? audience = realm?.GetAudience(); // TODO(fpion): allow customization (AudienceFormat)
-    string? issuer = realm?.GetIssuer(); // TODO(fpion): allow customization (IssuerFormat)
-    string? secret = realm?.JwtSecret; // TODO(fpion): allow customization (Secret)
+    string? audience = input.Audience?.Format(realm) ?? realm?.GetAudience();
+    string? issuer = input.Issuer?.Format(realm) ?? realm?.GetIssuer();
+    string? secret = realm?.JwtSecret ?? input.Secret ?? string.Empty;
 
     ClaimsPrincipal principal = await _tokenManager.ValidateAsync(input.Token, secret, audience,
       issuer, input.Purpose, request.Consume, cancellationToken);
