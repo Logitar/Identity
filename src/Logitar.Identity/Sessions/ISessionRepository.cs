@@ -1,4 +1,5 @@
-﻿using Logitar.Identity.Users;
+﻿using Logitar.Identity.Realms;
+using Logitar.Identity.Users;
 
 namespace Logitar.Identity.Sessions;
 
@@ -7,6 +8,13 @@ namespace Logitar.Identity.Sessions;
 /// </summary>
 public interface ISessionRepository
 {
+  /// <summary>
+  /// Retrieves the list of sessions in the specified realm.
+  /// </summary>
+  /// <param name="realm">The realm to retrieve the sessions into.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The list of sessions, or empty if none.</returns>
+  Task<IEnumerable<SessionAggregate>> LoadAsync(RealmAggregate realm, CancellationToken cancellationToken = default);
   /// <summary>
   /// Retrieves the list of sessions of the specified user.
   /// </summary>
