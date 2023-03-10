@@ -393,6 +393,37 @@ public class UserAggregate : AggregateRoot
   }
 
   /// <summary>
+  /// Sets the phone number of the user.
+  /// </summary>
+  /// <param name="actorId">The identifier of the actor setting the phone number.</param>
+  /// <param name="phone">The phone number of the user.</param>
+  public void SetPhone(AggregateId actorId, ReadOnlyPhone? phone)
+  {
+    bool isPhoneModified = Phone?.CountryCode != phone?.CountryCode
+      || Phone?.Number != phone?.Number || Phone?.Extension != phone?.Extension;
+    VerificationAction phoneVerification = phone?.IsVerified == true ? VerificationAction.Verify
+      : (isPhoneModified ? VerificationAction.Unverify : VerificationAction.None);
+
+    PhoneUpdatedEvent e = new()
+    {
+      ActorId = actorId,
+      Phone = phone,
+      PhoneVerification = phoneVerification
+    };
+    new PhoneUpdatedValidator().ValidateAndThrow(e);
+
+    ApplyChange(e);
+  }
+  /// <summary>
+  /// Applies the specified event to the user.
+  /// </summary>
+  /// <param name="e">The domain event.</param>
+  protected virtual void Apply(PhoneUpdatedEvent e)
+  {
+    Phone = e.Phone;
+  }
+
+  /// <summary>
   /// Signs-in the user at the specified date and time.
   /// </summary>
   /// <param name="realm">The realm in which the user belongs.</param>

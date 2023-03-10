@@ -92,4 +92,11 @@ public interface IUserService
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The updated user.</returns>
   Task<User> VerifyEmailAsync(Guid id, CancellationToken cancellationToken = default);
+  /// <summary>
+  /// Verifies the phone number of an user.
+  /// </summary>
+  /// <param name="id">The identifier of the user.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The updated user.</returns>
+  Task<User> VerifyPhoneAsync(Guid id, CancellationToken cancellationToken = default);
 }

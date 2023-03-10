@@ -108,6 +108,12 @@ public class UserApiController : ControllerBase
     return Ok(await _userService.VerifyEmailAsync(id, cancellationToken));
   }
 
+  [HttpPatch("{id}/verify-phone")]
+  public async Task<ActionResult<User>> VerifyPhoneAsync(Guid id, CancellationToken cancellationToken)
+  {
+    return Ok(await _userService.VerifyPhoneAsync(id, cancellationToken));
+  }
+
   [HttpPatch("{id}/{externalKey}/{externalValue}")]
   public async Task<ActionResult<User>> SaveAsync(Guid id, string externalKey, string externalValue, CancellationToken cancellationToken)
   {

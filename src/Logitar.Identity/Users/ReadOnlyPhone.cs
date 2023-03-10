@@ -38,4 +38,11 @@ public record ReadOnlyPhone : ReadOnlyContact, IPhoneNumber
   /// Gets the extension of the phone.
   /// </summary>
   public string? Extension { get; }
+
+  /// <summary>
+  /// Returns a new instance of the <see cref="ReadOnlyPhone"/> record using the current instance
+  /// properties. The new instance will be verified.
+  /// </summary>
+  /// <returns>The new record verified instance.</returns>
+  public ReadOnlyPhone Verify() => new(Number, CountryCode, Extension, isVerified: true);
 }

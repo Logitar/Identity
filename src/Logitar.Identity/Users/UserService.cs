@@ -150,4 +150,15 @@ internal class UserService : IUserService
   {
     return await _requestPipeline.ExecuteAsync(new VerifyEmailCommand(id), cancellationToken);
   }
+
+  /// <summary>
+  /// Verifies the phone number of an user.
+  /// </summary>
+  /// <param name="id">The identifier of the user.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The updated user.</returns>
+  public async Task<User> VerifyPhoneAsync(Guid id, CancellationToken cancellationToken)
+  {
+    return await _requestPipeline.ExecuteAsync(new VerifyPhoneCommand(id), cancellationToken);
+  }
 }

@@ -384,6 +384,34 @@ internal class UserEntity : AggregateEntity, ICustomAttributes
   }
 
   /// <summary>
+  /// Sets the phone number of the user.
+  /// </summary>
+  /// <param name="e">The phone number update event.</param>
+  /// <param name="actor">The actor setting the user's phone number.</param>
+  public void SetPhone(ISetPhone e, ActorEntity actor)
+  {
+    PhoneCountryCode = e.Phone?.CountryCode;
+    PhoneNumber = e.Phone?.Number;
+    PhoneExtension = e.Phone?.Extension;
+    PhoneE164Formatted = e.Phone?.ToE164String();
+    switch (e.PhoneVerification)
+    {
+      case VerificationAction.Verify:
+        PhoneVerifiedById = e.ActorId.Value;
+        PhoneVerifiedBy = actor.Serialize();
+        PhoneVerifiedOn = e.OccurredOn;
+        IsPhoneVerified = true;
+        break;
+      case VerificationAction.Unverify:
+        PhoneVerifiedById = null;
+        PhoneVerifiedBy = null;
+        PhoneVerifiedOn = null;
+        IsPhoneVerified = false;
+        break;
+    }
+  }
+
+  /// <summary>
   /// Signs-in the user to the state of the specified event.
   /// </summary>
   /// <param name="e">The sign-in event.</param>
@@ -472,26 +500,7 @@ internal class UserEntity : AggregateEntity, ICustomAttributes
     }
 
     SetEmail(e, actor);
-
-    PhoneCountryCode = e.Phone?.CountryCode;
-    PhoneNumber = e.Phone?.Number;
-    PhoneExtension = e.Phone?.Extension;
-    PhoneE164Formatted = e.Phone?.ToE164String();
-    switch (e.PhoneVerification)
-    {
-      case VerificationAction.Verify:
-        PhoneVerifiedById = e.ActorId.Value;
-        PhoneVerifiedBy = actor.Serialize();
-        PhoneVerifiedOn = e.OccurredOn;
-        IsPhoneVerified = true;
-        break;
-      case VerificationAction.Unverify:
-        PhoneVerifiedById = null;
-        PhoneVerifiedBy = null;
-        PhoneVerifiedOn = null;
-        IsPhoneVerified = false;
-        break;
-    }
+    SetPhone(e, actor);
 
     FirstName = e.FirstName;
     MiddleName = e.MiddleName;
