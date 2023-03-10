@@ -8,6 +8,13 @@ namespace Logitar.Identity.Users;
 public interface IUserRepository
 {
   /// <summary>
+  /// Retrieves the list of users in the specified realm.
+  /// </summary>
+  /// <param name="realm">The realm the users belong to.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The list of users, or empty if none.</returns>
+  Task<IEnumerable<UserAggregate>> LoadAsync(RealmAggregate realm, CancellationToken cancellationToken = default);
+  /// <summary>
   /// Retrieves an user by its realm and unique name.
   /// </summary>
   /// <param name="realm">The realm of the user.</param>

@@ -22,6 +22,24 @@ internal class UserRepository : EventStore, IUserRepository
   }
 
   /// <summary>
+  /// Retrieves the list of users in the specified realm.
+  /// </summary>
+  /// <param name="realm">The realm the users belong to.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The list of users, or empty if none.</returns>
+  public async Task<IEnumerable<UserAggregate>> LoadAsync(RealmAggregate realm, CancellationToken cancellationToken)
+  {
+    string aggregateType = typeof(UserAggregate).GetName();
+
+    EventEntity[] events = await Context.Events.FromSqlInterpolated($@"SELECT e.* FROM ""Events"" e JOIN ""Users"" u on u.""AggregateId"" = e.""AggregateId"" JOIN ""Realms"" r ON r.""RealmId"" = u.""RealmId"" WHERE e.""AggregateType"" = {aggregateType} AND r.""AggregateId"" = {realm.Id.Value}")
+      .AsNoTracking()
+      .OrderBy(x => x.Version)
+      .ToArrayAsync(cancellationToken);
+
+    return Load<UserAggregate>(events);
+  }
+
+  /// <summary>
   /// Retrieves an user by its realm and unique name.
   /// </summary>
   /// <param name="realm">The realm of the user.</param>
