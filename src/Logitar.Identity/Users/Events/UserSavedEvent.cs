@@ -7,7 +7,7 @@ namespace Logitar.Identity.Users.Events;
 /// <summary>
 /// The base <see cref="UserAggregate"/> save event.
 /// </summary>
-public abstract record UserSavedEvent : DomainEvent, INotification, ISetEmail
+public abstract record UserSavedEvent : DomainEvent, INotification, ISetEmail, ISetPhone
 {
   /// <summary>
   /// Gets or sets the salted and hashed password of the user.
