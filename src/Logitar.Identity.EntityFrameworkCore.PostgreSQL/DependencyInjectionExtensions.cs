@@ -49,9 +49,10 @@ public static class DependencyInjectionExtensions
       .AddMediatR(config => config.RegisterServicesFromAssembly(assembly))
       .AddQueriers()
       .AddRepositories()
-      .AddSingleton<ITokenManager, JwtTokenManager>()
       .AddScoped<IActorService, ActorService>()
-      .AddScoped<IEventBus, TEventBus>();
+      .AddScoped<IEventBus, TEventBus>()
+      .AddScoped<IJwtBlacklist, JwtBlacklist>()
+      .AddScoped<ITokenManager, JwtTokenManager>();
   }
 
   /// <summary>

@@ -6,7 +6,7 @@ namespace Logitar.Identity.EntityFrameworkCore.PostgreSQL.Tokens;
 /// <summary>
 /// The exception thrown when a security token does not serve the required purpose.
 /// </summary>
-internal class InvalidSecurityTokenPurposeException : SecurityTokenValidationException
+public class InvalidSecurityTokenPurposeException : SecurityTokenValidationException
 {
   /// <summary>
   /// Initializes a new instance of the <see cref="InvalidSecurityTokenPurposeException"/> class using the specified arguments.

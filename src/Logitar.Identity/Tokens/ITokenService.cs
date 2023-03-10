@@ -16,7 +16,8 @@ public interface ITokenService
   /// Validates a security token.
   /// </summary>
   /// <param name="input">The input validation arguments.</param>
+  /// <param name="consume">If true, the token will be consumed. A consumed token cannot be used again.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The validated token claims.</returns>
-  Task<IEnumerable<Claim>> ValidateAsync(ValidateTokenInput input, CancellationToken cancellationToken = default);
+  Task<IEnumerable<Claim>> ValidateAsync(ValidateTokenInput input, bool consume = false, CancellationToken cancellationToken = default);
 }

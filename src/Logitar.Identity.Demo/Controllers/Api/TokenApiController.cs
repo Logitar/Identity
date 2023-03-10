@@ -21,8 +21,8 @@ public class TokenApiController : ControllerBase
   }
 
   [HttpPost("validate")]
-  public async Task<ActionResult<IEnumerable<Claim>>> ValidateAsync([FromBody] ValidateTokenInput input, CancellationToken cancellationToken)
+  public async Task<ActionResult<IEnumerable<Claim>>> ValidateAsync(bool consume, [FromBody] ValidateTokenInput input, CancellationToken cancellationToken)
   {
-    return Ok(await _tokenService.ValidateAsync(input, cancellationToken));
+    return Ok(await _tokenService.ValidateAsync(input, consume, cancellationToken));
   }
 }

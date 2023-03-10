@@ -25,9 +25,22 @@ internal class JwtTokenManager : ITokenManager
   }
 
   /// <summary>
+  /// The JSON Web Token blacklist.
+  /// </summary>
+  private readonly IJwtBlacklist _blacklist;
+  /// <summary>
   /// The JSON Web Token handler.
   /// </summary>
   private readonly JwtSecurityTokenHandler _tokenHandler = new();
+
+  /// <summary>
+  /// Initializes a new instance of the <see cref="JwtTokenManager"/> class using the specified arguments.
+  /// </summary>
+  /// <param name="blacklist">The JSON Web Token blacklist.</param>
+  public JwtTokenManager(IJwtBlacklist blacklist)
+  {
+    _blacklist = blacklist;
+  }
 
   /// <summary>
   /// Creates a JSON Web Token using the specified arguments.
@@ -84,16 +97,15 @@ internal class JwtTokenManager : ITokenManager
 
     ClaimsPrincipal principal = _tokenHandler.ValidateToken(token, validationParameters, out _);
 
-    // TODO(fpion): token consuming
-    //IEnumerable<Guid> ids = principal.FindAll(Rfc7519ClaimTypes.JwtId).Select(x => Guid.Parse(x.Value));
-    //if (ids.Any())
-    //{
-    //  IEnumerable<Guid> blacklisted = await _blacklist.GetBlacklistedAsync(ids, cancellationToken);
-    //  if (blacklisted.Any())
-    //  {
-    //    throw new SecurityTokenBlacklistedException(blacklisted);
-    //  }
-    //}
+    IEnumerable<Guid> ids = principal.FindAll(Rfc7519ClaimTypes.JwtId).Select(x => Guid.Parse(x.Value));
+    if (ids.Any())
+    {
+      IEnumerable<Guid> blacklisted = await _blacklist.GetBlacklistedAsync(ids, cancellationToken);
+      if (blacklisted.Any())
+      {
+        throw new SecurityTokenBlacklistedException(blacklisted);
+      }
+    }
 
     if (purpose != null)
     {
@@ -105,15 +117,14 @@ internal class JwtTokenManager : ITokenManager
       }
     }
 
-    // TODO(fpion): token consuming
-    //if (consume)
-    //{
-    //  DateTime? expiresOn = principal.FindFirst(Rfc7519ClaimTypes.Expires)
-    //    ?.GetDateTime()
-    //    .Add(validationParameters.ClockSkew);
+    if (consume)
+    {
+      DateTime? expiresOn = principal.FindFirst(Rfc7519ClaimTypes.Expires)
+        ?.GetDateTime()
+        .Add(validationParameters.ClockSkew);
 
-    //  await _blacklist.BlacklistAsync(ids, expiresOn, cancellationToken);
-    //}
+      await _blacklist.BlacklistAsync(ids, expiresOn, cancellationToken);
+    }
 
     return principal;
   }

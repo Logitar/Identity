@@ -6,6 +6,11 @@
 public record CreateTokenInput
 {
   /// <summary>
+  /// Gets a value indicating whether or not the token can be consumed. Once consume, a token cannot
+  /// be used again.
+  /// </summary>
+  public bool IsConsumable { get; set; }
+  /// <summary>
   /// Gets or sets the lifetime of the token, in seconds.
   /// </summary>
   public int? Lifetime { get; set; }

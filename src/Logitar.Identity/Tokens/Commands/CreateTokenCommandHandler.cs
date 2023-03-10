@@ -58,7 +58,7 @@ internal class CreateTokenCommandHandler : IRequestHandler<CreateTokenCommand, s
       ? DateTime.UtcNow.AddSeconds(input.Lifetime.Value)
       : null;
 
-    if (true) // TODO(fpion): allow customization (IsConsumable)
+    if (input.IsConsumable)
     {
       identity.AddClaim(CreateClaim(Rfc7519ClaimTypes.JwtId, Guid.NewGuid().ToString()));
     }

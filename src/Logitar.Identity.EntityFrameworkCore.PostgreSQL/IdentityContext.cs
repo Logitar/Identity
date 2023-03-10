@@ -29,6 +29,10 @@ public class IdentityContext : DbContext
   /// </summary>
   internal DbSet<ExternalIdentifierEntity> ExternalIdentifiers { get; private set; } = null!;
   /// <summary>
+  /// Gets or sets the data set of blacklisted JSON Web Tokens.
+  /// </summary>
+  internal DbSet<BlacklistedJwtEntity> JwtBlacklist { get; private set; } = null!;
+  /// <summary>
   /// Gets or sets the data set of realms.
   /// </summary>
   internal DbSet<RealmEntity> Realms { get; private set; } = null!;

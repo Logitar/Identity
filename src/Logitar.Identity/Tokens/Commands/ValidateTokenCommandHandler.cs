@@ -54,7 +54,7 @@ internal class ValidateTokenCommandHandler : IRequestHandler<ValidateTokenComman
     string? secret = realm?.JwtSecret; // TODO(fpion): allow customization (Secret)
 
     ClaimsPrincipal principal = await _tokenManager.ValidateAsync(input.Token, secret, audience,
-      issuer, input.Purpose, consume: false, cancellationToken);
+      issuer, input.Purpose, request.Consume, cancellationToken);
 
     return principal.Claims.Select(claim => new Claim
     {
