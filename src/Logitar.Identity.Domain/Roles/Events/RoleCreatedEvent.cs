@@ -1,0 +1,33 @@
+﻿using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Shared;
+
+namespace Logitar.Identity.Domain.Roles.Events;
+
+/// <summary>
+/// The event raised when a new role is created.
+/// </summary>
+public record RoleCreatedEvent : DomainEvent
+{
+  /// <summary>
+  /// Gets the tenant identifier of the role.
+  /// </summary>
+  public TenantId? TenantId { get; }
+
+  /// <summary>
+  /// Gets the unique name of the role.
+  /// </summary>
+  public UniqueNameUnit UniqueName { get; }
+
+  /// <summary>
+  /// Initializes a new instance of the <see cref="RoleCreatedEvent"/> class.
+  /// </summary>
+  /// <param name="actorId">The actor identifier.</param>
+  /// <param name="uniqueName">The unique name of the role.</param>
+  /// <param name="tenantId">The tenant identifier of the role.</param>
+  public RoleCreatedEvent(ActorId actorId, UniqueNameUnit uniqueName, TenantId? tenantId = null)
+  {
+    ActorId = actorId;
+    TenantId = tenantId;
+    UniqueName = uniqueName;
+  }
+}
