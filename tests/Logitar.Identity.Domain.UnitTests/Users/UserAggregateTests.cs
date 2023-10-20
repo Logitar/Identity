@@ -62,29 +62,55 @@ public class UserAggregateTests
     Assert.False(_user.HasChanges);
   }
 
-  [Fact(DisplayName = "Description: it should change the description when it is different.")]
-  public void Description_it_should_change_the_description_when_it_is_different()
+  [Fact(DisplayName = "FirstName: it should change the first name when it is different.")]
+  public void FirstName_it_should_change_the_first_name_when_it_is_different()
   {
-    DescriptionUnit description = new("This is the main administration user.");
-    _user.Description = description;
-    Assert.Equal(description, _user.Description);
+    PersonNameUnit firstName = new(_faker.Person.FirstName);
+    _user.FirstName = firstName;
+    Assert.Equal(firstName, _user.FirstName);
 
     _user.Update();
 
-    _user.Description = description;
+    _user.FirstName = firstName;
     AssertHasNoUpdate(_user);
   }
 
-  [Fact(DisplayName = "DisplayName: it should change the display name when it is different.")]
-  public void DisplayName_it_should_change_the_display_name_when_it_is_different()
+  [Fact(DisplayName = "LastName: it should change the last name when it is different.")]
+  public void LastName_it_should_change_the_last_name_when_it_is_different()
   {
-    DisplayNameUnit displayName = new("Administrator");
-    _user.DisplayName = displayName;
-    Assert.Equal(displayName, _user.DisplayName);
+    PersonNameUnit lastName = new(_faker.Person.LastName);
+    _user.LastName = lastName;
+    Assert.Equal(lastName, _user.LastName);
 
     _user.Update();
 
-    _user.DisplayName = displayName;
+    _user.LastName = lastName;
+    AssertHasNoUpdate(_user);
+  }
+
+  [Fact(DisplayName = "MiddleName: it should change the last name when it is different.")]
+  public void MiddleName_it_should_change_the_last_name_when_it_is_different()
+  {
+    PersonNameUnit middleName = new(_faker.Name.FirstName(_faker.Person.Gender));
+    _user.MiddleName = middleName;
+    Assert.Equal(middleName, _user.MiddleName);
+
+    _user.Update();
+
+    _user.MiddleName = middleName;
+    AssertHasNoUpdate(_user);
+  }
+
+  [Fact(DisplayName = "Nickname: it should change the last name when it is different.")]
+  public void Nickname_it_should_change_the_last_name_when_it_is_different()
+  {
+    PersonNameUnit nickname = new(string.Concat(_faker.Person.FirstName.First(), _faker.Person.LastName).ToLower());
+    _user.Nickname = nickname;
+    Assert.Equal(nickname, _user.Nickname);
+
+    _user.Update();
+
+    _user.Nickname = nickname;
     AssertHasNoUpdate(_user);
   }
 
@@ -153,9 +179,9 @@ public class UserAggregateTests
   {
     Assert.StartsWith($"{_uniqueName.Value} | ", _user.ToString());
 
-    DisplayNameUnit displayName = new("Administrator");
-    _user.DisplayName = displayName;
-    Assert.StartsWith($"{displayName.Value} | ", _user.ToString());
+    _user.FirstName = new PersonNameUnit(" Charles-François ");
+    _user.LastName = new PersonNameUnit("Henry     Angers");
+    Assert.StartsWith("Charles-François Henry Angers | ", _user.ToString());
   }
 
   [Fact(DisplayName = "UniqueName: it should throw InvalidOperationException when it has not been initialized yet.")]
@@ -170,7 +196,8 @@ public class UserAggregateTests
   {
     ActorId actorId = ActorId.NewId();
 
-    _user.DisplayName = new DisplayNameUnit("Administrator");
+    _user.FirstName = new PersonNameUnit(_faker.Person.FirstName);
+    _user.LastName = new PersonNameUnit(_faker.Person.LastName);
     _user.Update(actorId);
     Assert.Equal(actorId, _user.UpdatedBy);
 

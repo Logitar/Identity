@@ -31,36 +31,80 @@ public class UserAggregate : AggregateRoot
   /// </summary>
   public UniqueNameUnit UniqueName => _uniqueName ?? throw new InvalidOperationException($"The {nameof(UniqueName)} has not been initialized yet.");
 
-  private DisplayNameUnit? _displayName = null;
+  private PersonNameUnit? _firstName = null;
   /// <summary>
-  /// Gets or sets the display name of the user.
+  /// Gets or sets the first name of the user.
   /// </summary>
-  public DisplayNameUnit? DisplayName
+  public PersonNameUnit? FirstName
   {
-    get => _displayName;
+    get => _firstName;
     set
     {
-      if (value != _displayName)
+      if (value != _firstName)
       {
-        _updated.DisplayName = new Modification<DisplayNameUnit>(value);
-        _displayName = value;
+        _updated.FirstName = new Modification<PersonNameUnit>(value);
+        _updated.FullName = new Modification<string>(BuildFullName(value, MiddleName, LastName));
+
+        _firstName = value;
+        FullName = _updated.FullName.Value;
       }
     }
   }
-
-  private DescriptionUnit? _description = null;
+  private PersonNameUnit? _middleName = null;
   /// <summary>
-  /// Gets or sets the description of the user.
+  /// Gets or sets the middle name of the user.
   /// </summary>
-  public DescriptionUnit? Description
+  public PersonNameUnit? MiddleName
   {
-    get => _description;
+    get => _middleName;
     set
     {
-      if (value != _description)
+      if (value != _middleName)
       {
-        _updated.Description = new Modification<DescriptionUnit>(value);
-        _description = value;
+        _updated.MiddleName = new Modification<PersonNameUnit>(value);
+        _updated.FullName = new Modification<string>(BuildFullName(FirstName, value, LastName));
+
+        _middleName = value;
+        FullName = _updated.FullName.Value;
+      }
+    }
+  }
+  private PersonNameUnit? _lastName = null;
+  /// <summary>
+  /// Gets or sets the last name of the user.
+  /// </summary>
+  public PersonNameUnit? LastName
+  {
+    get => _lastName;
+    set
+    {
+      if (value != _lastName)
+      {
+        _updated.LastName = new Modification<PersonNameUnit>(value);
+        _updated.FullName = new Modification<string>(BuildFullName(FirstName, MiddleName, value));
+
+        _lastName = value;
+        FullName = _updated.FullName.Value;
+      }
+    }
+  }
+  /// <summary>
+  /// Gets or sets the full name of the user.
+  /// </summary>
+  public string? FullName { get; private set; }
+  private PersonNameUnit? _nickname = null;
+  /// <summary>
+  /// Gets or sets the nickname of the user.
+  /// </summary>
+  public PersonNameUnit? Nickname
+  {
+    get => _nickname;
+    set
+    {
+      if (value != _nickname)
+      {
+        _updated.Nickname = new Modification<PersonNameUnit>(value);
+        _nickname = value;
       }
     }
   }
@@ -188,13 +232,25 @@ public class UserAggregate : AggregateRoot
   /// <param name="event">The event to apply.</param>
   protected virtual void Apply(UserUpdatedEvent @event)
   {
-    if (@event.DisplayName != null)
+    if (@event.FirstName != null)
     {
-      _displayName = @event.DisplayName.Value;
+      _firstName = @event.FirstName.Value;
     }
-    if (@event.Description != null)
+    if (@event.MiddleName != null)
     {
-      _description = @event.Description.Value;
+      _middleName = @event.MiddleName.Value;
+    }
+    if (@event.LastName != null)
+    {
+      _lastName = @event.LastName.Value;
+    }
+    if (@event.FullName != null)
+    {
+      FullName = @event.FullName.Value;
+    }
+    if (@event.Nickname != null)
+    {
+      _nickname = @event.Nickname.Value;
     }
   }
 
@@ -202,5 +258,9 @@ public class UserAggregate : AggregateRoot
   /// Returns a string representation of the user.
   /// </summary>
   /// <returns>The string representation.</returns>
-  public override string ToString() => $"{DisplayName?.Value ?? UniqueName.Value} | {base.ToString()}";
+  public override string ToString() => $"{FullName ?? UniqueName.Value} | {base.ToString()}";
+
+  private static string? BuildFullName(params PersonNameUnit?[] names) => string.Join(' ', names
+    .SelectMany(name => name?.Value.Split() ?? Array.Empty<string>())
+    .Where(name => !string.IsNullOrEmpty(name))).CleanTrim();
 }
