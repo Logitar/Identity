@@ -17,5 +17,9 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Logitar.Identity.Domain.UnitTests" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Using Include="System.Text" />
+  </ItemGroup>
 
 </Project>

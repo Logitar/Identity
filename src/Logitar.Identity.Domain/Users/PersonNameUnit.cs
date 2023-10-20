@@ -3,7 +3,7 @@
 namespace Logitar.Identity.Domain.Users;
 
 /// <summary>
-/// TODO(fpion): document
+/// Represents a name part of a part. It can be used to represent, for example, first names, middle names, last names and nicknames.
 /// </summary>
 public record PersonNameUnit
 {

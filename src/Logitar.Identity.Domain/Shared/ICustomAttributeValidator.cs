@@ -3,7 +3,7 @@
 namespace Logitar.Identity.Domain.Shared;
 
 /// <summary>
-/// Represents an abstraction of a custom attribute validator.
+/// Describes custom attribute validators.
 /// </summary>
 public interface ICustomAttributeValidator
 {

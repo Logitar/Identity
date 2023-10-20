@@ -1,15 +1,18 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Shared;
 using Logitar.Identity.Domain.Users.Events;
 
 namespace Logitar.Identity.Domain.Users;
 
 /// <summary>
-/// TODO(fpion): document
+/// Represents an user in the identity system. An user generally represents the account of a person.
+/// It contains personal information about that person as well as authentication information that could be used to authenticate that person.
 /// </summary>
 public class UserAggregate : AggregateRoot
 {
   private readonly Dictionary<string, string> _customAttributes = new();
+  private readonly HashSet<RoleId> _roles = new();
   private UserUpdatedEvent _updated = new();
 
   /// <summary>
@@ -120,6 +123,11 @@ public class UserAggregate : AggregateRoot
   public IReadOnlyDictionary<string, string> CustomAttributes => _customAttributes.AsReadOnly();
 
   /// <summary>
+  /// Gets the roles of the user.
+  /// </summary>
+  public IReadOnlyCollection<RoleId> Roles => _roles.ToList().AsReadOnly();
+
+  /// <summary>
   /// Initializes a new instance of the <see cref="UserAggregate"/> class.
   /// DO NOT use this constructor to create a new user. It is only intended to be used by the event sourcing.
   /// </summary>
@@ -151,6 +159,29 @@ public class UserAggregate : AggregateRoot
 
     _uniqueName = @event.UniqueName;
   }
+
+  /// <summary>
+  /// Adds the specified role to the user, if the user does not already have the specified role.
+  /// </summary>
+  /// <param name="role">The role to be added.</param>
+  /// <param name="actorId">The actor identifier.</param>
+  public void AddRole(RoleAggregate role, ActorId actorId = default)
+  {
+    if (role.TenantId != TenantId)
+    {
+      throw new TenantMismatchException(TenantId, role.TenantId);
+    }
+
+    if (!HasRole(role))
+    {
+      ApplyChange(new UserRoleAddedEvent(actorId, role.Id));
+    }
+  }
+  /// <summary>
+  /// Applies the specified event.
+  /// </summary>
+  /// <param name="event">The event to apply.</param>
+  protected virtual void Apply(UserRoleAddedEvent @event) => _roles.Add(@event.RoleId);
 
   /// <summary>
   /// Deletes the user, if it is not already deleted.
@@ -199,6 +230,13 @@ public class UserAggregate : AggregateRoot
   protected virtual void Apply(UserEnabledEvent _) => IsDisabled = false;
 
   /// <summary>
+  /// Returns a value indicating whether or not the user has the specified role.
+  /// </summary>
+  /// <param name="role">The role to match.</param>
+  /// <returns>True if the user has the specified role.</returns>
+  public bool HasRole(RoleAggregate role) => _roles.Contains(role.Id);
+
+  /// <summary>
   /// Removes the specified custom attribute on the user.
   /// </summary>
   /// <param name="key">The key of the custom attribute.</param>
@@ -212,6 +250,24 @@ public class UserAggregate : AggregateRoot
       _customAttributes.Remove(key);
     }
   }
+
+  /// <summary>
+  /// Removes the specified role from the user, if the user has the specified role.
+  /// </summary>
+  /// <param name="role">The role to be removed.</param>
+  /// <param name="actorId">The actor identifier.</param>
+  public void RemoveRole(RoleAggregate role, ActorId actorId = default)
+  {
+    if (HasRole(role))
+    {
+      ApplyChange(new UserRoleRemovedEvent(actorId, role.Id));
+    }
+  }
+  /// <summary>
+  /// Applies the specified event.
+  /// </summary>
+  /// <param name="event">The event to apply.</param>
+  protected virtual void Apply(UserRoleRemovedEvent @event) => _roles.Remove(@event.RoleId);
 
   private readonly CustomAttributeValidator _customAttributeValidator = new();
   /// <summary>

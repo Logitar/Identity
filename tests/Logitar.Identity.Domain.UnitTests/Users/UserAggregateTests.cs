@@ -1,9 +1,9 @@
 ﻿using Bogus;
 using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Shared;
 using Logitar.Identity.Domain.Users.Events;
-using System.Reflection;
 
 namespace Logitar.Identity.Domain.Users;
 
@@ -13,11 +13,13 @@ public class UserAggregateTests
   private readonly Faker _faker = new();
   private readonly UniqueNameSettings _uniqueNameSettings = new();
   private readonly UniqueNameUnit _uniqueName;
+  private readonly RoleAggregate _role;
   private readonly UserAggregate _user;
 
   public UserAggregateTests()
   {
-    _uniqueName = new(_uniqueNameSettings, "admin");
+    _uniqueName = new(_uniqueNameSettings, _faker.Person.UserName);
+    _role = new(new UniqueNameUnit(_uniqueNameSettings, "admin"));
     _user = new(_uniqueName);
   }
 
@@ -46,6 +48,34 @@ public class UserAggregateTests
     Assert.Equal(actorId, user.CreatedBy);
     Assert.Equal(tenantId, user.TenantId);
     Assert.Equal(_uniqueName, user.UniqueName);
+  }
+
+  [Fact(DisplayName = "AddRole: it should add the role to the user when it does not have the role.")]
+  public void AddRole_it_should_add_the_role_to_the_user_when_it_does_not_have_the_role()
+  {
+    Assert.False(_user.HasRole(_role));
+    Assert.Empty(_user.Roles);
+
+    _user.AddRole(_role);
+    Assert.Contains(_user.Changes, changes => changes is UserRoleAddedEvent @event && @event.RoleId == _role.Id);
+    Assert.True(_user.HasRole(_role));
+    Assert.Single(_user.Roles, _role.Id);
+
+    _user.ClearChanges();
+    _user.AddRole(_role);
+    Assert.False(_user.HasChanges);
+  }
+
+  [Fact(DisplayName = "AddRole: it should throw TenantMismatchException when the role is in a different tenant.")]
+  public void AddRole_it_should_throw_TenantMismatchException_when_the_role_is_in_a_different_tenant()
+  {
+    TenantId tenantId = new(Guid.NewGuid().ToString());
+    RoleAggregate role = new(_role.UniqueName, tenantId);
+
+    var exception = Assert.Throws<TenantMismatchException>(() => _user.AddRole(role));
+    Assert.Equal(_user.TenantId, exception.ExpectedTenantId);
+    Assert.Equal(role.TenantId, exception.ActualTenantId);
+    Assert.Null(exception.PropertyName);
   }
 
   [Fact(DisplayName = "Delete: it should delete the user when it is not deleted.")]
@@ -161,6 +191,24 @@ public class UserAggregateTests
     AssertHasNoUpdate(_user);
   }
 
+  [Fact(DisplayName = "RemoveRole: it should remove the role from the user when it has the role.")]
+  public void RemoveRole_it_should_remove_the_role_from_the_user_when_it_has_the_role()
+  {
+    _user.AddRole(_role);
+    Assert.True(_user.HasRole(_role));
+    Assert.Single(_user.Roles, _role.Id);
+    _user.ClearChanges();
+
+    _user.RemoveRole(_role);
+    Assert.Contains(_user.Changes, changes => changes is UserRoleRemovedEvent @event && @event.RoleId == _role.Id);
+    Assert.False(_user.HasRole(_role));
+    Assert.Empty(_user.Roles);
+
+    _user.ClearChanges();
+    _user.RemoveRole(_role);
+    Assert.False(_user.HasChanges);
+  }
+
   [Fact(DisplayName = "SetCustomAttribute: it should set a custom attribute when it is different.")]
   public void SetCustomAttribute_it_should_set_a_custom_attribute_when_it_is_different()
   {
@@ -195,7 +243,7 @@ public class UserAggregateTests
   [Fact(DisplayName = "SetUniqueName: it should change the unique name when it is different.")]
   public void SetUniqueName_it_should_change_the_unique_name_when_it_is_different()
   {
-    UniqueNameUnit uniqueName = new(_uniqueNameSettings, "manage_users");
+    UniqueNameUnit uniqueName = new(_uniqueNameSettings, _faker.Internet.UserName());
     _user.SetUniqueName(uniqueName);
     Assert.Equal(uniqueName, _user.UniqueName);
     Assert.Contains(_user.Changes, change => change is UserUniqueNameChangedEvent);

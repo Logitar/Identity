@@ -3,7 +3,6 @@ using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Roles.Events;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Shared;
-using System.Reflection;
 
 namespace Logitar.Identity.Domain.Roles;
 
