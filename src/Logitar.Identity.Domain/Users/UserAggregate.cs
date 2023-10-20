@@ -1,0 +1,206 @@
+﻿using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Shared;
+using Logitar.Identity.Domain.Users.Events;
+
+namespace Logitar.Identity.Domain.Users;
+
+/// <summary>
+/// TODO(fpion): document
+/// </summary>
+public class UserAggregate : AggregateRoot
+{
+  private readonly Dictionary<string, string> _customAttributes = new();
+  private UserUpdatedEvent _updated = new();
+
+  /// <summary>
+  /// Gets the identifier of the user.
+  /// </summary>
+  public new UserId Id => new(base.Id);
+
+  /// <summary>
+  /// Gets the tenant identifier of the user.
+  /// </summary>
+  public TenantId? TenantId { get; private set; }
+
+  /// <summary>
+  /// The unique name of the user.
+  /// </summary>
+  private UniqueNameUnit? _uniqueName = null;
+  /// <summary>
+  /// Gets the unique name of the user.
+  /// </summary>
+  public UniqueNameUnit UniqueName => _uniqueName ?? throw new InvalidOperationException($"The {nameof(UniqueName)} has not been initialized yet.");
+
+  private DisplayNameUnit? _displayName = null;
+  /// <summary>
+  /// Gets or sets the display name of the user.
+  /// </summary>
+  public DisplayNameUnit? DisplayName
+  {
+    get => _displayName;
+    set
+    {
+      if (value != _displayName)
+      {
+        _updated.DisplayName = new Modification<DisplayNameUnit>(value);
+        _displayName = value;
+      }
+    }
+  }
+
+  private DescriptionUnit? _description = null;
+  /// <summary>
+  /// Gets or sets the description of the user.
+  /// </summary>
+  public DescriptionUnit? Description
+  {
+    get => _description;
+    set
+    {
+      if (value != _description)
+      {
+        _updated.Description = new Modification<DescriptionUnit>(value);
+        _description = value;
+      }
+    }
+  }
+
+  /// <summary>
+  /// Gets the custom attributes of the user.
+  /// </summary>
+  public IReadOnlyDictionary<string, string> CustomAttributes => _customAttributes.AsReadOnly();
+
+  /// <summary>
+  /// Initializes a new instance of the <see cref="UserAggregate"/> class.
+  /// DO NOT use this constructor to create a new user. It is only intended to be used by the event sourcing.
+  /// </summary>
+  /// <param name="id">The identifier of the user.</param>
+  public UserAggregate(AggregateId id) : base(id)
+  {
+  }
+
+  /// <summary>
+  /// Initializes a new instance of the <see cref="UserAggregate"/> class.
+  /// DO use this constructor to create a new user.
+  /// </summary>
+  /// <param name="uniqueName">The unique name of the user.</param>
+  /// <param name="tenantId">The tenant identifier of the user.</param>
+  /// <param name="actorId">The actor identifier.</param>
+  /// <param name="id">The identifier of the user.</param>
+  public UserAggregate(UniqueNameUnit uniqueName, TenantId? tenantId = null, ActorId actorId = default, UserId? id = null)
+    : base(id?.AggregateId)
+  {
+    ApplyChange(new UserCreatedEvent(actorId, uniqueName, tenantId));
+  }
+  /// <summary>
+  /// Applies the specified event.
+  /// </summary>
+  /// <param name="event">The event to apply.</param>
+  protected virtual void Apply(UserCreatedEvent @event)
+  {
+    TenantId = @event.TenantId;
+
+    _uniqueName = @event.UniqueName;
+  }
+
+  /// <summary>
+  /// Deletes the user, if it is not already deleted.
+  /// </summary>
+  /// <param name="actorId">The actor identifier.</param>
+  public void Delete(ActorId actorId = default)
+  {
+    if (!IsDeleted)
+    {
+      ApplyChange(new UserDeletedEvent(actorId));
+    }
+  }
+
+  /// <summary>
+  /// Removes the specified custom attribute on the user.
+  /// </summary>
+  /// <param name="key">The key of the custom attribute.</param>
+  public void RemoveCustomAttribute(string key)
+  {
+    key = key.Trim();
+
+    if (_customAttributes.ContainsKey(key))
+    {
+      _updated.CustomAttributes[key] = null;
+      _customAttributes.Remove(key);
+    }
+  }
+
+  private readonly CustomAttributeValidator _customAttributeValidator = new();
+  /// <summary>
+  /// Sets the specified custom attribute on the user.
+  /// </summary>
+  /// <param name="key">The key of the custom attribute.</param>
+  /// <param name="value">The value of the custom attribute.</param>
+  public void SetCustomAttribute(string key, string value)
+  {
+    key = key.Trim();
+    value = value.Trim();
+    _customAttributeValidator.ValidateAndThrow(key, value);
+
+    if (!_customAttributes.TryGetValue(key, out string? existingValue) || existingValue != value)
+    {
+      _updated.CustomAttributes[key] = value;
+      _customAttributes[key] = value;
+    }
+  }
+
+  /// <summary>
+  /// Sets the unique name of the user.
+  /// </summary>
+  /// <param name="uniqueName">The unique name.</param>
+  /// <param name="actorId">The actor identifier.</param>
+  public void SetUniqueName(UniqueNameUnit uniqueName, ActorId actorId = default)
+  {
+    if (uniqueName != _uniqueName)
+    {
+      ApplyChange(new UserUniqueNameChangedEvent(actorId, uniqueName));
+    }
+  }
+  /// <summary>
+  /// Applies the specified event.
+  /// </summary>
+  /// <param name="event">The event to apply.</param>
+  protected virtual void Apply(UserUniqueNameChangedEvent @event) => _uniqueName = @event.UniqueName;
+
+  /// <summary>
+  /// Applies updates on the user.
+  /// </summary>
+  /// <param name="actorId">The actor identifier.</param>
+  public void Update(ActorId actorId = default)
+  {
+    if (_updated.HasChanges)
+    {
+      _updated.ActorId = actorId;
+
+      ApplyChange(_updated);
+
+      _updated = new();
+    }
+  }
+  /// <summary>
+  /// Applies the specified event.
+  /// </summary>
+  /// <param name="event">The event to apply.</param>
+  protected virtual void Apply(UserUpdatedEvent @event)
+  {
+    if (@event.DisplayName != null)
+    {
+      _displayName = @event.DisplayName.Value;
+    }
+    if (@event.Description != null)
+    {
+      _description = @event.Description.Value;
+    }
+  }
+
+  /// <summary>
+  /// Returns a string representation of the user.
+  /// </summary>
+  /// <returns>The string representation.</returns>
+  public override string ToString() => $"{DisplayName?.Value ?? UniqueName.Value} | {base.ToString()}";
+}
