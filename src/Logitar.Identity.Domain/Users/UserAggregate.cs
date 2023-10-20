@@ -31,6 +31,11 @@ public class UserAggregate : AggregateRoot
   /// </summary>
   public UniqueNameUnit UniqueName => _uniqueName ?? throw new InvalidOperationException($"The {nameof(UniqueName)} has not been initialized yet.");
 
+  /// <summary>
+  /// Gets or sets a value indicating whether or not the user is disabled.
+  /// </summary>
+  public bool IsDisabled { get; private set; }
+
   private PersonNameUnit? _firstName = null;
   /// <summary>
   /// Gets or sets the first name of the user.
@@ -158,6 +163,40 @@ public class UserAggregate : AggregateRoot
       ApplyChange(new UserDeletedEvent(actorId));
     }
   }
+
+  /// <summary>
+  /// Disables the user, if it is enabled.
+  /// </summary>
+  /// <param name="actorId">The actor identifier.</param>
+  public void Disable(ActorId actorId = default)
+  {
+    if (!IsDisabled)
+    {
+      ApplyChange(new UserDisabledEvent(actorId));
+    }
+  }
+  /// <summary>
+  /// Applies the specified event.
+  /// </summary>
+  /// <param name="_">The event to apply.</param>
+  protected virtual void Apply(UserDisabledEvent _) => IsDisabled = true;
+
+  /// <summary>
+  /// Enables the user, if it is disabled.
+  /// </summary>
+  /// <param name="actorId">The actor identifier.</param>
+  public void Enable(ActorId actorId = default)
+  {
+    if (IsDisabled)
+    {
+      ApplyChange(new UserEnabledEvent(actorId));
+    }
+  }
+  /// <summary>
+  /// Applies the specified event.
+  /// </summary>
+  /// <param name="_">The event to apply.</param>
+  protected virtual void Apply(UserEnabledEvent _) => IsDisabled = false;
 
   /// <summary>
   /// Removes the specified custom attribute on the user.

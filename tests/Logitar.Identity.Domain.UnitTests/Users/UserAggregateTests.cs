@@ -62,6 +62,37 @@ public class UserAggregateTests
     Assert.False(_user.HasChanges);
   }
 
+  [Fact(DisplayName = "Disable: it should disable the user when it is enabled.")]
+  public void Disable_it_should_disable_the_user_when_it_is_enabled()
+  {
+    Assert.False(_user.IsDisabled);
+
+    _user.Disable();
+    Assert.True(_user.IsDisabled);
+    Assert.Contains(_user.Changes, change => change is UserDisabledEvent);
+
+    _user.ClearChanges();
+    _user.Disable();
+    Assert.False(_user.HasChanges);
+  }
+
+  [Fact(DisplayName = "Enable: it should enable the user when it is disabled.")]
+  public void Enable_it_should_enable_the_user_when_it_is_disabled()
+  {
+    _user.Disable();
+    Assert.True(_user.IsDisabled);
+
+    _user.ClearChanges();
+
+    _user.Enable();
+    Assert.False(_user.IsDisabled);
+    Assert.Contains(_user.Changes, change => change is UserEnabledEvent);
+
+    _user.ClearChanges();
+    _user.Enable();
+    Assert.False(_user.HasChanges);
+  }
+
   [Fact(DisplayName = "FirstName: it should change the first name when it is different.")]
   public void FirstName_it_should_change_the_first_name_when_it_is_different()
   {
