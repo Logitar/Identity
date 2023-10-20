@@ -25,21 +25,35 @@ public class FluentValidationExtensionsTests
     Assert.True(FluentValidationExtensions.BeAValidIdentifier(identifier));
   }
 
-  [Theory(DisplayName = "BeAValidUrl: it should return false when it is not a valid URL.")]
-  [InlineData("")]
-  [InlineData("    ")]
-  [InlineData("test")]
-  [InlineData("/about")]
-  public void BeAValidUrl_it_should_return_false_when_it_is_not_a_valid_Url(string uriString)
+  [Fact(DisplayName = "BeInTheFuture: it should return false when the value is in the past.")]
+  public void BeInTheFuture_it_should_return_false_when_the_value_is_in_the_past()
   {
-    Assert.False(FluentValidationExtensions.BeAValidUrl(uriString));
+    DateTime moment = DateTime.Now;
+    DateTime value = moment.AddDays(-1);
+    Assert.False(FluentValidationExtensions.BeInTheFuture(value, moment));
   }
 
-  [Theory(DisplayName = "BeAValidUrl: it should return true when the value is a valid URL.")]
-  [InlineData("http://test.com")]
-  [InlineData("https://www.test.com/")]
-  public void BeAValidUrl_it_should_return_true_when_the_value_is_a_valid_Url(string uriString)
+  [Fact(DisplayName = "BeInTheFuture: it should return true when the value is in the future.")]
+  public void BeInTheFuture_it_should_return_true_when_the_value_is_in_the_future()
   {
-    Assert.True(FluentValidationExtensions.BeAValidUrl(uriString));
+    DateTime moment = DateTime.Now;
+    DateTime value = moment.AddYears(1);
+    Assert.True(FluentValidationExtensions.BeInTheFuture(value, moment));
+  }
+
+  [Fact(DisplayName = "BeInThePast: it should return false when the value is in the future.")]
+  public void BeInThePast_it_should_return_false_when_the_value_is_in_the_future()
+  {
+    DateTime moment = DateTime.Now;
+    DateTime value = moment.AddMonths(1);
+    Assert.False(FluentValidationExtensions.BeInThePast(value, moment));
+  }
+
+  [Fact(DisplayName = "BeInThePast: it should return true when the value is in the past.")]
+  public void BeInThePast_it_should_return_true_when_the_value_is_in_the_past()
+  {
+    DateTime moment = DateTime.Now;
+    DateTime value = moment.AddMinutes(-1);
+    Assert.True(FluentValidationExtensions.BeInThePast(value, moment));
   }
 }

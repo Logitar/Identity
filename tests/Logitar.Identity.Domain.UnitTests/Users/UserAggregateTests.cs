@@ -78,6 +78,32 @@ public class UserAggregateTests
     Assert.Null(exception.PropertyName);
   }
 
+  [Fact(DisplayName = "Birthdate: it should change the birthdate when it is different.")]
+  public void Birthdate_it_should_change_the_birthdate_when_it_is_different()
+  {
+    DateTime birthdate = _faker.Person.DateOfBirth;
+
+    _user.Birthdate = birthdate;
+    Assert.Equal(birthdate, _user.Birthdate);
+
+    _user.Update();
+
+    _user.Birthdate = birthdate;
+    AssertHasNoUpdate(_user);
+  }
+
+  [Fact(DisplayName = "Birthdate: it should throw ValidationException when the value is in the future.")]
+  public void Birthdate_it_should_throw_ValidationException_when_the_value_is_in_the_future()
+  {
+    DateTime birthdate = DateTime.Now.AddYears(1);
+    var exception = Assert.Throws<FluentValidation.ValidationException>(() => _user.Birthdate = birthdate);
+    Assert.All(exception.Errors, e =>
+    {
+      Assert.Equal("PastValidator", e.ErrorCode);
+      Assert.Equal(nameof(_user.Birthdate), e.PropertyName);
+    });
+  }
+
   [Fact(DisplayName = "Delete: it should delete the user when it is not deleted.")]
   public void Delete_it_should_delete_the_user_when_it_is_not_deleted()
   {
@@ -136,6 +162,20 @@ public class UserAggregateTests
     AssertHasNoUpdate(_user);
   }
 
+  [Fact(DisplayName = "Gender: it should change the gender when it is different.")]
+  public void Gender_it_should_change_the_gender_when_it_is_different()
+  {
+    GenderUnit gender = new(_faker.Person.Gender.ToString());
+
+    _user.Gender = gender;
+    Assert.Equal(gender, _user.Gender);
+
+    _user.Update();
+
+    _user.Gender = gender;
+    AssertHasNoUpdate(_user);
+  }
+
   [Fact(DisplayName = "LastName: it should change the last name when it is different.")]
   public void LastName_it_should_change_the_last_name_when_it_is_different()
   {
@@ -146,6 +186,20 @@ public class UserAggregateTests
     _user.Update();
 
     _user.LastName = lastName;
+    AssertHasNoUpdate(_user);
+  }
+
+  [Fact(DisplayName = "Locale: it should change the locale when it is different.")]
+  public void Locale_it_should_change_the_locale_when_it_is_different()
+  {
+    LocaleUnit locale = new(_faker.Locale);
+
+    _user.Locale = locale;
+    Assert.Equal(locale, _user.Locale);
+
+    _user.Update();
+
+    _user.Locale = locale;
     AssertHasNoUpdate(_user);
   }
 
@@ -277,6 +331,20 @@ public class UserAggregateTests
     _user.ClearChanges();
     _user.SetUniqueName(uniqueName);
     Assert.False(_user.HasChanges);
+  }
+
+  [Fact(DisplayName = "TimeZone: it should change the time zone when it is different.")]
+  public void TimeZone_it_should_change_the_time_zone_when_it_is_different()
+  {
+    TimeZoneUnit timeZone = new("America/New_York");
+
+    _user.TimeZone = timeZone;
+    Assert.Equal(timeZone, _user.TimeZone);
+
+    _user.Update();
+
+    _user.TimeZone = timeZone;
+    AssertHasNoUpdate(_user);
   }
 
   [Fact(DisplayName = "ToString: it should return the correct string representation.")]

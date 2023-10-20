@@ -13,6 +13,7 @@
     <PackageReference Include="FluentValidation" Version="11.8.0" />
     <PackageReference Include="Logitar.EventSourcing" Version="4.0.1" />
     <PackageReference Include="Logitar.Security" Version="5.2.1" />
+    <PackageReference Include="NodaTime" Version="3.1.9" />
   </ItemGroup>
   
   <ItemGroup>

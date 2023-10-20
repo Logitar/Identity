@@ -30,6 +30,23 @@ public record UserUpdatedEvent : DomainEvent
   public Modification<PersonNameUnit>? Nickname { get; internal set; }
 
   /// <summary>
+  /// Gets or sets the birthdate of the user.
+  /// </summary>
+  public Modification<DateTime?>? Birthdate { get; internal set; }
+  /// <summary>
+  /// Gets or sets the gender of the user.
+  /// </summary>
+  public Modification<GenderUnit>? Gender { get; internal set; }
+  /// <summary>
+  /// Gets or sets the locale of the user.
+  /// </summary>
+  public Modification<LocaleUnit>? Locale { get; internal set; }
+  /// <summary>
+  /// Gets or sets the time zone of the user.
+  /// </summary>
+  public Modification<TimeZoneUnit>? TimeZone { get; internal set; }
+
+  /// <summary>
   /// Gets or sets the URL to the picture of the user.
   /// </summary>
   public Modification<UrlUnit>? Picture { get; internal set; }
@@ -51,6 +68,7 @@ public record UserUpdatedEvent : DomainEvent
   /// Gets a value indicating whether or not the user is being modified.
   /// </summary>
   public bool HasChanges => FirstName != null || MiddleName != null || LastName != null || FullName != null || Nickname != null
+    || Birthdate != null || Gender != null || Locale != null || TimeZone != null
     || Picture != null || Profile != null || Website != null
     || CustomAttributes.Any();
 }

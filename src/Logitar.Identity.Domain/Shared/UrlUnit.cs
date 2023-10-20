@@ -26,15 +26,15 @@ public record UrlUnit
   /// Initializes a new instance of the <see cref="UrlUnit"/> class.
   /// </summary>
   /// <param name="uri">The Uniform Resource Identifier (URI) object.</param>
-  public UrlUnit(Uri uri)
+  /// <param name="propertyName">The name of the property, used for validation.</param>
+  public UrlUnit(Uri uri, string? propertyName = null) : this(uri.ToString(), propertyName)
   {
-    Uri = uri;
   }
   /// <summary>
   /// Initializes a new instance of the <see cref="UrlUnit"/> class.
   /// </summary>
   /// <param name="uriString">A string representation of an Uniform Resource Identifier (URI.</param>
-  /// <param name="propertyName">The property name, used for validation.</param>
+  /// <param name="propertyName">The name of the property, used for validation.</param>
   public UrlUnit(string uriString, string? propertyName = null)
   {
     uriString = uriString.Trim();

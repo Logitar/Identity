@@ -24,7 +24,11 @@ public class PersonNameUnitTests
     string propertyName = nameof(PersonNameUnit);
 
     var exception = Assert.Throws<FluentValidation.ValidationException>(() => new PersonNameUnit(value, propertyName));
-    Assert.All(exception.Errors, e => Assert.Equal(propertyName, e.PropertyName));
+    Assert.All(exception.Errors, e =>
+    {
+      Assert.Equal(propertyName, e.PropertyName);
+      Assert.Equal("NotEmptyValidator", e.ErrorCode);
+    });
   }
 
   [Fact(DisplayName = "ctor: it should throw ValidationException when the value is too long.")]
@@ -34,7 +38,11 @@ public class PersonNameUnitTests
     string propertyName = nameof(PersonNameUnit);
 
     var exception = Assert.Throws<FluentValidation.ValidationException>(() => new PersonNameUnit(value, propertyName));
-    Assert.All(exception.Errors, e => Assert.Equal(propertyName, e.PropertyName));
+    Assert.All(exception.Errors, e =>
+    {
+      Assert.Equal("MaximumLengthValidator", e.ErrorCode);
+      Assert.Equal(propertyName, e.PropertyName);
+    });
   }
 
   [Theory(DisplayName = "TryCreate: it should return a person name when the value is not empty.")]

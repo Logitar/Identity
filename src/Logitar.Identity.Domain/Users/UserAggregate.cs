@@ -1,4 +1,5 @@
-﻿using Logitar.EventSourcing;
+﻿using FluentValidation;
+using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Shared;
 using Logitar.Identity.Domain.Users.Events;
@@ -113,6 +114,76 @@ public class UserAggregate : AggregateRoot
       {
         _updated.Nickname = new Modification<PersonNameUnit>(value);
         _nickname = value;
+      }
+    }
+  }
+
+  private DateTime? _birthdate = null;
+  /// <summary>
+  /// Gets or sets the birthdate of the user.
+  /// </summary>
+  public DateTime? Birthdate
+  {
+    get => _birthdate;
+    set
+    {
+      if (value.HasValue)
+      {
+        new BirthdateValidator(nameof(Birthdate)).ValidateAndThrow(value.Value);
+      }
+
+      if (value != _birthdate)
+      {
+        _updated.Birthdate = new Modification<DateTime?>(value);
+        _birthdate = value;
+      }
+    }
+  }
+  private GenderUnit? _gender = null;
+  /// <summary>
+  /// Gets or sets the gender of the user.
+  /// </summary>
+  public GenderUnit? Gender
+  {
+    get => _gender;
+    set
+    {
+      if (value != _gender)
+      {
+        _updated.Gender = new Modification<GenderUnit>(value);
+        _gender = value;
+      }
+    }
+  }
+  private LocaleUnit? _locale = null;
+  /// <summary>
+  /// Gets or sets the locale of the user.
+  /// </summary>
+  public LocaleUnit? Locale
+  {
+    get => _locale;
+    set
+    {
+      if (value != _locale)
+      {
+        _updated.Locale = new Modification<LocaleUnit>(value);
+        _locale = value;
+      }
+    }
+  }
+  private TimeZoneUnit? _timeZone = null;
+  /// <summary>
+  /// Gets or sets the time zone of the user.
+  /// </summary>
+  public TimeZoneUnit? TimeZone
+  {
+    get => _timeZone;
+    set
+    {
+      if (value != _timeZone)
+      {
+        _updated.TimeZone = new Modification<TimeZoneUnit>(value);
+        _timeZone = value;
       }
     }
   }
@@ -395,6 +466,23 @@ public class UserAggregate : AggregateRoot
     if (@event.Nickname != null)
     {
       _nickname = @event.Nickname.Value;
+    }
+
+    if (@event.Birthdate != null)
+    {
+      _birthdate = @event.Birthdate.Value;
+    }
+    if (@event.Gender != null)
+    {
+      _gender = @event.Gender.Value;
+    }
+    if (@event.Locale != null)
+    {
+      _locale = @event.Locale.Value;
+    }
+    if (@event.TimeZone != null)
+    {
+      _timeZone = @event.TimeZone.Value;
     }
 
     if (@event.Picture != null)

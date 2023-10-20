@@ -22,7 +22,11 @@ public class DescriptionUnitTests
     string propertyName = nameof(DescriptionUnit);
 
     var exception = Assert.Throws<ValidationException>(() => new DescriptionUnit(value, propertyName));
-    Assert.All(exception.Errors, e => Assert.Equal(propertyName, e.PropertyName));
+    Assert.All(exception.Errors, e =>
+    {
+      Assert.Equal(propertyName, e.PropertyName);
+      Assert.Equal("NotEmptyValidator", e.ErrorCode);
+    });
   }
 
   [Theory(DisplayName = "TryCreate: it should return a description when the value is not empty.")]

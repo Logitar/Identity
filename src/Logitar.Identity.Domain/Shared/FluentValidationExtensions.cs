@@ -24,6 +24,26 @@ public static class FluentValidationExtensions
   }
 
   /// <summary>
+  /// Defines a future validator on the current rule builder.
+  /// Validation will fail if the value is a date and time set in the past.
+  /// Validation will succeed if the value is a date and time set in the future.
+  /// </summary>
+  /// <typeparam name="T">The type of the validated object.</typeparam>
+  /// <param name="ruleBuilder">The rule builder.</param>
+  /// <param name="moment">The moment used to validate (defaults to now).</param>
+  /// <returns>The rule builder.</returns>
+  public static IRuleBuilderOptions<T, DateTime> Future<T>(this IRuleBuilderOptions<T, DateTime> ruleBuilder, DateTime? moment = null)
+  {
+    return ruleBuilder.Must(value => BeInTheFuture(value, moment))
+      .WithErrorCode("FutureValidator")
+      .WithMessage("'{PropertyName}' must be a date and time set in the future.");
+  }
+  internal static bool BeInTheFuture(DateTime value, DateTime? moment)
+  {
+    return value > (moment ?? DateTime.Now);
+  }
+
+  /// <summary>
   /// Defines an identifier validator on the current rule builder.
   /// Validation will fail if the value starts with a digit or contains characters that are not letters, digits or underscores (_).
   /// Validation will succeed if the value does not start with a digit and only contains letters, digits and underscores (_).
@@ -43,30 +63,23 @@ public static class FluentValidationExtensions
   }
 
   /// <summary>
-  /// Defines a Uniform Resource Locator (URL) validator on the current rule builder.
-  /// Validation will fail if the value is not a valid Uniform Resource Locator (URL).
-  /// Validation will succeed if the value is a valid Uniform Resource Locator (URL).
+  /// Defines a past validator on the current rule builder.
+  /// Validation will fail if the value is a date and time set in the future.
+  /// Validation will succeed if the value is a date and time set in the past.
   /// </summary>
   /// <typeparam name="T">The type of the validated object.</typeparam>
   /// <param name="ruleBuilder">The rule builder.</param>
+  /// <param name="moment">The moment used to validate (defaults to now).</param>
   /// <returns>The rule builder.</returns>
-  public static IRuleBuilderOptions<T, string> Url<T>(this IRuleBuilderOptions<T, string> ruleBuilder)
+  public static IRuleBuilderOptions<T, DateTime> Past<T>(this IRuleBuilderOptions<T, DateTime> ruleBuilder, DateTime? moment = null)
   {
-    return ruleBuilder.Must(BeAValidUrl)
-      .WithErrorCode("UrlValidator")
-      .WithMessage("'{PropertyName}' must be a valid Uniform Resource Locator (URL).");
+    return ruleBuilder.Must(value => BeInThePast(value, moment))
+      .WithErrorCode("PastValidator")
+      .WithMessage("'{PropertyName}' must be a date and time set in the past.");
   }
-  internal static bool BeAValidUrl(string url)
+  internal static bool BeInThePast(DateTime value, DateTime? moment)
   {
-    try
-    {
-      _ = new Uri(url);
-      return true;
-    }
-    catch (Exception)
-    {
-      return false;
-    }
+    return value < (moment ?? DateTime.Now);
   }
 
   /// <summary>

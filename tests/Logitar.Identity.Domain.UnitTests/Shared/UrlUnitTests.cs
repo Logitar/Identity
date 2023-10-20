@@ -43,17 +43,55 @@ public class UrlUnitTests
     string propertyName = nameof(UrlUnit);
 
     var exception = Assert.Throws<FluentValidation.ValidationException>(() => new UrlUnit(value, propertyName));
-    Assert.All(exception.Errors, e => Assert.Equal(propertyName, e.PropertyName));
+    Assert.All(exception.Errors, e =>
+    {
+      Assert.Equal(propertyName, e.PropertyName);
+      Assert.True(e.ErrorCode == "NotEmptyValidator" || e.ErrorCode == "UrlValidator");
+    });
   }
 
-  [Fact(DisplayName = "ctor: it should throw ValidationException when the value is too long.")]
-  public void ctor_it_should_throw_ValidationException_when_the_value_is_too_long()
+  [Theory(DisplayName = "ctor: it should throw ValidationException when the value is not a valid URL.")]
+  [InlineData("")]
+  [InlineData("  ")]
+  [InlineData("/about")]
+  public void ctor_it_should_throw_ValidationException_when_the_value_is_not_a_valid_Url(string value)
   {
-    string value = _faker.Random.String(UrlUnit.MaximumLength + 1);
     string propertyName = nameof(UrlUnit);
 
     var exception = Assert.Throws<FluentValidation.ValidationException>(() => new UrlUnit(value, propertyName));
-    Assert.All(exception.Errors, e => Assert.Equal(propertyName, e.PropertyName));
+    Assert.All(exception.Errors, e =>
+    {
+      Assert.Equal(propertyName, e.PropertyName);
+      Assert.True(e.ErrorCode == "NotEmptyValidator" || e.ErrorCode == "UrlValidator");
+    });
+  }
+
+  [Fact(DisplayName = "ctor: it should throw ValidationException when the string value is too long.")]
+  public void ctor_it_should_throw_ValidationException_when_the_string_value_is_too_long()
+  {
+    string uriString = string.Concat("https://www.", _faker.Internet.DomainName(), "?key=", _faker.Random.String(UrlUnit.MaximumLength, minChar: 'a', maxChar: 'z'));
+    string propertyName = nameof(UrlUnit);
+
+    var exception = Assert.Throws<FluentValidation.ValidationException>(() => new UrlUnit(uriString, propertyName));
+    Assert.All(exception.Errors, e =>
+    {
+      Assert.Equal("MaximumLengthValidator", e.ErrorCode);
+      Assert.Equal(propertyName, e.PropertyName);
+    });
+  }
+
+  [Fact(DisplayName = "ctor: it should throw ValidationException when the Uri value is too long.")]
+  public void ctor_it_should_throw_ValidationException_when_the_Uri_value_is_too_long()
+  {
+    string uriString = string.Concat("https://www.", _faker.Internet.DomainName(), "?key=", _faker.Random.String(UrlUnit.MaximumLength, minChar: 'a', maxChar: 'z'));
+    string propertyName = nameof(UrlUnit);
+
+    var exception = Assert.Throws<FluentValidation.ValidationException>(() => new UrlUnit(new Uri(uriString), propertyName));
+    Assert.All(exception.Errors, e =>
+    {
+      Assert.Equal("MaximumLengthValidator", e.ErrorCode);
+      Assert.Equal(propertyName, e.PropertyName);
+    });
   }
 
   [Theory(DisplayName = "TryCreate: it should return a URL when the value is not empty.")]
