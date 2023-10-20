@@ -117,6 +117,55 @@ public class UserAggregate : AggregateRoot
     }
   }
 
+  private UrlUnit? _picture = null;
+  /// <summary>
+  /// Gets or sets the URL to the picture of the user.
+  /// </summary>
+  public UrlUnit? Picture
+  {
+    get => _picture;
+    set
+    {
+      if (value != _picture)
+      {
+        _updated.Picture = new Modification<UrlUnit>(value);
+        _picture = value;
+      }
+    }
+  }
+  private UrlUnit? _profile = null;
+  /// <summary>
+  /// Gets or sets the URL to the profile page of the user.
+  /// </summary>
+  public UrlUnit? Profile
+  {
+    get => _profile;
+    set
+    {
+      if (value != _profile)
+      {
+        _updated.Profile = new Modification<UrlUnit>(value);
+        _profile = value;
+      }
+    }
+  }
+  private UrlUnit? _website = null;
+  /// <summary>
+  /// Gets or sets the URL to the website of the user.
+  /// </summary>
+  public UrlUnit? Website
+  {
+    get => _website;
+    set
+    {
+      if (value != _website)
+      {
+        _updated.Website = new Modification<UrlUnit>(value);
+        _website = value;
+      }
+    }
+  }
+
   /// <summary>
   /// Gets the custom attributes of the user.
   /// </summary>
@@ -346,6 +395,19 @@ public class UserAggregate : AggregateRoot
     if (@event.Nickname != null)
     {
       _nickname = @event.Nickname.Value;
+    }
+
+    if (@event.Picture != null)
+    {
+      _picture = @event.Picture.Value;
+    }
+    if (@event.Profile != null)
+    {
+      _profile = @event.Profile.Value;
+    }
+    if (@event.Website != null)
+    {
+      _website = @event.Website.Value;
     }
   }
 

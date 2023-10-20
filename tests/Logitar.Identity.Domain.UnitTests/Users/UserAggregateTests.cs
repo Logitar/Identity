@@ -175,6 +175,32 @@ public class UserAggregateTests
     AssertHasNoUpdate(_user);
   }
 
+  [Fact(DisplayName = "Picture: it should change the picture when it is different.")]
+  public void Picture_it_should_change_the_picture_when_it_is_different()
+  {
+    UrlUnit picture = new(_faker.Person.Avatar);
+    _user.Picture = picture;
+    Assert.Equal(picture, _user.Picture);
+
+    _user.Update();
+
+    _user.Picture = picture;
+    AssertHasNoUpdate(_user);
+  }
+
+  [Fact(DisplayName = "Profile: it should change the profile page when it is different.")]
+  public void Profile_it_should_change_the_profile_page_when_it_is_different()
+  {
+    UrlUnit profile = new($"https://www.test.com/employees/{_user.UniqueName.Value}");
+    _user.Profile = profile;
+    Assert.Equal(profile, _user.Profile);
+
+    _user.Update();
+
+    _user.Profile = profile;
+    AssertHasNoUpdate(_user);
+  }
+
   [Fact(DisplayName = "RemoveCustomAttribute: it should remove an existing custom attribute.")]
   public void RemoveCustomAttribute_it_should_remove_an_existing_custom_attribute()
   {
@@ -283,6 +309,19 @@ public class UserAggregateTests
     long version = _user.Version;
     _user.Update(actorId);
     Assert.Equal(version, _user.Version);
+  }
+
+  [Fact(DisplayName = "Website: it should change the website when it is different.")]
+  public void Website_it_should_change_the_website_when_it_is_different()
+  {
+    UrlUnit website = new($"https://www.{_faker.Person.Website}");
+    _user.Website = website;
+    Assert.Equal(website, _user.Website);
+
+    _user.Update();
+
+    _user.Website = website;
+    AssertHasNoUpdate(_user);
   }
 
   private static void AssertHasNoUpdate(UserAggregate user)

@@ -10,8 +10,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="11.7.1" />
+    <PackageReference Include="FluentValidation" Version="11.8.0" />
     <PackageReference Include="Logitar.EventSourcing" Version="4.0.1" />
+    <PackageReference Include="Logitar.Security" Version="5.2.1" />
   </ItemGroup>
   
   <ItemGroup>

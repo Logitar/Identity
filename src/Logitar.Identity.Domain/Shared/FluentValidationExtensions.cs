@@ -35,11 +35,38 @@ public static class FluentValidationExtensions
   {
     return ruleBuilder.Must(BeAValidIdentifier)
       .WithErrorCode("IdentifierValidator")
-      .WithMessage("{PropertyName} ");
+      .WithMessage("'{PropertyName}' may not start with a digit and may only contain letters, digits and underscores (_).");
   }
   internal static bool BeAValidIdentifier(string identifier)
   {
     return !char.IsDigit(identifier.FirstOrDefault()) && identifier.All(c => char.IsLetterOrDigit(c) || c == '_');
+  }
+
+  /// <summary>
+  /// Defines a Uniform Resource Locator (URL) validator on the current rule builder.
+  /// Validation will fail if the value is not a valid Uniform Resource Locator (URL).
+  /// Validation will succeed if the value is a valid Uniform Resource Locator (URL).
+  /// </summary>
+  /// <typeparam name="T">The type of the validated object.</typeparam>
+  /// <param name="ruleBuilder">The rule builder.</param>
+  /// <returns>The rule builder.</returns>
+  public static IRuleBuilderOptions<T, string> Url<T>(this IRuleBuilderOptions<T, string> ruleBuilder)
+  {
+    return ruleBuilder.Must(BeAValidUrl)
+      .WithErrorCode("UrlValidator")
+      .WithMessage("'{PropertyName}' must be a valid Uniform Resource Locator (URL).");
+  }
+  internal static bool BeAValidUrl(string url)
+  {
+    try
+    {
+      _ = new Uri(url);
+      return true;
+    }
+    catch (Exception)
+    {
+      return false;
+    }
   }
 
   /// <summary>

@@ -1,4 +1,5 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Shared;
 
 namespace Logitar.Identity.Domain.Users.Events;
 
@@ -29,6 +30,19 @@ public record UserUpdatedEvent : DomainEvent
   public Modification<PersonNameUnit>? Nickname { get; internal set; }
 
   /// <summary>
+  /// Gets or sets the URL to the picture of the user.
+  /// </summary>
+  public Modification<UrlUnit>? Picture { get; internal set; }
+  /// <summary>
+  /// Gets or sets the URL to the profile page of the user.
+  /// </summary>
+  public Modification<UrlUnit>? Profile { get; internal set; }
+  /// <summary>
+  /// Gets or sets the URL to the website of the user.
+  /// </summary>
+  public Modification<UrlUnit>? Website { get; internal set; }
+
+  /// <summary>
   /// Gets or sets the custom attribute modifications of the user.
   /// </summary>
   public Dictionary<string, string?> CustomAttributes { get; } = new();
@@ -36,5 +50,7 @@ public record UserUpdatedEvent : DomainEvent
   /// <summary>
   /// Gets a value indicating whether or not the user is being modified.
   /// </summary>
-  public bool HasChanges => FirstName != null || MiddleName != null || LastName != null || FullName != null || Nickname != null || CustomAttributes.Any();
+  public bool HasChanges => FirstName != null || MiddleName != null || LastName != null || FullName != null || Nickname != null
+    || Picture != null || Profile != null || Website != null
+    || CustomAttributes.Any();
 }
