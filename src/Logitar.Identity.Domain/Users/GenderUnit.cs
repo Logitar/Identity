@@ -35,7 +35,7 @@ public record GenderUnit
   /// Returns a value indicating whether or not the specified gender is known.
   /// </summary>
   /// <param name="value">The textual representation of the gender.</param>
-  /// <returns>True if the gender is known.</returns>
+  /// <returns>True if the gender is known, or false otherwise.</returns>
   public static bool IsKnown(string value) => _knownValues.Contains(value.Trim().ToLower());
 
   /// <summary>

@@ -9,6 +9,19 @@ namespace Logitar.Identity.Domain.Users.Events;
 public record UserUpdatedEvent : DomainEvent
 {
   /// <summary>
+  /// Gets or sets the postal address of the user.
+  /// </summary>
+  public Modification<AddressUnit>? Address { get; internal set; }
+  /// <summary>
+  /// Gets or sets the email address of the user.
+  /// </summary>
+  public Modification<EmailUnit>? Email { get; internal set; }
+  /// <summary>
+  /// Gets or sets the phone number of the user.
+  /// </summary>
+  public Modification<PhoneUnit>? Phone { get; internal set; }
+
+  /// <summary>
   /// Gets or sets the first name of the user.
   /// </summary>
   public Modification<PersonNameUnit>? FirstName { get; internal set; }
@@ -67,7 +80,8 @@ public record UserUpdatedEvent : DomainEvent
   /// <summary>
   /// Gets a value indicating whether or not the user is being modified.
   /// </summary>
-  public bool HasChanges => FirstName != null || MiddleName != null || LastName != null || FullName != null || Nickname != null
+  public bool HasChanges => Address != null || Email != null || Phone != null
+    || FirstName != null || MiddleName != null || LastName != null || FullName != null || Nickname != null
     || Birthdate != null || Gender != null || Locale != null || TimeZone != null
     || Picture != null || Profile != null || Website != null
     || CustomAttributes.Any();

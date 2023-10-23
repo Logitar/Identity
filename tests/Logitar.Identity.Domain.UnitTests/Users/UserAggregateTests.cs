@@ -23,31 +23,17 @@ public class UserAggregateTests
     _user = new(_uniqueName);
   }
 
-  [Fact(DisplayName = "ctor: it should create a new user with id.")]
-  public void ctor_it_should_create_a_new_user_with_id()
+  [Fact(DisplayName = "Address: it should change the postal address when it is different.")]
+  public void Address_it_should_change_the_postal_address_when_it_is_different()
   {
-    UserId userId = new(AggregateId.NewId());
+    AddressUnit address = new("150 Saint-Catherine St W", "Montreal", "CA", "QC", "H2X 3Y2");
+    _user.Address = address;
+    Assert.Equal(address, _user.Address);
 
-    UserAggregate user = new(userId.AggregateId);
+    _user.Update();
 
-    Assert.Equal(userId, user.Id);
-    Assert.Equal(userId.AggregateId, user.Id.AggregateId);
-    Assert.Null(user.TenantId);
-  }
-
-  [Fact(DisplayName = "ctor: it should create a new user with parameters.")]
-  public void ctor_it_should_create_a_new_user_with_parameters()
-  {
-    TenantId tenantId = new(Guid.NewGuid().ToString());
-    ActorId actorId = ActorId.NewId();
-    UserId id = new(Guid.NewGuid().ToString());
-
-    UserAggregate user = new(_uniqueName, tenantId, actorId, id);
-
-    Assert.Equal(id, user.Id);
-    Assert.Equal(actorId, user.CreatedBy);
-    Assert.Equal(tenantId, user.TenantId);
-    Assert.Equal(_uniqueName, user.UniqueName);
+    _user.Address = address;
+    AssertHasNoUpdate(_user);
   }
 
   [Fact(DisplayName = "AddRole: it should add the role to the user when it does not have the role.")]
@@ -104,6 +90,33 @@ public class UserAggregateTests
     });
   }
 
+  [Fact(DisplayName = "ctor: it should create a new user with id.")]
+  public void ctor_it_should_create_a_new_user_with_id()
+  {
+    UserId userId = new(AggregateId.NewId());
+
+    UserAggregate user = new(userId.AggregateId);
+
+    Assert.Equal(userId, user.Id);
+    Assert.Equal(userId.AggregateId, user.Id.AggregateId);
+    Assert.Null(user.TenantId);
+  }
+
+  [Fact(DisplayName = "ctor: it should create a new user with parameters.")]
+  public void ctor_it_should_create_a_new_user_with_parameters()
+  {
+    TenantId tenantId = new(Guid.NewGuid().ToString());
+    ActorId actorId = ActorId.NewId();
+    UserId id = new(Guid.NewGuid().ToString());
+
+    UserAggregate user = new(_uniqueName, tenantId, actorId, id);
+
+    Assert.Equal(id, user.Id);
+    Assert.Equal(actorId, user.CreatedBy);
+    Assert.Equal(tenantId, user.TenantId);
+    Assert.Equal(_uniqueName, user.UniqueName);
+  }
+
   [Fact(DisplayName = "Delete: it should delete the user when it is not deleted.")]
   public void Delete_it_should_delete_the_user_when_it_is_not_deleted()
   {
@@ -130,6 +143,19 @@ public class UserAggregateTests
     _user.ClearChanges();
     _user.Disable();
     Assert.False(_user.HasChanges);
+  }
+
+  [Fact(DisplayName = "Email: it should change the email address when it is different.")]
+  public void Email_it_should_change_the_email_address_when_it_is_different()
+  {
+    EmailUnit email = new(_faker.Person.Email);
+    _user.Email = email;
+    Assert.Equal(email, _user.Email);
+
+    _user.Update();
+
+    _user.Email = email;
+    AssertHasNoUpdate(_user);
   }
 
   [Fact(DisplayName = "Enable: it should enable the user when it is disabled.")]
@@ -174,6 +200,24 @@ public class UserAggregateTests
 
     _user.Gender = gender;
     AssertHasNoUpdate(_user);
+  }
+
+  [Fact(DisplayName = "IsConfirmed: it should be false when the user has no verified contact information.")]
+  public void IsConfirmed_it_should_be_false_when_the_user_has_no_verified_contact_information()
+  {
+    _user.Address = new AddressUnit("150 Saint-Catherine St W", "Montreal", "CA", "QC", "H2X 3Y2", isVerified: false);
+    _user.Email = new EmailUnit(_faker.Person.Email, isVerified: false);
+    _user.Phone = new PhoneUnit("+15148454636", "CA", "12345", isVerified: false);
+    Assert.False(_user.IsConfirmed);
+  }
+
+  [Fact(DisplayName = "IsConfirmed: it should be true when the user has at least one verified contact information.")]
+  public void IsConfirmed_it_should_be_true_when_the_user_has_at_least_one_verified_contact_information()
+  {
+    _user.Address = new AddressUnit("150 Saint-Catherine St W", "Montreal", "CA", "QC", "H2X 3Y2", isVerified: false);
+    _user.Email = new EmailUnit(_faker.Person.Email, isVerified: true);
+    _user.Phone = new PhoneUnit("+15148454636", "CA", "12345", isVerified: false);
+    Assert.True(_user.IsConfirmed);
   }
 
   [Fact(DisplayName = "LastName: it should change the last name when it is different.")]
@@ -226,6 +270,19 @@ public class UserAggregateTests
     _user.Update();
 
     _user.Nickname = nickname;
+    AssertHasNoUpdate(_user);
+  }
+
+  [Fact(DisplayName = "Phone: it should change the phone number when it is different.")]
+  public void Phone_it_should_change_the_phone_number_when_it_is_different()
+  {
+    PhoneUnit phone = new("+15148454636", "CA", "12345");
+    _user.Phone = phone;
+    Assert.Equal(phone, _user.Phone);
+
+    _user.Update();
+
+    _user.Phone = phone;
     AssertHasNoUpdate(_user);
   }
 

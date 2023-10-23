@@ -40,6 +40,60 @@ public class UserAggregate : AggregateRoot
   /// </summary>
   public bool IsDisabled { get; private set; }
 
+  private AddressUnit? _address = null;
+  /// <summary>
+  /// Gets or sets the email address of the user.
+  /// </summary>
+  public AddressUnit? Address
+  {
+    get => _address;
+    set
+    {
+      if (value != _address)
+      {
+        _updated.Address = new Modification<AddressUnit>(value);
+        _address = value;
+      }
+    }
+  }
+  private EmailUnit? _email = null;
+  /// <summary>
+  /// Gets or sets the email address of the user.
+  /// </summary>
+  public EmailUnit? Email
+  {
+    get => _email;
+    set
+    {
+      if (value != _email)
+      {
+        _updated.Email = new Modification<EmailUnit>(value);
+        _email = value;
+      }
+    }
+  }
+  private PhoneUnit? _phone = null;
+  /// <summary>
+  /// Gets or sets the phone number of the user.
+  /// </summary>
+  public PhoneUnit? Phone
+  {
+    get => _phone;
+    set
+    {
+      if (value != _phone)
+      {
+        _updated.Phone = new Modification<PhoneUnit>(value);
+        _phone = value;
+      }
+    }
+  }
+  /// <summary>
+  /// Gets a value indicating whether or not the user is confirmed.
+  /// A confirmed user has at least one verified contact information.
+  /// </summary>
+  public bool IsConfirmed => _address?.IsVerified == true || _email?.IsVerified == true || _phone?.IsVerified == true;
+
   private PersonNameUnit? _firstName = null;
   /// <summary>
   /// Gets or sets the first name of the user.
@@ -353,7 +407,7 @@ public class UserAggregate : AggregateRoot
   /// Returns a value indicating whether or not the user has the specified role.
   /// </summary>
   /// <param name="role">The role to match.</param>
-  /// <returns>True if the user has the specified role.</returns>
+  /// <returns>True if the user has the specified role, or false otherwise.</returns>
   public bool HasRole(RoleAggregate role) => _roles.Contains(role.Id);
 
   /// <summary>
@@ -447,6 +501,19 @@ public class UserAggregate : AggregateRoot
   /// <param name="event">The event to apply.</param>
   protected virtual void Apply(UserUpdatedEvent @event)
   {
+    if (@event.Address != null)
+    {
+      _address = @event.Address.Value;
+    }
+    if (@event.Email != null)
+    {
+      _email = @event.Email.Value;
+    }
+    if (@event.Phone != null)
+    {
+      _phone = @event.Phone.Value;
+    }
+
     if (@event.FirstName != null)
     {
       _firstName = @event.FirstName.Value;
