@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Shared;
 using Logitar.Identity.Domain.Users.Events;
@@ -14,6 +15,7 @@ public class UserAggregate : AggregateRoot
 {
   private readonly Dictionary<string, string> _customAttributes = new();
   private readonly HashSet<RoleId> _roles = new();
+  private Password? _password = null;
   private UserUpdatedEvent _updated = new();
 
   /// <summary>
@@ -339,6 +341,7 @@ public class UserAggregate : AggregateRoot
   /// </summary>
   /// <param name="role">The role to be added.</param>
   /// <param name="actorId">The actor identifier.</param>
+  /// <exception cref="TenantMismatchException">The role and user tenant identifiers do not match.</exception>
   public void AddRole(RoleAggregate role, ActorId actorId = default)
   {
     if (role.TenantId != TenantId)
@@ -356,6 +359,23 @@ public class UserAggregate : AggregateRoot
   /// </summary>
   /// <param name="event">The event to apply.</param>
   protected virtual void Apply(UserRoleAddedEvent @event) => _roles.Add(@event.RoleId);
+
+  /// <summary>
+  /// Changes the password of the user, validating its current password.
+  /// </summary>
+  /// <param name="currentPassword">The current password of the user.</param>
+  /// <param name="newPassword">The new password of the user.</param>
+  /// <param name="actorId">The actor identifier.</param>
+  /// <exception cref="NotImplementedException">TODO(fpion): document</exception>
+  public void ChangePassword(string currentPassword, Password newPassword, ActorId actorId = default)
+  {
+    if (_password?.IsMatch(currentPassword) != true)
+    {
+      throw new NotImplementedException(); // TODO(fpion): implement
+    }
+
+    ApplyChange(new UserPasswordChangedEvent(actorId, newPassword)); // TODO(fpion): how to distinguish from Update and Replace?
+  }
 
   /// <summary>
   /// Deletes the user, if it is not already deleted.
@@ -461,6 +481,21 @@ public class UserAggregate : AggregateRoot
       _customAttributes[key] = value;
     }
   }
+
+  /// <summary>
+  /// Sets the password of the user.
+  /// </summary>
+  /// <param name="password">The new password.</param>
+  /// <param name="actorId">The actor identifier.</param>
+  public void SetPassword(Password password, ActorId actorId = default)
+  {
+    ApplyChange(new UserPasswordChangedEvent(actorId, password));
+  }
+  /// <summary>
+  /// Applies the specified event.
+  /// </summary>
+  /// <param name="event">The event to apply.</param>
+  protected virtual void Apply(UserPasswordChangedEvent @event) => _password = @event.Password;
 
   /// <summary>
   /// Sets the unique name of the user.
