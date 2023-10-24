@@ -467,7 +467,7 @@ public class UserAggregateTests
     _user.SetPassword(password, actorId);
 
     AssertPassword(_user, PasswordString);
-    Assert.Contains(_user.Changes, change => change is UserPasswordUpdatedEvent @event
+    Assert.Contains(_user.Changes, change => change is UserPasswordSetEvent @event
       && @event.ActorId == actorId
       && @event.Password.IsMatch(PasswordString));
   }

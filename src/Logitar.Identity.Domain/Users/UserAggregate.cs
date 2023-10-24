@@ -512,13 +512,13 @@ public class UserAggregate : AggregateRoot
   /// <param name="actorId">The actor identifier.</param>
   public void SetPassword(Password password, ActorId actorId = default)
   {
-    ApplyChange(new UserPasswordUpdatedEvent(actorId, password));
+    ApplyChange(new UserPasswordSetEvent(actorId, password));
   }
   /// <summary>
   /// Applies the specified event.
   /// </summary>
   /// <param name="event">The event to apply.</param>
-  protected virtual void Apply(UserPasswordUpdatedEvent @event) => _password = @event.Password;
+  protected virtual void Apply(UserPasswordSetEvent @event) => _password = @event.Password;
 
   /// <summary>
   /// Sets the unique name of the user.

@@ -1,5 +1,4 @@
 ﻿using Bogus;
-using System.Globalization;
 
 namespace Logitar.Identity.Domain.Shared;
 

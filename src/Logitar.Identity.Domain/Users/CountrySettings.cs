@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-
-namespace Logitar.Identity.Domain.Users;
+﻿namespace Logitar.Identity.Domain.Users;
 
 /// <summary>
 /// Represents validation settings for a country.
