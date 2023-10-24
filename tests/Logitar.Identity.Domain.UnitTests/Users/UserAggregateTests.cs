@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Shared;
@@ -10,6 +11,8 @@ namespace Logitar.Identity.Domain.Users;
 [Trait(Traits.Category, Categories.Unit)]
 public class UserAggregateTests
 {
+  private const string PasswordString = "Test123!";
+
   private readonly Faker _faker = new();
   private readonly UniqueNameSettings _uniqueNameSettings = new();
   private readonly UniqueNameUnit _uniqueName;
@@ -88,6 +91,63 @@ public class UserAggregateTests
       Assert.Equal("PastValidator", e.ErrorCode);
       Assert.Equal(nameof(_user.Birthdate), e.PropertyName);
     });
+  }
+
+  [Fact(DisplayName = "ChangePassword: it should change the users password.")]
+  public void ChangePassword_it_should_change_the_users_password()
+  {
+    string oldPassword = PasswordString[1..];
+    _user.SetPassword(new PasswordMock(oldPassword));
+    _user.ClearChanges();
+    AssertPassword(_user, oldPassword);
+
+    PasswordMock newPassword = new(PasswordString);
+    _user.ChangePassword(oldPassword, newPassword);
+    AssertPassword(_user, PasswordString);
+    Assert.Contains(_user.Changes, change => change is UserPasswordChangedEvent @event
+      && @event.ActorId.Value == _user.Id.Value
+      && @event.Password.IsMatch(PasswordString));
+  }
+
+  [Fact(DisplayName = "ChangePassword: it should change the users password using the specified actor identifier.")]
+  public void ChangePassword_it_should_change_the_users_password_using_the_specified_actor_identifier()
+  {
+    string oldPassword = PasswordString[1..];
+    _user.SetPassword(new PasswordMock(oldPassword));
+    _user.ClearChanges();
+    AssertPassword(_user, oldPassword);
+
+    PasswordMock newPassword = new(PasswordString);
+    ActorId actorId = ActorId.NewId();
+    _user.ChangePassword(oldPassword, newPassword, propertyName: null, actorId);
+    AssertPassword(_user, PasswordString);
+    Assert.Contains(_user.Changes, change => change is UserPasswordChangedEvent @event && @event.ActorId == actorId);
+  }
+
+  [Fact(DisplayName = "ChangePassword: it should throw IncorrectUserPasswordException when the attempted password is incorrect.")]
+  public void ChangePassword_it_should_throw_IncorrectUserPasswordException_when_the_attempted_password_is_incorrect()
+  {
+    _user.SetPassword(new PasswordMock(PasswordString));
+    AssertPassword(_user, PasswordString);
+
+    PasswordMock password = new(PasswordString);
+    string attemptedPassword = PasswordString[1..];
+    string propertyName = "Password";
+    var exception = Assert.Throws<IncorrectUserPasswordException>(() => _user.ChangePassword(attemptedPassword, password, propertyName));
+    Assert.Equal(attemptedPassword, exception.AttemptedPassword);
+    Assert.Equal(_user.Id, exception.UserId);
+    Assert.Equal(propertyName, exception.PropertyName);
+  }
+
+  [Fact(DisplayName = "ChangePassword: it should throw IncorrectUserPasswordException when the user has no password.")]
+  public void ChangePassword_it_should_throw_IncorrectUserPasswordException_when_the_user_has_no_password()
+  {
+    AssertPassword(_user, password: null);
+
+    PasswordMock password = new(PasswordString);
+    var exception = Assert.Throws<IncorrectUserPasswordException>(() => _user.ChangePassword(PasswordString, password));
+    Assert.Equal(PasswordString, exception.AttemptedPassword);
+    Assert.Equal(_user.Id, exception.UserId);
   }
 
   [Fact(DisplayName = "ctor: it should create a new user with id.")]
@@ -346,6 +406,26 @@ public class UserAggregateTests
     Assert.False(_user.HasChanges);
   }
 
+  [Fact(DisplayName = "ResetPassword: it should reset the user's password.")]
+  public void ResetPassword_it_should_reset_the_users_password()
+  {
+    PasswordMock password = new(PasswordString);
+    _user.ResetPassword(password);
+    AssertPassword(_user, PasswordString);
+    Assert.Contains(_user.Changes, change => change is UserPasswordResetEvent @event
+      && @event.ActorId.Value == _user.Id.Value
+      && @event.Password.IsMatch(PasswordString));
+  }
+
+  [Fact(DisplayName = "ResetPassword: it should reset the user's password using the specified actor identifier.")]
+  public void ResetPassword_it_should_reset_the_users_password_using_the_specified_actor_identifier()
+  {
+    PasswordMock password = new(PasswordString);
+    ActorId actorId = ActorId.NewId();
+    _user.ResetPassword(password, actorId);
+    Assert.Contains(_user.Changes, change => change is UserPasswordResetEvent @event && @event.ActorId == actorId);
+  }
+
   [Fact(DisplayName = "SetCustomAttribute: it should set a custom attribute when it is different.")]
   public void SetCustomAttribute_it_should_set_a_custom_attribute_when_it_is_different()
   {
@@ -375,6 +455,21 @@ public class UserAggregateTests
 
     exception = Assert.Throws<FluentValidation.ValidationException>(() => _user.SetCustomAttribute("key", "     "));
     Assert.All(exception.Errors, e => Assert.Equal("Value", e.PropertyName));
+  }
+
+  [Fact(DisplayName = "SetPassword: it should change the password.")]
+  public void SetPassword_it_should_change_the_password()
+  {
+    AssertPassword(_user, password: null);
+
+    ActorId actorId = ActorId.NewId();
+    PasswordMock password = new(PasswordString);
+    _user.SetPassword(password, actorId);
+
+    AssertPassword(_user, PasswordString);
+    Assert.Contains(_user.Changes, change => change is UserPasswordUpdatedEvent @event
+      && @event.ActorId == actorId
+      && @event.Password.IsMatch(PasswordString));
   }
 
   [Fact(DisplayName = "SetUniqueName: it should change the unique name when it is different.")]
@@ -457,5 +552,21 @@ public class UserAggregateTests
     UserUpdatedEvent? updated = field.GetValue(user) as UserUpdatedEvent;
     Assert.NotNull(updated);
     Assert.False(updated.HasChanges);
+  }
+  private static void AssertPassword(UserAggregate user, string? password)
+  {
+    FieldInfo? field = user.GetType().GetField("_password", BindingFlags.NonPublic | BindingFlags.Instance);
+    Assert.NotNull(field);
+
+    Password? instance = field.GetValue(user) as Password;
+    if (password == null)
+    {
+      Assert.Null(instance);
+    }
+    else
+    {
+      Assert.NotNull(instance);
+      Assert.True(instance.IsMatch(password));
+    }
   }
 }

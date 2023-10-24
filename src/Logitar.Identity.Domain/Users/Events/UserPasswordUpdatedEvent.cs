@@ -4,9 +4,9 @@ using Logitar.Identity.Domain.Passwords;
 namespace Logitar.Identity.Domain.Users.Events;
 
 /// <summary>
-/// The event raised when an user changes its password.
+/// The event raised when the password of an user is modified.
 /// </summary>
-public record UserPasswordChangedEvent : DomainEvent
+public record UserPasswordUpdatedEvent : DomainEvent
 {
   /// <summary>
   /// Gets the new password of the user.
@@ -14,11 +14,11 @@ public record UserPasswordChangedEvent : DomainEvent
   public Password Password { get; }
 
   /// <summary>
-  /// Initializes a new instance of the <see cref="UserPasswordChangedEvent"/> class.
+  /// Initializes a new instance of the <see cref="UserPasswordResetEvent"/> class.
   /// </summary>
-  /// <param name="actorId">The actor identifier, generally the user's identifier.</param>
+  /// <param name="actorId">The actor identifier.</param>
   /// <param name="password">The new password of the user.</param>
-  public UserPasswordChangedEvent(ActorId actorId, Password password)
+  public UserPasswordUpdatedEvent(ActorId actorId, Password password)
   {
     ActorId = actorId;
     Password = password;

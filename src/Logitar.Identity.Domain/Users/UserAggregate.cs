@@ -365,17 +365,24 @@ public class UserAggregate : AggregateRoot
   /// </summary>
   /// <param name="currentPassword">The current password of the user.</param>
   /// <param name="newPassword">The new password of the user.</param>
-  /// <param name="actorId">The actor identifier.</param>
-  /// <exception cref="NotImplementedException">TODO(fpion): document</exception>
-  public void ChangePassword(string currentPassword, Password newPassword, ActorId actorId = default)
+  /// <param name="propertyName">The name of the property, used for validation.</param>
+  /// <param name="actorId">(Optional) The actor identifier. This parameter should be left null so that it defaults to the user's identifier.</param>
+  /// <exception cref="IncorrectUserPasswordException">The current password is incorrect.</exception>
+  public void ChangePassword(string currentPassword, Password newPassword, string? propertyName = null, ActorId? actorId = null)
   {
     if (_password?.IsMatch(currentPassword) != true)
     {
-      throw new NotImplementedException(); // TODO(fpion): implement
+      throw new IncorrectUserPasswordException(currentPassword, this, propertyName);
     }
 
-    ApplyChange(new UserPasswordChangedEvent(actorId, newPassword)); // TODO(fpion): how to distinguish from Update and Replace?
+    actorId ??= new(Id.Value);
+    ApplyChange(new UserPasswordChangedEvent(actorId.Value, newPassword));
   }
+  /// <summary>
+  /// Applies the specified event.
+  /// </summary>
+  /// <param name="event">The event to apply.</param>
+  protected virtual void Apply(UserPasswordChangedEvent @event) => _password = @event.Password;
 
   /// <summary>
   /// Deletes the user, if it is not already deleted.
@@ -463,6 +470,22 @@ public class UserAggregate : AggregateRoot
   /// <param name="event">The event to apply.</param>
   protected virtual void Apply(UserRoleRemovedEvent @event) => _roles.Remove(@event.RoleId);
 
+  /// <summary>
+  /// Resets the password of the user.
+  /// </summary>
+  /// <param name="password">The new password of the user.</param>
+  /// <param name="actorId">(Optional) The actor identifier. This parameter should be left null so that it defaults to the user's identifier.</param>
+  public void ResetPassword(Password password, ActorId? actorId = null)
+  {
+    actorId ??= new(Id.Value);
+    ApplyChange(new UserPasswordResetEvent(actorId.Value, password));
+  }
+  /// <summary>
+  /// Applies the specified event.
+  /// </summary>
+  /// <param name="event">The event to apply.</param>
+  protected virtual void Apply(UserPasswordResetEvent @event) => _password = @event.Password;
+
   private readonly CustomAttributeValidator _customAttributeValidator = new();
   /// <summary>
   /// Sets the specified custom attribute on the user.
@@ -489,13 +512,13 @@ public class UserAggregate : AggregateRoot
   /// <param name="actorId">The actor identifier.</param>
   public void SetPassword(Password password, ActorId actorId = default)
   {
-    ApplyChange(new UserPasswordChangedEvent(actorId, password));
+    ApplyChange(new UserPasswordUpdatedEvent(actorId, password));
   }
   /// <summary>
   /// Applies the specified event.
   /// </summary>
   /// <param name="event">The event to apply.</param>
-  protected virtual void Apply(UserPasswordChangedEvent @event) => _password = @event.Password;
+  protected virtual void Apply(UserPasswordUpdatedEvent @event) => _password = @event.Password;
 
   /// <summary>
   /// Sets the unique name of the user.
