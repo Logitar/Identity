@@ -5,7 +5,7 @@ using Logitar.Identity.Domain.Shared;
 namespace Logitar.Identity.Domain.Roles;
 
 /// <summary>
-/// Represents a role in the identifier system. A role is a group of permissions.
+/// Represents a role in the identity system. A role is a group of permissions.
 /// A role can be assigned to any actor or actor group, and an actor or actor group can have more than one role.
 /// </summary>
 public class RoleAggregate : AggregateRoot

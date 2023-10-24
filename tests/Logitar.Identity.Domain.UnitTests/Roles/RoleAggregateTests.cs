@@ -3,7 +3,6 @@ using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Roles.Events;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Shared;
-using System.Reflection;
 
 namespace Logitar.Identity.Domain.Roles;
 
@@ -59,7 +58,7 @@ public class RoleAggregateTests
 
     _role.ClearChanges();
     _role.Delete();
-    Assert.DoesNotContain(_role.Changes, change => change is RoleDeletedEvent);
+    Assert.False(_role.HasChanges);
   }
 
   [Fact(DisplayName = "Description: it should change the description when it is different.")]
@@ -72,7 +71,7 @@ public class RoleAggregateTests
     _role.Update();
 
     _role.Description = description;
-    AssertHasNoChange(_role);
+    AssertHasNoUpdate(_role);
   }
 
   [Fact(DisplayName = "DisplayName: it should change the display name when it is different.")]
@@ -85,7 +84,7 @@ public class RoleAggregateTests
     _role.Update();
 
     _role.DisplayName = displayName;
-    AssertHasNoChange(_role);
+    AssertHasNoUpdate(_role);
   }
 
   [Fact(DisplayName = "RemoveCustomAttribute: it should remove an existing custom attribute.")]
@@ -101,7 +100,7 @@ public class RoleAggregateTests
     Assert.False(_role.CustomAttributes.ContainsKey(key));
 
     _role.RemoveCustomAttribute(key);
-    AssertHasNoChange(_role);
+    AssertHasNoUpdate(_role);
   }
 
   [Fact(DisplayName = "SetCustomAttribute: it should set a custom attribute when it is different.")]
@@ -115,7 +114,7 @@ public class RoleAggregateTests
     _role.Update();
 
     _role.SetCustomAttribute(key, value);
-    AssertHasNoChange(_role);
+    AssertHasNoUpdate(_role);
   }
 
   [Fact(DisplayName = "SetCustomAttribute: it should throw ValidationException when the key or value is not valid.")]
@@ -145,7 +144,7 @@ public class RoleAggregateTests
 
     _role.ClearChanges();
     _role.SetUniqueName(uniqueName);
-    Assert.DoesNotContain(_role.Changes, change => change is RoleUniqueNameChangedEvent);
+    Assert.False(_role.HasChanges);
   }
 
   [Fact(DisplayName = "ToString: it should return the correct string representation.")]
@@ -179,7 +178,7 @@ public class RoleAggregateTests
     Assert.Equal(version, _role.Version);
   }
 
-  private static void AssertHasNoChange(RoleAggregate role)
+  private static void AssertHasNoUpdate(RoleAggregate role)
   {
     FieldInfo? field = role.GetType().GetField("_updated", BindingFlags.NonPublic | BindingFlags.Instance);
     Assert.NotNull(field);

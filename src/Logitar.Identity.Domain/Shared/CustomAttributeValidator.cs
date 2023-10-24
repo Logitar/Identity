@@ -19,8 +19,8 @@ public class CustomAttributeValidator : ICustomAttributeValidator
   /// <summary>
   /// Initializes a new instance of the <see cref="CustomAttributeValidator"/> class.
   /// </summary>
-  /// <param name="keyValidator"></param>
-  /// <param name="valueValidator"></param>
+  /// <param name="keyValidator">The custom attribute key validator.</param>
+  /// <param name="valueValidator">The custom attribute value validator.</param>
   public CustomAttributeValidator(IValidator<string>? keyValidator = null, IValidator<string>? valueValidator = null)
   {
     KeyValidator = keyValidator ?? new CustomAttributeKeyValidator("Key");

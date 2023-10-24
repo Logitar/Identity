@@ -26,7 +26,11 @@ public class UniqueNameUnitTests
     string propertyName = nameof(UniqueNameUnit);
 
     var exception = Assert.Throws<FluentValidation.ValidationException>(() => new UniqueNameUnit(_uniqueNameSettings, value, propertyName));
-    Assert.All(exception.Errors, e => Assert.Equal(propertyName, e.PropertyName));
+    Assert.All(exception.Errors, e =>
+    {
+      Assert.Equal(propertyName, e.PropertyName);
+      Assert.Equal("AllowedCharactersValidator", e.ErrorCode);
+    });
   }
 
   [Theory(DisplayName = "ctor: it should throw ValidationException when the value is empty.")]
@@ -37,7 +41,11 @@ public class UniqueNameUnitTests
     string propertyName = nameof(UniqueNameUnit);
 
     var exception = Assert.Throws<FluentValidation.ValidationException>(() => new UniqueNameUnit(_uniqueNameSettings, value, propertyName));
-    Assert.All(exception.Errors, e => Assert.Equal(propertyName, e.PropertyName));
+    Assert.All(exception.Errors, e =>
+    {
+      Assert.Equal(propertyName, e.PropertyName);
+      Assert.Equal("NotEmptyValidator", e.ErrorCode);
+    });
   }
 
   [Fact(DisplayName = "ctor: it should throw ValidationException when the value is too long.")]
@@ -47,7 +55,11 @@ public class UniqueNameUnitTests
     string propertyName = nameof(UniqueNameUnit);
 
     var exception = Assert.Throws<FluentValidation.ValidationException>(() => new UniqueNameUnit(_uniqueNameSettings, value, propertyName));
-    Assert.All(exception.Errors, e => Assert.Equal(propertyName, e.PropertyName));
+    Assert.All(exception.Errors, e =>
+    {
+      Assert.Equal("MaximumLengthValidator", e.ErrorCode);
+      Assert.Equal(propertyName, e.PropertyName);
+    });
   }
 
   [Theory(DisplayName = "TryCreate: it should return a unique name when the value is not empty.")]

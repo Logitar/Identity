@@ -24,6 +24,26 @@ public static class FluentValidationExtensions
   }
 
   /// <summary>
+  /// Defines a future validator on the current rule builder.
+  /// Validation will fail if the value is a date and time set in the past.
+  /// Validation will succeed if the value is a date and time set in the future.
+  /// </summary>
+  /// <typeparam name="T">The type of the validated object.</typeparam>
+  /// <param name="ruleBuilder">The rule builder.</param>
+  /// <param name="moment">The moment used to validate (defaults to now).</param>
+  /// <returns>The rule builder.</returns>
+  public static IRuleBuilderOptions<T, DateTime> Future<T>(this IRuleBuilderOptions<T, DateTime> ruleBuilder, DateTime? moment = null)
+  {
+    return ruleBuilder.Must(value => BeInTheFuture(value, moment))
+      .WithErrorCode("FutureValidator")
+      .WithMessage("'{PropertyName}' must be a date and time set in the future.");
+  }
+  internal static bool BeInTheFuture(DateTime value, DateTime? moment)
+  {
+    return value > (moment ?? DateTime.Now);
+  }
+
+  /// <summary>
   /// Defines an identifier validator on the current rule builder.
   /// Validation will fail if the value starts with a digit or contains characters that are not letters, digits or underscores (_).
   /// Validation will succeed if the value does not start with a digit and only contains letters, digits and underscores (_).
@@ -35,11 +55,31 @@ public static class FluentValidationExtensions
   {
     return ruleBuilder.Must(BeAValidIdentifier)
       .WithErrorCode("IdentifierValidator")
-      .WithMessage("{PropertyName} ");
+      .WithMessage("'{PropertyName}' may not start with a digit and may only contain letters, digits and underscores (_).");
   }
   internal static bool BeAValidIdentifier(string identifier)
   {
     return !char.IsDigit(identifier.FirstOrDefault()) && identifier.All(c => char.IsLetterOrDigit(c) || c == '_');
+  }
+
+  /// <summary>
+  /// Defines a past validator on the current rule builder.
+  /// Validation will fail if the value is a date and time set in the future.
+  /// Validation will succeed if the value is a date and time set in the past.
+  /// </summary>
+  /// <typeparam name="T">The type of the validated object.</typeparam>
+  /// <param name="ruleBuilder">The rule builder.</param>
+  /// <param name="moment">The moment used to validate (defaults to now).</param>
+  /// <returns>The rule builder.</returns>
+  public static IRuleBuilderOptions<T, DateTime> Past<T>(this IRuleBuilderOptions<T, DateTime> ruleBuilder, DateTime? moment = null)
+  {
+    return ruleBuilder.Must(value => BeInThePast(value, moment))
+      .WithErrorCode("PastValidator")
+      .WithMessage("'{PropertyName}' must be a date and time set in the past.");
+  }
+  internal static bool BeInThePast(DateTime value, DateTime? moment)
+  {
+    return value < (moment ?? DateTime.Now);
   }
 
   /// <summary>

@@ -5,7 +5,7 @@ namespace Logitar.Identity.Domain.Shared;
 
 /// <summary>
 /// The validator used to validate unique names.
-/// See <see cref="UniqueNameValidator"/> for more information.
+/// See <see cref="UniqueNameUnit"/> for more information.
 /// </summary>
 public class UniqueNameValidator : AbstractValidator<string>
 {
