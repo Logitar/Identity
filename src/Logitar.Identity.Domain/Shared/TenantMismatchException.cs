@@ -14,11 +14,7 @@ public class TenantMismatchException : Exception, IFailureException
   /// </summary>
   public TenantId? ExpectedTenantId
   {
-    get
-    {
-      string? value = Data[nameof(ExpectedTenantId)] as string;
-      return value == null ? null : new TenantId(value);
-    }
+    get => Data[nameof(ExpectedTenantId)] is not string value ? null : new TenantId(value);
     private set => Data[nameof(ExpectedTenantId)] = value?.Value;
   }
   /// <summary>
@@ -26,11 +22,7 @@ public class TenantMismatchException : Exception, IFailureException
   /// </summary>
   public TenantId? ActualTenantId
   {
-    get
-    {
-      string? value = Data[nameof(ActualTenantId)] as string;
-      return value == null ? null : new TenantId(value);
-    }
+    get => Data[nameof(ActualTenantId)] is not string value ? null : new TenantId(value);
     private set => Data[nameof(ActualTenantId)] = value?.Value;
   }
   /// <summary>
@@ -45,12 +37,12 @@ public class TenantMismatchException : Exception, IFailureException
   /// <summary>
   /// Gets the validation failure of the exception.
   /// </summary>
-  public ValidationFailure Failure => new(PropertyName, ErrorMessage, ActualTenantId)
+  public ValidationFailure Failure => new(PropertyName, ErrorMessage, ActualTenantId?.Value)
   {
     ErrorCode = this.GetErrorCode(),
     CustomState = new
     {
-      ExpectedValue = ExpectedTenantId
+      ExpectedValue = ExpectedTenantId?.Value
     }
   };
 

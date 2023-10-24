@@ -41,7 +41,10 @@ public class IncorrectUserPasswordException : InvalidCredentialsException, IFail
   public ValidationFailure Failure => new(PropertyName, ErrorMessage, AttemptedPassword)
   {
     ErrorMessage = this.GetErrorCode(),
-    CustomState = new { UserId }
+    CustomState = new
+    {
+      UserId = UserId.Value
+    }
   };
 
   /// <summary>
