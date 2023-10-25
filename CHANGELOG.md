@@ -12,3 +12,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implemented role domain layer.
 - Implemented user domain layer.
 - Implemented session domain layer.
+- Implemented API key domain layer.
