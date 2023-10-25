@@ -92,14 +92,14 @@ public class ApiKeyAggregateTests
     Assert.Equal(propertyName, exception.PropertyName);
   }
 
-  [Fact(DisplayName = "Authenticate: it should throw ApiKeyIsExpiredException when the API key is expired.")]
-  public void Authenticate_it_should_throw_ApiKeyIsExpiredException_when_the_Api_key_is_expired()
+  [Fact(DisplayName = "Authenticate: it should throw ApiKeyHasExpiredException when the API key is expired.")]
+  public void Authenticate_it_should_throw_ApiKeyHasExpiredException_when_the_Api_key_is_expired()
   {
     _apiKey.SetExpiration(DateTime.Now.AddMilliseconds(100));
 
     Thread.Sleep(TimeSpan.FromMilliseconds(100));
 
-    var exception = Assert.Throws<ApiKeyIsExpiredException>(() => _apiKey.Authenticate(SecretString));
+    var exception = Assert.Throws<ApiKeyHasExpiredException>(() => _apiKey.Authenticate(SecretString));
     Assert.Equal(_apiKey.Id, exception.ApiKeyId);
   }
 

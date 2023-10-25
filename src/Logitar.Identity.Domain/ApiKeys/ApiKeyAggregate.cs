@@ -143,13 +143,13 @@ public class ApiKeyAggregate : AggregateRoot
   /// <param name="secret">The current secret of the API key.</param>
   /// <param name="propertyName">The name of the property, used for validation.</param>
   /// <param name="actorId">(Optional) The actor identifier. This parameter should be left null so that it defaults to the API key's identifier.</param>
-  /// <exception cref="ApiKeyIsExpiredException">The API key is expired.</exception>
+  /// <exception cref="ApiKeyHasExpiredException">The API key is expired.</exception>
   /// <exception cref="IncorrectApiKeySecretException">The secret is incorrect.</exception>
   public void Authenticate(string secret, string? propertyName = null, ActorId? actorId = null)
   {
     if (IsExpired())
     {
-      throw new ApiKeyIsExpiredException(this);
+      throw new ApiKeyHasExpiredException(this);
     }
     else if (_secret?.IsMatch(secret) != true)
     {
