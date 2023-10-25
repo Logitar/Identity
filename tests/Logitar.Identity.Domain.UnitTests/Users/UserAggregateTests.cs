@@ -318,6 +318,19 @@ public class UserAggregateTests
     AssertHasNoUpdate(_user);
   }
 
+  [Fact(DisplayName = "HasRole: it should return false when the Api key does not have the specified role.")]
+  public void HasRole_it_should_return_false_when_the_Api_key_does_not_have_the_specified_role()
+  {
+    Assert.False(_user.HasRole(_role));
+  }
+
+  [Fact(DisplayName = "HasRole: it should return true when the Api key does have the specified role.")]
+  public void HasRole_it_should_return_true_when_the_Api_key_does_have_the_specified_role()
+  {
+    _user.AddRole(_role);
+    Assert.True(_user.HasRole(_role));
+  }
+
   [Fact(DisplayName = "IsConfirmed: it should be false when the user has no verified contact information.")]
   public void IsConfirmed_it_should_be_false_when_the_user_has_no_verified_contact_information()
   {
