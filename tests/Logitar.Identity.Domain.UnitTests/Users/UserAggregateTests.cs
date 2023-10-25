@@ -2,9 +2,11 @@
 using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Roles;
+using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Shared;
 using Logitar.Identity.Domain.Users.Events;
+using Logitar.Security.Cryptography;
 
 namespace Logitar.Identity.Domain.Users;
 
@@ -539,6 +541,77 @@ public class UserAggregateTests
     Assert.False(_user.HasChanges);
   }
 
+  [Fact(DisplayName = "SignIn: it should open a new session with a password check.")]
+  public void SignIn_it_should_open_a_new_session_with_a_password_check()
+  {
+    PasswordMock password = new(PasswordString);
+    _user.SetPassword(password);
+
+    string propertyName = "Password";
+    string secretString = RandomStringGenerator.GetString(32);
+    PasswordMock secret = new(secretString);
+    ActorId actorId = ActorId.NewId();
+    SessionId sessionId = new(Guid.NewGuid().ToString());
+    SessionAggregate session = _user.SignIn(PasswordString, propertyName, secret, actorId, sessionId);
+    Assert.Equal(_user.Id, session.UserId);
+    Assert.True(session.IsActive);
+    Assert.True(session.IsPersistent);
+
+    Assert.Equal(sessionId, session.Id);
+    Assert.Equal(actorId, session.CreatedBy);
+    AssertSecret(session, secretString);
+
+    Assert.Contains(_user.Changes, change => change is UserSignedInEvent @event
+      && @event.ActorId == actorId
+      && @event.OccurredOn == session.CreatedOn);
+  }
+
+  [Fact(DisplayName = "SignIn: it should open a new session without a password check.")]
+  public void SignIn_it_should_open_a_new_session_without_a_password_check()
+  {
+    SessionAggregate session = _user.SignIn();
+    Assert.Equal(_user.Id, session.UserId);
+    Assert.True(session.IsActive);
+    Assert.False(session.IsPersistent);
+
+    Assert.Equal(_user.Id.Value, session.CreatedBy.Value);
+    Assert.Contains(_user.Changes, change => change is UserSignedInEvent @event
+      && @event.ActorId.Value == _user.Id.Value
+      && @event.OccurredOn == session.CreatedOn);
+  }
+
+  [Fact(DisplayName = "SignIn: it should throw IncorrectUserPasswordException when the password is incorrect.")]
+  public void SignIn_it_should_throw_IncorrectUserPasswordException_when_the_password_is_incorrect()
+  {
+    PasswordMock password = new(PasswordString[1..]);
+    _user.SetPassword(password);
+
+    string propertyName = "Password";
+    var exception = Assert.Throws<IncorrectUserPasswordException>(() => _user.SignIn(PasswordString, propertyName));
+    Assert.Equal(PasswordString, exception.AttemptedPassword);
+    Assert.Equal(_user.Id, exception.UserId);
+    Assert.Equal(propertyName, exception.PropertyName);
+  }
+
+  [Fact(DisplayName = "SignIn: it should throw IncorrectUserPasswordException when the user has no password.")]
+  public void SignIn_it_should_throw_IncorrectUserPasswordException_when_the_user_has_no_password()
+  {
+    string propertyName = "Password";
+    var exception = Assert.Throws<IncorrectUserPasswordException>(() => _user.SignIn(PasswordString, propertyName));
+    Assert.Equal(PasswordString, exception.AttemptedPassword);
+    Assert.Equal(_user.Id, exception.UserId);
+    Assert.Equal(propertyName, exception.PropertyName);
+  }
+
+  [Fact(DisplayName = "SignIn: it should throw UserIsDisabledException when the user is disabled.")]
+  public void SignIn_it_should_throw_UserIsDisabledException_when_the_user_is_disabled()
+  {
+    _user.Disable();
+
+    var exception = Assert.Throws<UserIsDisabledException>(() => _user.SignIn());
+    Assert.Equal(_user.Id, exception.UserId);
+  }
+
   [Fact(DisplayName = "TimeZone: it should change the time zone when it is different.")]
   public void TimeZone_it_should_change_the_time_zone_when_it_is_different()
   {
@@ -621,6 +694,22 @@ public class UserAggregateTests
     {
       Assert.NotNull(instance);
       Assert.True(instance.IsMatch(password));
+    }
+  }
+  private static void AssertSecret(SessionAggregate session, string? secret)
+  {
+    FieldInfo? field = session.GetType().GetField("_secret", BindingFlags.NonPublic | BindingFlags.Instance);
+    Assert.NotNull(field);
+
+    Password? instance = field.GetValue(session) as Password;
+    if (secret == null)
+    {
+      Assert.Null(instance);
+    }
+    else
+    {
+      Assert.NotNull(instance);
+      Assert.True(instance.IsMatch(secret));
     }
   }
 }
