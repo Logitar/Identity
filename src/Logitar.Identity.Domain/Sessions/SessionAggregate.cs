@@ -120,7 +120,7 @@ public class SessionAggregate : AggregateRoot
   {
     if (!IsActive)
     {
-      throw new SessionIsNotActiveException(this, propertyName);
+      throw new SessionIsNotActiveException(this);
     }
     else if (_secret?.IsMatch(currentSecret) != true)
     {

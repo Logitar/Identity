@@ -376,7 +376,7 @@ public class UserAggregate : AggregateRoot
     }
     else if (IsDisabled)
     {
-      throw new UserIsDisabledException(this, propertyName);
+      throw new UserIsDisabledException(this);
     }
 
     actorId ??= new(Id.Value);

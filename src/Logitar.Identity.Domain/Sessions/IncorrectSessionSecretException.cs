@@ -6,7 +6,7 @@ namespace Logitar.Identity.Domain.Sessions;
 /// <summary>
 /// The exception raised when a session secret check fails.
 /// </summary>
-public class IncorrectSessionSecretException : InvalidCredentialsException, IFailureException
+public class IncorrectSessionSecretException : InvalidCredentialsException, IValidationException
 {
   private const string ErrorMessage = "The specified secret did not match the session.";
 

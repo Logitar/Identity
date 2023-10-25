@@ -150,15 +150,13 @@ public class SessionAggregateTests
   public void Renew_it_should_throw_SessionIsNotActiveException_when_the_session_is_not_active()
   {
     string currentSecret = RandomStringGenerator.GetString(32);
-    PasswordMock secret = new(currentSecret);
-    SessionAggregate session = new(_user, secret);
+    PasswordMock newSecret = new(currentSecret);
+    SessionAggregate session = new(_user, newSecret);
 
     session.SignOut();
 
-    string propertyName = "RefreshToken";
-    var exception = Assert.Throws<SessionIsNotActiveException>(() => session.Renew(currentSecret, newSecret: secret, propertyName));
+    var exception = Assert.Throws<SessionIsNotActiveException>(() => session.Renew(currentSecret, newSecret));
     Assert.Equal(session.Id, exception.SessionId);
-    Assert.Equal(propertyName, exception.PropertyName);
   }
 
   [Fact(DisplayName = "SetCustomAttribute: it should set a custom attribute when it is different.")]

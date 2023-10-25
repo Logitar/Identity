@@ -6,7 +6,7 @@ namespace Logitar.Identity.Domain.Shared;
 /// Describes exceptions that can be represented by a validation failure.
 /// See <see cref="Exception"/> and <see cref="ValidationFailure"/> for more information.
 /// </summary>
-public interface IFailureException
+public interface IValidationException
 {
   /// <summary>
   /// Gets the validation failure of the exception.

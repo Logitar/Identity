@@ -64,7 +64,6 @@ public class UserAggregateTests
     var exception = Assert.Throws<TenantMismatchException>(() => _user.AddRole(role));
     Assert.Equal(_user.TenantId, exception.ExpectedTenantId);
     Assert.Equal(role.TenantId, exception.ActualTenantId);
-    Assert.Null(exception.PropertyName);
   }
 
   [Fact(DisplayName = "Authenticate: it should authenticate the user.")]
@@ -118,10 +117,8 @@ public class UserAggregateTests
     _user.SetPassword(password);
     _user.Disable();
 
-    string propertyName = "Password";
-    var exception = Assert.Throws<UserIsDisabledException>(() => _user.Authenticate(PasswordString, propertyName));
+    var exception = Assert.Throws<UserIsDisabledException>(() => _user.Authenticate(PasswordString));
     Assert.Equal(_user.Id, exception.UserId);
-    Assert.Equal(propertyName, exception.PropertyName);
   }
 
   [Fact(DisplayName = "Birthdate: it should change the birthdate when it is different.")]

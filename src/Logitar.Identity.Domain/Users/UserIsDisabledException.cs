@@ -1,12 +1,11 @@
-﻿using FluentValidation.Results;
-using Logitar.Identity.Domain.Shared;
+﻿using Logitar.Identity.Domain.Shared;
 
 namespace Logitar.Identity.Domain.Users;
 
 /// <summary>
 /// The exception raised when a disabled user is authenticated or signs-in.
 /// </summary>
-public class UserIsDisabledException : Exception, IFailureException
+public class UserIsDisabledException : Exception
 {
   private const string ErrorMessage = "The specified user is disabled.";
 
@@ -18,37 +17,17 @@ public class UserIsDisabledException : Exception, IFailureException
     get => new((string)Data[nameof(UserId)]!);
     private set => Data[nameof(UserId)] = value.Value;
   }
-  /// <summary>
-  /// Gets or sets the name of the validated property.
-  /// </summary>
-  public string? PropertyName
-  {
-    get => (string?)Data[nameof(PropertyName)];
-    private set => Data[nameof(PropertyName)] = value;
-  }
-
-  /// <summary>
-  /// Gets the validation failure of the exception.
-  /// </summary>
-  public ValidationFailure Failure => new(PropertyName, ErrorMessage, UserId.Value)
-  {
-    ErrorCode = this.GetErrorCode()
-  };
 
   /// <summary>
   /// Initializes a new instance of the <see cref="UserIsDisabledException"/> class.
   /// </summary>
   /// <param name="user">The user that is disabled.</param>
-  /// <param name="propertyName">The name of the property, used for validation.</param>
-  public UserIsDisabledException(UserAggregate user, string? propertyName = null)
-    : base(BuildMessage(user, propertyName))
+  public UserIsDisabledException(UserAggregate user) : base(BuildMessage(user))
   {
     UserId = user.Id;
-    PropertyName = propertyName;
   }
 
-  private static string BuildMessage(UserAggregate user, string? propertyName) => new ErrorMessageBuilder(ErrorMessage)
+  private static string BuildMessage(UserAggregate user) => new ErrorMessageBuilder(ErrorMessage)
     .AddData(nameof(UserId), user.Id.Value)
-    .AddData(nameof(PropertyName), propertyName)
     .Build();
 }
