@@ -6,7 +6,7 @@ namespace Logitar.Identity.Domain.Users;
 /// <summary>
 /// The exception raised when an user password check fails.
 /// </summary>
-public class IncorrectUserPasswordException : InvalidCredentialsException, IFailureException
+public class IncorrectUserPasswordException : InvalidCredentialsException, IValidationException
 {
   private const string ErrorMessage = "The specified password did not match the user.";
 
@@ -41,7 +41,10 @@ public class IncorrectUserPasswordException : InvalidCredentialsException, IFail
   public ValidationFailure Failure => new(PropertyName, ErrorMessage, AttemptedPassword)
   {
     ErrorMessage = this.GetErrorCode(),
-    CustomState = new { UserId }
+    CustomState = new
+    {
+      UserId = UserId.Value
+    }
   };
 
   /// <summary>

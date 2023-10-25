@@ -5,7 +5,7 @@ namespace Logitar.Identity.Domain.Shared;
 /// <summary>
 /// The exception raised when a time zone is not valid.
 /// </summary>
-public class InvalidTimeZoneEntryException : Exception, IFailureException
+public class InvalidTimeZoneEntryException : Exception, IValidationException
 {
   private const string ErrorMessage = "The specified time zone identifier did not resolve to a tz entry.";
 

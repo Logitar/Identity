@@ -197,6 +197,18 @@ public class RoleAggregate : AggregateRoot
     {
       _description = @event.Description.Value;
     }
+
+    foreach (KeyValuePair<string, string?> customAttribute in @event.CustomAttributes)
+    {
+      if (customAttribute.Value == null)
+      {
+        _customAttributes.Remove(customAttribute.Key);
+      }
+      else
+      {
+        _customAttributes[customAttribute.Key] = customAttribute.Value;
+      }
+    }
   }
 
   /// <summary>

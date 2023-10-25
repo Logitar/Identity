@@ -2,6 +2,7 @@
 using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Roles;
+using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Shared;
 using Logitar.Identity.Domain.Users.Events;
 
@@ -361,6 +362,29 @@ public class UserAggregate : AggregateRoot
   protected virtual void Apply(UserRoleAddedEvent @event) => _roles.Add(@event.RoleId);
 
   /// <summary>
+  /// Authenticates the user.
+  /// </summary>
+  /// <param name="password">The current password of the user.</param>
+  /// <param name="propertyName">The name of the property, used for validation.</param>
+  /// <param name="actorId">(Optional) The actor identifier. This parameter should be left null so that it defaults to the user's identifier.</param>
+  /// <exception cref="IncorrectUserPasswordException">The password is incorrect.</exception>
+  /// <exception cref="UserIsDisabledException">The user is disabled.</exception>
+  public void Authenticate(string password, string? propertyName = null, ActorId? actorId = null)
+  {
+    if (_password?.IsMatch(password) != true)
+    {
+      throw new IncorrectUserPasswordException(password, this, propertyName);
+    }
+    else if (IsDisabled)
+    {
+      throw new UserIsDisabledException(this);
+    }
+
+    actorId ??= new(Id.Value);
+    ApplyChange(new UserAuthenticatedEvent(actorId.Value));
+  }
+
+  /// <summary>
   /// Changes the password of the user, validating its current password.
   /// </summary>
   /// <param name="currentPassword">The current password of the user.</param>
@@ -539,6 +563,48 @@ public class UserAggregate : AggregateRoot
   protected virtual void Apply(UserUniqueNameChangedEvent @event) => _uniqueName = @event.UniqueName;
 
   /// <summary>
+  /// Signs-in the user, opening a new session.
+  /// </summary>
+  /// <param name="secret">The secret of the session.</param>
+  /// <param name="actorId">(Optional) The actor identifier. This parameter should be left null so that it defaults to the user's identifier.</param>
+  /// <param name="sessionId">The identifier of the session.</param>
+  /// <returns>The newly opened session.</returns>
+  /// <exception cref="IncorrectUserPasswordException">The password is incorrect.</exception>
+  /// <exception cref="UserIsDisabledException">The user is disabled.</exception>
+  public SessionAggregate SignIn(Password? secret = null, ActorId? actorId = null, SessionId? sessionId = null)
+  {
+    return SignIn(password: null, propertyName: null, secret, actorId, sessionId);
+  }
+  /// <summary>
+  /// Signs-in the user, opening a new session.
+  /// </summary>
+  /// <param name="password">The password to check.</param>
+  /// <param name="propertyName">The name of the property, used for validation.</param>
+  /// <param name="secret">The secret of the session.</param>
+  /// <param name="actorId">(Optional) The actor identifier. This parameter should be left null so that it defaults to the user's identifier.</param>
+  /// <param name="sessionId">The identifier of the session.</param>
+  /// <returns>The newly opened session.</returns>
+  /// <exception cref="IncorrectUserPasswordException">The password is incorrect.</exception>
+  /// <exception cref="UserIsDisabledException">The user is disabled.</exception>
+  public SessionAggregate SignIn(string? password, string? propertyName = null, Password? secret = null, ActorId? actorId = null, SessionId? sessionId = null)
+  {
+    if (password != null && _password?.IsMatch(password) != true)
+    {
+      throw new IncorrectUserPasswordException(password, this, propertyName);
+    }
+    else if (IsDisabled)
+    {
+      throw new UserIsDisabledException(this);
+    }
+
+    actorId ??= new(Id.Value);
+    SessionAggregate session = new(this, secret, actorId, sessionId);
+    ApplyChange(new UserSignedInEvent(actorId.Value, session.CreatedOn));
+
+    return session;
+  }
+
+  /// <summary>
   /// Applies updates on the user.
   /// </summary>
   /// <param name="actorId">The actor identifier.</param>
@@ -621,6 +687,18 @@ public class UserAggregate : AggregateRoot
     if (@event.Website != null)
     {
       _website = @event.Website.Value;
+    }
+
+    foreach (KeyValuePair<string, string?> customAttribute in @event.CustomAttributes)
+    {
+      if (customAttribute.Value == null)
+      {
+        _customAttributes.Remove(customAttribute.Key);
+      }
+      else
+      {
+        _customAttributes[customAttribute.Key] = customAttribute.Value;
+      }
     }
   }
 
