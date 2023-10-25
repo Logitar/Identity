@@ -361,6 +361,29 @@ public class UserAggregate : AggregateRoot
   protected virtual void Apply(UserRoleAddedEvent @event) => _roles.Add(@event.RoleId);
 
   /// <summary>
+  /// Authenticates the user.
+  /// </summary>
+  /// <param name="password">The current password of the user.</param>
+  /// <param name="propertyName">The name of the property, used for validation.</param>
+  /// <param name="actorId">(Optional) The actor identifier. This parameter should be left null so that it defaults to the user's identifier.</param>
+  /// <exception cref="IncorrectUserPasswordException">The password is incorrect.</exception>
+  /// <exception cref="UserIsDisabledException">The user is disabled.</exception>
+  public void Authenticate(string password, string? propertyName = null, ActorId? actorId = null)
+  {
+    if (_password?.IsMatch(password) != true)
+    {
+      throw new IncorrectUserPasswordException(password, this, propertyName);
+    }
+    else if (IsDisabled)
+    {
+      throw new UserIsDisabledException(this, propertyName);
+    }
+
+    actorId ??= new(Id.Value);
+    ApplyChange(new UserAuthenticatedEvent(actorId.Value));
+  }
+
+  /// <summary>
   /// Changes the password of the user, validating its current password.
   /// </summary>
   /// <param name="currentPassword">The current password of the user.</param>
