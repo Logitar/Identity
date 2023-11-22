@@ -1,6 +1,4 @@
-﻿using Logitar.Identity.Domain.Shared;
-
-namespace Logitar.Identity.Domain.Users;
+﻿namespace Logitar.Identity.Domain.Users;
 
 /// <summary>
 /// The exception raised when a disabled user is authenticated or signs-in.

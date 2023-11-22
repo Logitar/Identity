@@ -1,6 +1,4 @@
-﻿using Logitar.Identity.Domain.Shared;
-
-namespace Logitar.Identity.Domain.Sessions;
+﻿namespace Logitar.Identity.Domain.Sessions;
 
 /// <summary>
 /// The exception raised when an inactive session is signed-out.
