@@ -365,15 +365,14 @@ public class UserAggregate : AggregateRoot
   /// Authenticates the user.
   /// </summary>
   /// <param name="password">The current password of the user.</param>
-  /// <param name="propertyName">The name of the property, used for validation.</param>
   /// <param name="actorId">(Optional) The actor identifier. This parameter should be left null so that it defaults to the user's identifier.</param>
   /// <exception cref="IncorrectUserPasswordException">The password is incorrect.</exception>
   /// <exception cref="UserIsDisabledException">The user is disabled.</exception>
-  public void Authenticate(string password, string? propertyName = null, ActorId? actorId = null)
+  public void Authenticate(string password, ActorId? actorId = null)
   {
     if (_password?.IsMatch(password) != true)
     {
-      throw new IncorrectUserPasswordException(password, this, propertyName);
+      throw new IncorrectUserPasswordException(this, password);
     }
     else if (IsDisabled)
     {
@@ -389,14 +388,13 @@ public class UserAggregate : AggregateRoot
   /// </summary>
   /// <param name="currentPassword">The current password of the user.</param>
   /// <param name="newPassword">The new password of the user.</param>
-  /// <param name="propertyName">The name of the property, used for validation.</param>
   /// <param name="actorId">(Optional) The actor identifier. This parameter should be left null so that it defaults to the user's identifier.</param>
   /// <exception cref="IncorrectUserPasswordException">The current password is incorrect.</exception>
-  public void ChangePassword(string currentPassword, Password newPassword, string? propertyName = null, ActorId? actorId = null)
+  public void ChangePassword(string currentPassword, Password newPassword, ActorId? actorId = null)
   {
     if (_password?.IsMatch(currentPassword) != true)
     {
-      throw new IncorrectUserPasswordException(currentPassword, this, propertyName);
+      throw new IncorrectUserPasswordException(this, currentPassword);
     }
 
     actorId ??= new(Id.Value);
@@ -565,32 +563,18 @@ public class UserAggregate : AggregateRoot
   /// <summary>
   /// Signs-in the user, opening a new session.
   /// </summary>
-  /// <param name="secret">The secret of the session.</param>
-  /// <param name="actorId">(Optional) The actor identifier. This parameter should be left null so that it defaults to the user's identifier.</param>
-  /// <param name="sessionId">The identifier of the session.</param>
-  /// <returns>The newly opened session.</returns>
-  /// <exception cref="IncorrectUserPasswordException">The password is incorrect.</exception>
-  /// <exception cref="UserIsDisabledException">The user is disabled.</exception>
-  public SessionAggregate SignIn(Password? secret = null, ActorId? actorId = null, SessionId? sessionId = null)
-  {
-    return SignIn(password: null, propertyName: null, secret, actorId, sessionId);
-  }
-  /// <summary>
-  /// Signs-in the user, opening a new session.
-  /// </summary>
   /// <param name="password">The password to check.</param>
-  /// <param name="propertyName">The name of the property, used for validation.</param>
   /// <param name="secret">The secret of the session.</param>
   /// <param name="actorId">(Optional) The actor identifier. This parameter should be left null so that it defaults to the user's identifier.</param>
   /// <param name="sessionId">The identifier of the session.</param>
   /// <returns>The newly opened session.</returns>
   /// <exception cref="IncorrectUserPasswordException">The password is incorrect.</exception>
   /// <exception cref="UserIsDisabledException">The user is disabled.</exception>
-  public SessionAggregate SignIn(string? password, string? propertyName = null, Password? secret = null, ActorId? actorId = null, SessionId? sessionId = null)
+  public SessionAggregate SignIn(string? password = null, Password? secret = null, ActorId? actorId = null, SessionId? sessionId = null)
   {
     if (password != null && _password?.IsMatch(password) != true)
     {
-      throw new IncorrectUserPasswordException(password, this, propertyName);
+      throw new IncorrectUserPasswordException(this, password);
     }
     else if (IsDisabled)
     {
