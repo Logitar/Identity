@@ -1,4 +1,4 @@
-﻿namespace Logitar.Identity.Domain;
+﻿namespace Logitar.Identity.Domain.Shared;
 
 /// <summary>
 /// The exception raised when credential validation failed.
