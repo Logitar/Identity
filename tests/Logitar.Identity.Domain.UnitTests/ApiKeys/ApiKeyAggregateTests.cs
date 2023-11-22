@@ -64,7 +64,7 @@ public class ApiKeyAggregateTests
   public void Authenticate_it_should_authenticate_the_Api_key_using_the_specified_actor_identifier()
   {
     ActorId actorId = ActorId.NewId();
-    _apiKey.Authenticate(SecretString, propertyName: null, actorId);
+    _apiKey.Authenticate(SecretString, actorId);
     Assert.Contains(_apiKey.Changes, change => change is ApiKeyAuthenticatedEvent @event && @event.ActorId == actorId);
   }
 
@@ -73,11 +73,9 @@ public class ApiKeyAggregateTests
   {
     string secret = SecretString[1..];
 
-    string propertyName = "Secret";
-    var exception = Assert.Throws<IncorrectApiKeySecretException>(() => _apiKey.Authenticate(secret, propertyName));
+    var exception = Assert.Throws<IncorrectApiKeySecretException>(() => _apiKey.Authenticate(secret));
     Assert.Equal(secret, exception.AttemptedSecret);
     Assert.Equal(_apiKey.Id, exception.ApiKeyId);
-    Assert.Equal(propertyName, exception.PropertyName);
   }
 
   [Fact(DisplayName = "Authenticate: it should throw IncorrectApiKeySecretException when the API key has no secret.")]
@@ -85,11 +83,9 @@ public class ApiKeyAggregateTests
   {
     ApiKeyAggregate apiKey = new(AggregateId.NewId());
 
-    string propertyName = "Secret";
-    var exception = Assert.Throws<IncorrectApiKeySecretException>(() => apiKey.Authenticate(SecretString, propertyName));
+    var exception = Assert.Throws<IncorrectApiKeySecretException>(() => apiKey.Authenticate(SecretString));
     Assert.Equal(SecretString, exception.AttemptedSecret);
     Assert.Equal(apiKey.Id, exception.ApiKeyId);
-    Assert.Equal(propertyName, exception.PropertyName);
   }
 
   [Fact(DisplayName = "Authenticate: it should throw ApiKeyHasExpiredException when the API key is expired.")]

@@ -126,11 +126,9 @@ public class SessionAggregateTests
     SessionAggregate session = new(_user, secret);
 
     string attemptedSecret = secretString[1..];
-    string propertyName = "RefreshToken";
-    var exception = Assert.Throws<IncorrectSessionSecretException>(() => session.Renew(attemptedSecret, secret, propertyName));
+    var exception = Assert.Throws<IncorrectSessionSecretException>(() => session.Renew(attemptedSecret, secret));
     Assert.Equal(attemptedSecret, exception.AttemptedSecret);
     Assert.Equal(session.Id, exception.SessionId);
-    Assert.Equal(propertyName, exception.PropertyName);
   }
 
   [Fact(DisplayName = "Renew: it should throw IncorrectSessionSecretException when the session has no secret.")]
@@ -138,12 +136,10 @@ public class SessionAggregateTests
   {
     string secretString = RandomStringGenerator.GetString(32);
     PasswordMock newSecret = new(secretString);
-    string propertyName = "RefreshToken";
 
-    var exception = Assert.Throws<IncorrectSessionSecretException>(() => _session.Renew(secretString, newSecret, propertyName));
+    var exception = Assert.Throws<IncorrectSessionSecretException>(() => _session.Renew(secretString, newSecret));
     Assert.Equal(secretString, exception.AttemptedSecret);
     Assert.Equal(_session.Id, exception.SessionId);
-    Assert.Equal(propertyName, exception.PropertyName);
   }
 
   [Fact(DisplayName = "Renew: it should throw SessionIsNotActiveException when the session is not active.")]

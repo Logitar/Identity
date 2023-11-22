@@ -85,7 +85,7 @@ public class UserAggregateTests
     _user.SetPassword(password);
 
     ActorId actorId = ActorId.NewId();
-    _user.Authenticate(PasswordString, propertyName: null, actorId);
+    _user.Authenticate(PasswordString, actorId);
     Assert.Contains(_user.Changes, change => change is UserAuthenticatedEvent @event && @event.ActorId == actorId);
   }
 
@@ -95,21 +95,17 @@ public class UserAggregateTests
     PasswordMock password = new(PasswordString[1..]);
     _user.SetPassword(password);
 
-    string propertyName = "Password";
-    var exception = Assert.Throws<IncorrectUserPasswordException>(() => _user.Authenticate(PasswordString, propertyName));
+    var exception = Assert.Throws<IncorrectUserPasswordException>(() => _user.Authenticate(PasswordString));
     Assert.Equal(PasswordString, exception.AttemptedPassword);
     Assert.Equal(_user.Id, exception.UserId);
-    Assert.Equal(propertyName, exception.PropertyName);
   }
 
   [Fact(DisplayName = "Authenticate: it should throw IncorrectUserPasswordException when the user has no password.")]
   public void Authenticate_it_should_throw_IncorrectUserPasswordException_when_the_user_has_no_password()
   {
-    string propertyName = "Password";
-    var exception = Assert.Throws<IncorrectUserPasswordException>(() => _user.Authenticate(PasswordString, propertyName));
+    var exception = Assert.Throws<IncorrectUserPasswordException>(() => _user.Authenticate(PasswordString));
     Assert.Equal(PasswordString, exception.AttemptedPassword);
     Assert.Equal(_user.Id, exception.UserId);
-    Assert.Equal(propertyName, exception.PropertyName);
   }
 
   [Fact(DisplayName = "Authenticate: it should throw UserIsDisabledException when the user is disabled.")]
@@ -175,7 +171,7 @@ public class UserAggregateTests
 
     PasswordMock newPassword = new(PasswordString);
     ActorId actorId = ActorId.NewId();
-    _user.ChangePassword(oldPassword, newPassword, propertyName: null, actorId);
+    _user.ChangePassword(oldPassword, newPassword, actorId);
     AssertPassword(_user, PasswordString);
     Assert.Contains(_user.Changes, change => change is UserPasswordChangedEvent @event && @event.ActorId == actorId);
   }
@@ -188,11 +184,9 @@ public class UserAggregateTests
 
     PasswordMock password = new(PasswordString);
     string attemptedPassword = PasswordString[1..];
-    string propertyName = "Password";
-    var exception = Assert.Throws<IncorrectUserPasswordException>(() => _user.ChangePassword(attemptedPassword, password, propertyName));
+    var exception = Assert.Throws<IncorrectUserPasswordException>(() => _user.ChangePassword(attemptedPassword, password));
     Assert.Equal(attemptedPassword, exception.AttemptedPassword);
     Assert.Equal(_user.Id, exception.UserId);
-    Assert.Equal(propertyName, exception.PropertyName);
   }
 
   [Fact(DisplayName = "ChangePassword: it should throw IncorrectUserPasswordException when the user has no password.")]
@@ -560,12 +554,11 @@ public class UserAggregateTests
     PasswordMock password = new(PasswordString);
     _user.SetPassword(password);
 
-    string propertyName = "Password";
     string secretString = RandomStringGenerator.GetString(32);
     PasswordMock secret = new(secretString);
     ActorId actorId = ActorId.NewId();
     SessionId sessionId = new(Guid.NewGuid().ToString());
-    SessionAggregate session = _user.SignIn(PasswordString, propertyName, secret, actorId, sessionId);
+    SessionAggregate session = _user.SignIn(PasswordString, secret, actorId, sessionId);
     Assert.Equal(_user.Id, session.UserId);
     Assert.True(session.IsActive);
     Assert.True(session.IsPersistent);
@@ -599,21 +592,17 @@ public class UserAggregateTests
     PasswordMock password = new(PasswordString[1..]);
     _user.SetPassword(password);
 
-    string propertyName = "Password";
-    var exception = Assert.Throws<IncorrectUserPasswordException>(() => _user.SignIn(PasswordString, propertyName));
+    var exception = Assert.Throws<IncorrectUserPasswordException>(() => _user.SignIn(PasswordString));
     Assert.Equal(PasswordString, exception.AttemptedPassword);
     Assert.Equal(_user.Id, exception.UserId);
-    Assert.Equal(propertyName, exception.PropertyName);
   }
 
   [Fact(DisplayName = "SignIn: it should throw IncorrectUserPasswordException when the user has no password.")]
   public void SignIn_it_should_throw_IncorrectUserPasswordException_when_the_user_has_no_password()
   {
-    string propertyName = "Password";
-    var exception = Assert.Throws<IncorrectUserPasswordException>(() => _user.SignIn(PasswordString, propertyName));
+    var exception = Assert.Throws<IncorrectUserPasswordException>(() => _user.SignIn(PasswordString));
     Assert.Equal(PasswordString, exception.AttemptedPassword);
     Assert.Equal(_user.Id, exception.UserId);
-    Assert.Equal(propertyName, exception.PropertyName);
   }
 
   [Fact(DisplayName = "SignIn: it should throw UserIsDisabledException when the user is disabled.")]

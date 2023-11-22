@@ -112,11 +112,10 @@ public class SessionAggregate : AggregateRoot
   /// </summary>
   /// <param name="currentSecret">The current secret of the session.</param>
   /// <param name="newSecret">The new secret of the session.</param>
-  /// <param name="propertyName">The name of the property, used for validation.</param>
   /// <param name="actorId">(Optional) The actor identifier. This parameter should be left null so that it defaults to the user's identifier.</param>
   /// <exception cref="SessionIsNotActiveException">The session is not active.</exception>
   /// <exception cref="IncorrectSessionSecretException">The current secret is incorrect.</exception>
-  public void Renew(string currentSecret, Password newSecret, string? propertyName = null, ActorId? actorId = default)
+  public void Renew(string currentSecret, Password newSecret, ActorId? actorId = default)
   {
     if (!IsActive)
     {
@@ -124,7 +123,7 @@ public class SessionAggregate : AggregateRoot
     }
     else if (_secret?.IsMatch(currentSecret) != true)
     {
-      throw new IncorrectSessionSecretException(currentSecret, this, propertyName);
+      throw new IncorrectSessionSecretException(this, currentSecret);
     }
 
     actorId ??= new(UserId.Value);

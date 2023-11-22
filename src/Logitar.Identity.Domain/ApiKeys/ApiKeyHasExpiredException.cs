@@ -1,6 +1,4 @@
-﻿using Logitar.Identity.Domain.Shared;
-
-namespace Logitar.Identity.Domain.ApiKeys;
+﻿namespace Logitar.Identity.Domain.ApiKeys;
 
 /// <summary>
 /// The exception raised when an expired API key is authenticated.
