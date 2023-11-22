@@ -14,8 +14,8 @@ namespace Logitar.Identity.Domain.Users;
 /// </summary>
 public class UserAggregate : AggregateRoot
 {
-  private readonly Dictionary<string, string> _customAttributes = new();
-  private readonly HashSet<RoleId> _roles = new();
+  private readonly Dictionary<string, string> _customAttributes = [];
+  private readonly HashSet<RoleId> _roles = [];
   private Password? _password = null;
   private UserUpdatedEvent _updated = new();
 
@@ -324,7 +324,7 @@ public class UserAggregate : AggregateRoot
   public UserAggregate(UniqueNameUnit uniqueName, TenantId? tenantId = null, ActorId actorId = default, UserId? id = null)
     : base(id?.AggregateId)
   {
-    ApplyChange(new UserCreatedEvent(actorId, uniqueName, tenantId));
+    Raise(new UserCreatedEvent(actorId, uniqueName, tenantId));
   }
   /// <summary>
   /// Applies the specified event.
@@ -352,7 +352,7 @@ public class UserAggregate : AggregateRoot
 
     if (!HasRole(role))
     {
-      ApplyChange(new UserRoleAddedEvent(actorId, role.Id));
+      Raise(new UserRoleAddedEvent(actorId, role.Id));
     }
   }
   /// <summary>
@@ -381,7 +381,7 @@ public class UserAggregate : AggregateRoot
     }
 
     actorId ??= new(Id.Value);
-    ApplyChange(new UserAuthenticatedEvent(actorId.Value));
+    Raise(new UserAuthenticatedEvent(actorId.Value));
   }
 
   /// <summary>
@@ -400,7 +400,7 @@ public class UserAggregate : AggregateRoot
     }
 
     actorId ??= new(Id.Value);
-    ApplyChange(new UserPasswordChangedEvent(actorId.Value, newPassword));
+    Raise(new UserPasswordChangedEvent(actorId.Value, newPassword));
   }
   /// <summary>
   /// Applies the specified event.
@@ -416,7 +416,7 @@ public class UserAggregate : AggregateRoot
   {
     if (!IsDeleted)
     {
-      ApplyChange(new UserDeletedEvent(actorId));
+      Raise(new UserDeletedEvent(actorId));
     }
   }
 
@@ -428,7 +428,7 @@ public class UserAggregate : AggregateRoot
   {
     if (!IsDisabled)
     {
-      ApplyChange(new UserDisabledEvent(actorId));
+      Raise(new UserDisabledEvent(actorId));
     }
   }
   /// <summary>
@@ -445,7 +445,7 @@ public class UserAggregate : AggregateRoot
   {
     if (IsDisabled)
     {
-      ApplyChange(new UserEnabledEvent(actorId));
+      Raise(new UserEnabledEvent(actorId));
     }
   }
   /// <summary>
@@ -485,7 +485,7 @@ public class UserAggregate : AggregateRoot
   {
     if (HasRole(role))
     {
-      ApplyChange(new UserRoleRemovedEvent(actorId, role.Id));
+      Raise(new UserRoleRemovedEvent(actorId, role.Id));
     }
   }
   /// <summary>
@@ -502,7 +502,7 @@ public class UserAggregate : AggregateRoot
   public void ResetPassword(Password password, ActorId? actorId = null)
   {
     actorId ??= new(Id.Value);
-    ApplyChange(new UserPasswordResetEvent(actorId.Value, password));
+    Raise(new UserPasswordResetEvent(actorId.Value, password));
   }
   /// <summary>
   /// Applies the specified event.
@@ -536,7 +536,7 @@ public class UserAggregate : AggregateRoot
   /// <param name="actorId">The actor identifier.</param>
   public void SetPassword(Password password, ActorId actorId = default)
   {
-    ApplyChange(new UserPasswordSetEvent(actorId, password));
+    Raise(new UserPasswordSetEvent(actorId, password));
   }
   /// <summary>
   /// Applies the specified event.
@@ -553,7 +553,7 @@ public class UserAggregate : AggregateRoot
   {
     if (uniqueName != _uniqueName)
     {
-      ApplyChange(new UserUniqueNameChangedEvent(actorId, uniqueName));
+      Raise(new UserUniqueNameChangedEvent(actorId, uniqueName));
     }
   }
   /// <summary>
@@ -599,7 +599,7 @@ public class UserAggregate : AggregateRoot
 
     actorId ??= new(Id.Value);
     SessionAggregate session = new(this, secret, actorId, sessionId);
-    ApplyChange(new UserSignedInEvent(actorId.Value, session.CreatedOn));
+    Raise(new UserSignedInEvent(actorId.Value, session.CreatedOn));
 
     return session;
   }
@@ -614,7 +614,7 @@ public class UserAggregate : AggregateRoot
     {
       _updated.ActorId = actorId;
 
-      ApplyChange(_updated);
+      Raise(_updated);
 
       _updated = new();
     }
@@ -709,6 +709,6 @@ public class UserAggregate : AggregateRoot
   public override string ToString() => $"{FullName ?? UniqueName.Value} | {base.ToString()}";
 
   private static string? BuildFullName(params PersonNameUnit?[] names) => string.Join(' ', names
-    .SelectMany(name => name?.Value.Split() ?? Array.Empty<string>())
+    .SelectMany(name => name?.Value.Split() ?? [])
     .Where(name => !string.IsNullOrEmpty(name))).CleanTrim();
 }

@@ -10,7 +10,7 @@ namespace Logitar.Identity.Domain.Roles;
 /// </summary>
 public class RoleAggregate : AggregateRoot
 {
-  private readonly Dictionary<string, string> _customAttributes = new();
+  private readonly Dictionary<string, string> _customAttributes = [];
   private RoleUpdatedEvent _updated = new();
 
   /// <summary>
@@ -91,7 +91,7 @@ public class RoleAggregate : AggregateRoot
   public RoleAggregate(UniqueNameUnit uniqueName, TenantId? tenantId = null, ActorId actorId = default, RoleId? id = null)
     : base(id?.AggregateId)
   {
-    ApplyChange(new RoleCreatedEvent(actorId, uniqueName, tenantId));
+    Raise(new RoleCreatedEvent(actorId, uniqueName, tenantId));
   }
   /// <summary>
   /// Applies the specified event.
@@ -112,7 +112,7 @@ public class RoleAggregate : AggregateRoot
   {
     if (!IsDeleted)
     {
-      ApplyChange(new RoleDeletedEvent(actorId));
+      Raise(new RoleDeletedEvent(actorId));
     }
   }
 
@@ -159,7 +159,7 @@ public class RoleAggregate : AggregateRoot
   {
     if (uniqueName != _uniqueName)
     {
-      ApplyChange(new RoleUniqueNameChangedEvent(actorId, uniqueName));
+      Raise(new RoleUniqueNameChangedEvent(actorId, uniqueName));
     }
   }
   /// <summary>
@@ -178,7 +178,7 @@ public class RoleAggregate : AggregateRoot
     {
       _updated.ActorId = actorId;
 
-      ApplyChange(_updated);
+      Raise(_updated);
 
       _updated = new();
     }
