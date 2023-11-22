@@ -12,7 +12,7 @@ namespace Logitar.Identity.Domain.Sessions;
 /// </summary>
 public class SessionAggregate : AggregateRoot
 {
-  private readonly Dictionary<string, string> _customAttributes = new();
+  private readonly Dictionary<string, string> _customAttributes = [];
   private SessionUpdatedEvent _updated = new();
 
   private Password? _secret = null;
@@ -65,7 +65,7 @@ public class SessionAggregate : AggregateRoot
     : base(id?.AggregateId)
   {
     actorId ??= new(user.Id.Value);
-    ApplyChange(new SessionCreatedEvent(actorId.Value, user.Id, secret));
+    Raise(new SessionCreatedEvent(actorId.Value, user.Id, secret));
   }
   /// <summary>
   /// Applies the specified event.
@@ -88,7 +88,7 @@ public class SessionAggregate : AggregateRoot
   {
     if (!IsDeleted)
     {
-      ApplyChange(new SessionDeletedEvent(actorId));
+      Raise(new SessionDeletedEvent(actorId));
     }
   }
 
@@ -128,7 +128,7 @@ public class SessionAggregate : AggregateRoot
     }
 
     actorId ??= new(UserId.Value);
-    ApplyChange(new SessionRenewedEvent(actorId.Value, newSecret));
+    Raise(new SessionRenewedEvent(actorId.Value, newSecret));
   }
   /// <summary>
   /// Applies the specified event.
@@ -164,7 +164,7 @@ public class SessionAggregate : AggregateRoot
     if (IsActive)
     {
       actorId ??= new(UserId.Value);
-      ApplyChange(new SessionSignedOutEvent(actorId.Value));
+      Raise(new SessionSignedOutEvent(actorId.Value));
     }
   }
   /// <summary>
@@ -183,7 +183,7 @@ public class SessionAggregate : AggregateRoot
     {
       _updated.ActorId = actorId;
 
-      ApplyChange(_updated);
+      Raise(_updated);
 
       _updated = new();
     }

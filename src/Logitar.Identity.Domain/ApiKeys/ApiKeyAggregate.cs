@@ -13,8 +13,8 @@ namespace Logitar.Identity.Domain.ApiKeys;
 /// </summary>
 public class ApiKeyAggregate : AggregateRoot
 {
-  private readonly Dictionary<string, string> _customAttributes = new();
-  private readonly HashSet<RoleId> _roles = new();
+  private readonly Dictionary<string, string> _customAttributes = [];
+  private readonly HashSet<RoleId> _roles = [];
   private Password? _secret = null;
   private ApiKeyUpdatedEvent _updated = new();
 
@@ -98,7 +98,7 @@ public class ApiKeyAggregate : AggregateRoot
   public ApiKeyAggregate(DisplayNameUnit displayName, Password secret, TenantId? tenantId = null, ActorId actorId = default, ApiKeyId? id = null)
     : base(id?.AggregateId)
   {
-    ApplyChange(new ApiKeyCreatedEvent(actorId, displayName, secret, tenantId));
+    Raise(new ApiKeyCreatedEvent(actorId, displayName, secret, tenantId));
   }
   /// <summary>
   /// Applies the specified event.
@@ -128,7 +128,7 @@ public class ApiKeyAggregate : AggregateRoot
 
     if (!HasRole(role))
     {
-      ApplyChange(new ApiKeyRoleAddedEvent(actorId, role.Id));
+      Raise(new ApiKeyRoleAddedEvent(actorId, role.Id));
     }
   }
   /// <summary>
@@ -157,7 +157,7 @@ public class ApiKeyAggregate : AggregateRoot
     }
 
     actorId ??= new(Id.Value);
-    ApplyChange(new ApiKeyAuthenticatedEvent(actorId.Value));
+    Raise(new ApiKeyAuthenticatedEvent(actorId.Value));
   }
 
   /// <summary>
@@ -168,7 +168,7 @@ public class ApiKeyAggregate : AggregateRoot
   {
     if (!IsDeleted)
     {
-      ApplyChange(new ApiKeyDeletedEvent(actorId));
+      Raise(new ApiKeyDeletedEvent(actorId));
     }
   }
 
@@ -210,7 +210,7 @@ public class ApiKeyAggregate : AggregateRoot
   {
     if (HasRole(role))
     {
-      ApplyChange(new ApiKeyRoleRemovedEvent(actorId, role.Id));
+      Raise(new ApiKeyRoleRemovedEvent(actorId, role.Id));
     }
   }
   /// <summary>
@@ -264,7 +264,7 @@ public class ApiKeyAggregate : AggregateRoot
     {
       _updated.ActorId = actorId;
 
-      ApplyChange(_updated);
+      Raise(_updated);
 
       _updated = new();
     }
