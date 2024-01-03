@@ -45,6 +45,10 @@ internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, Unit>
       user.SetEmail(new EmailUnit(payload.EmailAddress), actorId);
     }
 
+    user.FirstName = PersonNameUnit.TryCreate(payload.FirstName);
+    user.LastName = PersonNameUnit.TryCreate(payload.LastName);
+    user.Update(actorId);
+
     await _userManager.SaveAsync(user, cancellationToken);
 
     // TODO(fpion): send 2FA link/OTP-code?

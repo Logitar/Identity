@@ -3,10 +3,10 @@
 public record RegisterPayload
 {
   public string UniqueName { get; set; } = string.Empty;
-  // TODO(fpion): Password
+  public string? Password { get; set; }
 
   public string? EmailAddress { get; set; }
 
-  // TODO(fpion): FirstName
-  // TODO(fpion): LastName
+  public string? FirstName { get; set; }
+  public string? LastName { get; set; }
 }

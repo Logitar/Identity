@@ -36,6 +36,9 @@ internal class EventBus : IEventBus
       case UserUniqueNameChangedEvent userUniqueNameChanged:
         await _userEventHandler.HandleAsync(userUniqueNameChanged, cancellationToken);
         break;
+      case UserUpdatedEvent userUpdated:
+        await _userEventHandler.HandleAsync(userUpdated, cancellationToken);
+        break;
       default:
         throw new NotSupportedException($"The event type '{@event.GetType().GetNamespaceQualifiedName()}' is not supported.");
     }

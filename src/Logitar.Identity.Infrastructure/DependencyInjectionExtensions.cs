@@ -12,6 +12,7 @@ public static class DependencyInjectionExtensions
     services.AddLogitarEventSourcingInfrastructure();
 
     EventSerializer eventSerializer = new();
+    eventSerializer.RegisterConverter(new PersonNameConverter());
     eventSerializer.RegisterConverter(new TenantIdConverter());
     eventSerializer.RegisterConverter(new UniqueNameConverter());
 

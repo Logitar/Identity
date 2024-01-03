@@ -80,4 +80,15 @@ public class UserEventHandler : IUserEventHandler
 
     await _context.SaveChangesAsync(cancellationToken);
   }
+
+  public async Task HandleAsync(UserUpdatedEvent @event, CancellationToken cancellationToken)
+  {
+    UserEntity user = await _context.Users
+     .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
+     ?? throw new InvalidOperationException($"The user 'AggregateId={@event.AggregateId}' could not be found.");
+
+    user.Update(@event);
+
+    await _context.SaveChangesAsync(cancellationToken);
+  }
 }
