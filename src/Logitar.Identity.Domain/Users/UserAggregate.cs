@@ -13,6 +13,8 @@ public class UserAggregate : AggregateRoot
   private UniqueNameUnit? _uniqueName = null;
   public UniqueNameUnit UniqueName => _uniqueName ?? throw new InvalidOperationException("The unique name has not been initialized yet.");
 
+  public bool IsDisabled { get; private set; }
+
   public string? FullName { get; private set; }
 
   public UserAggregate(AggregateId id) : base(id)
@@ -37,6 +39,30 @@ public class UserAggregate : AggregateRoot
     {
       Raise(new UserDeletedEvent(actorId));
     }
+  }
+
+  public void Disable(ActorId actorId = default)
+  {
+    if (!IsDisabled)
+    {
+      Raise(new UserDisabledEvent(actorId));
+    }
+  }
+  protected virtual void Apply(UserDisabledEvent _)
+  {
+    IsDisabled = true;
+  }
+
+  public void Enable(ActorId actorId = default)
+  {
+    if (IsDisabled)
+    {
+      Raise(new UserEnabledEvent(actorId));
+    }
+  }
+  protected virtual void Apply(UserEnabledEvent _)
+  {
+    IsDisabled = false;
   }
 
   public void SetUniqueName(UniqueNameUnit uniqueName, ActorId actorId = default)

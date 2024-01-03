@@ -5,17 +5,20 @@ using Logitar.Identity.Contracts.Account;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Shared;
 using Logitar.Identity.Domain.Users;
+using Logitar.Identity.Settings;
 using MediatR;
 
 namespace Logitar.Identity.Application.Account.Commands;
 
 internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, Unit>
 {
+  private readonly RegisterSettings _registerSettings;
   private readonly IUserManager _userManager;
   private readonly IUserSettings _userSettings;
 
-  public RegisterCommandHandler(IUserManager userManager, IUserSettings userSettings)
+  public RegisterCommandHandler(IConfiguration configuration, IUserManager userManager, IUserSettings userSettings)
   {
+    _registerSettings = configuration.GetSection("Register").Get<RegisterSettings>() ?? new();
     _userManager = userManager;
     _userSettings = userSettings;
   }
@@ -31,8 +34,16 @@ internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, Unit>
     UserId id = UserId.NewId();
     ActorId actorId = new(id.Value);
     UserAggregate user = new(uniqueName, tenantId: null, actorId, id);
+    if (_registerSettings.DisableUserOnRegistration)
+    {
+      user.Disable(actorId);
+    }
 
     await _userManager.SaveAsync(user, cancellationToken);
+
+    // TODO(fpion): send 2FA link/OTP-code?
+
+    // TODO(fpion): issue session?
 
     return Unit.Value;
   }

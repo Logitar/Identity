@@ -15,6 +15,14 @@ public class UserEntity : AggregateEntity
     private set { }
   }
 
+  public string? DisabledBy { get; private set; }
+  public DateTime? DisabledOn { get; private set; }
+  public bool IsDisabled
+  {
+    get => DisabledBy != null && DisabledOn != null;
+    private set { }
+  }
+
   public string? FullName { get; private set; }
 
   public UserEntity(UserCreatedEvent @event) : base(@event)
@@ -26,6 +34,22 @@ public class UserEntity : AggregateEntity
 
   private UserEntity() : base()
   {
+  }
+
+  public void Disable(UserDisabledEvent @event)
+  {
+    Update(@event);
+
+    DisabledBy = @event.ActorId.Value;
+    DisabledOn = @event.OccurredOn.ToUniversalTime();
+  }
+
+  public void Enable(UserEnabledEvent @event)
+  {
+    Update(@event);
+
+    DisabledBy = null;
+    DisabledOn = null;
   }
 
   public void SetUniqueName(UserUniqueNameChangedEvent @event)

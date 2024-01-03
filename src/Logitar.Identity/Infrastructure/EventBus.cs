@@ -24,6 +24,12 @@ internal class EventBus : IEventBus
       case UserDeletedEvent userDeleted:
         await _userEventHandler.HandleAsync(userDeleted, cancellationToken);
         break;
+      case UserDisabledEvent userDisabled:
+        await _userEventHandler.HandleAsync(userDisabled, cancellationToken);
+        break;
+      case UserEnabledEvent userEnabled:
+        await _userEventHandler.HandleAsync(userEnabled, cancellationToken);
+        break;
       case UserUniqueNameChangedEvent userUniqueNameChanged:
         await _userEventHandler.HandleAsync(userUniqueNameChanged, cancellationToken);
         break;

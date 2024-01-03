@@ -1,4 +1,5 @@
-﻿using Logitar.Identity.Domain.Shared;
+﻿using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Shared;
 using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -22,6 +23,7 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
     builder.Property(x => x.TenantId).HasMaxLength(TenantId.MaximumLength);
     builder.Property(x => x.UniqueName).HasMaxLength(UniqueNameUnit.MaximumLength);
     builder.Property(x => x.UniqueNameNormalized).HasMaxLength(UniqueNameUnit.MaximumLength);
+    builder.Property(x => x.DisabledBy).HasMaxLength(ActorId.MaximumLength);
     builder.Property(x => x.FullName).HasMaxLength(byte.MaxValue * 3 + 2); // TODO(fpion): PersonNameUnit + Documentation
   }
 }
