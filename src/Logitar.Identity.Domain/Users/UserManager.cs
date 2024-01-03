@@ -7,14 +7,14 @@ namespace Logitar.Identity.Domain.Users;
 
 public class UserManager : IUserManager
 {
-  private readonly IUserRepository _userRepository;
-  private readonly IUserSettings _userSettings;
-
   public UserManager(IUserRepository userRepository, IUserSettings userSettings) // TODO(fpion): not multitenant-compatible
   {
-    _userRepository = userRepository;
-    _userSettings = userSettings;
+    UserRepository = userRepository;
+    UserSettings = userSettings;
   }
+
+  protected IUserRepository UserRepository { get; }
+  protected IUserSettings UserSettings { get; }
 
   public virtual async Task SaveAsync(UserAggregate user, CancellationToken cancellationToken)
   {
@@ -39,16 +39,16 @@ public class UserManager : IUserManager
 
     if (uniqueNameHasChanged)
     {
-      UserAggregate? other = await _userRepository.LoadAsync(user.TenantId, user.UniqueName, cancellationToken);
+      UserAggregate? other = await UserRepository.LoadAsync(user.TenantId, user.UniqueName, cancellationToken);
       if (other?.Equals(user) == false)
       {
         throw new UniqueNameAlreadyUsedException<UserAggregate>(user.TenantId, user.UniqueName);
       }
     }
 
-    if (emailHasChanged && user.Email != null && _userSettings.RequireUniqueEmail)
+    if (emailHasChanged && user.Email != null && UserSettings.RequireUniqueEmail)
     {
-      IEnumerable<UserAggregate> others = await _userRepository.LoadAsync(user.TenantId, user.Email, cancellationToken);
+      IEnumerable<UserAggregate> others = await UserRepository.LoadAsync(user.TenantId, user.Email, cancellationToken);
       if (others.Any(other => !other.Equals(user)))
       {
         throw new EmailAddressAlreadyUsedException(user.TenantId, user.Email);
@@ -60,6 +60,6 @@ public class UserManager : IUserManager
       // TODO(fpion): delete sessions
     }
 
-    await _userRepository.SaveAsync(user, cancellationToken);
+    await UserRepository.SaveAsync(user, cancellationToken);
   }
 }

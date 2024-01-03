@@ -6,22 +6,23 @@ namespace Logitar.Identity.Infrastructure.Passwords;
 
 public class PasswordManager : IPasswordManager
 {
-  private readonly Dictionary<string, IPasswordStrategy> _strategies = [];
-  private readonly IUserSettings _userSettings;
-
   public PasswordManager(IEnumerable<IPasswordStrategy> strategies, IUserSettings userSettings) // TODO(fpion): not multitenant-compatible
   {
+    Strategies = [];
+    UserSettings = userSettings;
+
     foreach (IPasswordStrategy strategy in strategies)
     {
-      _strategies[strategy.Key] = strategy;
+      Strategies[strategy.Key] = strategy;
     }
-
-    _userSettings = userSettings;
   }
+
+  protected Dictionary<string, IPasswordStrategy> Strategies { get; }
+  protected IUserSettings UserSettings { get; }
 
   public virtual Password Create(string password)
   {
-    IPasswordSettings passwordSettings = _userSettings.PasswordSettings;
+    IPasswordSettings passwordSettings = UserSettings.PasswordSettings;
     new PasswordValidator(passwordSettings).ValidateAndThrow(password);
     return FindStrategy(passwordSettings.HashingStrategy).Create(password);
   }
@@ -34,7 +35,7 @@ public class PasswordManager : IPasswordManager
 
   protected virtual IPasswordStrategy FindStrategy(string key)
   {
-    if (!_strategies.TryGetValue(key, out IPasswordStrategy? strategy))
+    if (!Strategies.TryGetValue(key, out IPasswordStrategy? strategy))
     {
       throw new PasswordStrategyNotSupportedException(key);
     }
