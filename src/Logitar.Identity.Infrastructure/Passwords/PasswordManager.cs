@@ -1,4 +1,5 @@
-﻿using Logitar.Identity.Domain.Passwords;
+﻿using FluentValidation;
+using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Settings;
 
 namespace Logitar.Identity.Infrastructure.Passwords;
@@ -18,7 +19,12 @@ public class PasswordManager : IPasswordManager
     _userSettings = userSettings;
   }
 
-  public virtual Password Create(string password) => FindStrategy(_userSettings.PasswordSettings.HashingStrategy).Create(password);
+  public virtual Password Create(string password)
+  {
+    IPasswordSettings passwordSettings = _userSettings.PasswordSettings;
+    new PasswordValidator(passwordSettings).ValidateAndThrow(password);
+    return FindStrategy(passwordSettings.HashingStrategy).Create(password);
+  }
 
   public virtual Password Decode(string password)
   {
