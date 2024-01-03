@@ -8,3 +8,17 @@ services:
     environment:
       ACCEPT_EULA: 'Y'
       SA_PASSWORD: Ks875v3qctRxE6Z4
+
+  identity_api:
+    build:
+      context: .
+      dockerfile: /src/Logitar.Identity/Dockerfile
+    image: identity_api
+    container_name: Logitar.Identity_api
+    depends_on:
+      - identity_mssql
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_Environment: Development
+    ports:
+      - 36190:8080

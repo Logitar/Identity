@@ -1,0 +1,6 @@
+@Logitar.Identity_HostAddress = http://localhost:5075
+
+GET {{Logitar.Identity_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
