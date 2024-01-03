@@ -15,6 +15,10 @@ public class UserAggregate : AggregateRoot
 
   public bool IsDisabled { get; private set; }
 
+  public EmailUnit? Email { get; private set; }
+
+  public bool IsConfirmed => Email?.IsVerified == true;
+
   public string? FullName { get; private set; }
 
   public UserAggregate(AggregateId id) : base(id)
@@ -63,6 +67,18 @@ public class UserAggregate : AggregateRoot
   protected virtual void Apply(UserEnabledEvent _)
   {
     IsDisabled = false;
+  }
+
+  public void SetEmail(EmailUnit? email, ActorId actorId = default)
+  {
+    if (email != Email)
+    {
+      Raise(new UserEmailChangedEvent(actorId, email));
+    }
+  }
+  protected virtual void Apply(UserEmailChangedEvent @event)
+  {
+    Email = @event.Email;
   }
 
   public void SetUniqueName(UniqueNameUnit uniqueName, ActorId actorId = default)

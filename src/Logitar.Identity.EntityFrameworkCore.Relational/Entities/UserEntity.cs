@@ -23,6 +23,26 @@ public class UserEntity : AggregateEntity
     private set { }
   }
 
+  public string? EmailAddress { get; private set; }
+  public string? EmailAddressNormalized
+  {
+    get => EmailAddress?.ToUpper();
+    private set { }
+  }
+  public string? EmailVerifiedBy { get; private set; }
+  public DateTime? EmailVerifiedOn { get; private set; }
+  public bool IsEmailVerified
+  {
+    get => EmailVerifiedBy != null && EmailVerifiedOn != null;
+    private set { }
+  }
+
+  public bool IsConfirmed
+  {
+    get => IsEmailVerified;
+    private set { }
+  }
+
   public string? FullName { get; private set; }
 
   public UserEntity(UserCreatedEvent @event) : base(@event)
@@ -50,6 +70,24 @@ public class UserEntity : AggregateEntity
 
     DisabledBy = null;
     DisabledOn = null;
+  }
+
+  public void SetEmail(UserEmailChangedEvent @event)
+  {
+    Update(@event);
+
+    EmailAddress = @event.Email?.Address;
+
+    if (!IsEmailVerified && @event.Email?.IsVerified == true)
+    {
+      EmailVerifiedBy = @event.ActorId.Value;
+      EmailVerifiedOn = @event.OccurredOn.ToUniversalTime();
+    }
+    else if (IsEmailVerified && @event.Email?.IsVerified != true)
+    {
+      EmailVerifiedBy = null;
+      EmailVerifiedOn = null;
+    }
   }
 
   public void SetUniqueName(UserUniqueNameChangedEvent @event)

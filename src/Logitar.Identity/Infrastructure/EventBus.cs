@@ -27,6 +27,9 @@ internal class EventBus : IEventBus
       case UserDisabledEvent userDisabled:
         await _userEventHandler.HandleAsync(userDisabled, cancellationToken);
         break;
+      case UserEmailChangedEvent userEmailChanged:
+        await _userEventHandler.HandleAsync(userEmailChanged, cancellationToken);
+        break;
       case UserEnabledEvent userEnabled:
         await _userEventHandler.HandleAsync(userEnabled, cancellationToken);
         break;

@@ -5,7 +5,7 @@ public record RegisterPayload
   public string UniqueName { get; set; } = string.Empty;
   // TODO(fpion): Password
 
-  // TODO(fpion): EmailAddress
+  public string? EmailAddress { get; set; }
 
   // TODO(fpion): FirstName
   // TODO(fpion): LastName

@@ -34,9 +34,15 @@ internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, Unit>
     UserId id = UserId.NewId();
     ActorId actorId = new(id.Value);
     UserAggregate user = new(uniqueName, tenantId: null, actorId, id);
+
     if (_registerSettings.DisableUserOnRegistration)
     {
       user.Disable(actorId);
+    }
+
+    if (!string.IsNullOrWhiteSpace(payload.EmailAddress))
+    {
+      user.SetEmail(new EmailUnit(payload.EmailAddress), actorId);
     }
 
     await _userManager.SaveAsync(user, cancellationToken);

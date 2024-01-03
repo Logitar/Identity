@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Logitar.Identity.Contracts;
 using Logitar.Identity.Domain.Shared;
+using Logitar.Identity.Domain.Users;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -10,6 +11,7 @@ public class IdentityExceptionFilter : ExceptionFilterAttribute
 {
   private static readonly Dictionary<Type, Func<ExceptionContext, IActionResult>> _handlers = new()
   {
+    [typeof(EmailAddressAlreadyUsedException)] = HandleEmailAddressAlreadyUsedException,
     [typeof(ValidationException)] = HandleValidationException
   };
 
@@ -34,6 +36,18 @@ public class IdentityExceptionFilter : ExceptionFilterAttribute
     {
       base.OnException(context);
     }
+  }
+
+
+  private static ConflictObjectResult HandleEmailAddressAlreadyUsedException(ExceptionContext context)
+  {
+    EmailAddressAlreadyUsedException exception = (EmailAddressAlreadyUsedException)context.Exception;
+    Error error = new(GetErrorCode(exception), EmailAddressAlreadyUsedException.BaseMessage, new ErrorData[]
+    {
+      new(nameof(EmailAddressAlreadyUsedException.TenantId), exception.TenantId),
+      new(nameof(EmailAddressAlreadyUsedException.EmailAddress), exception.EmailAddress)
+    });
+    return new ConflictObjectResult(error);
   }
 
   private static BadRequestObjectResult HandleValidationException(ExceptionContext context)
