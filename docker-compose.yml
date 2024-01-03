@@ -20,5 +20,6 @@ services:
     restart: unless-stopped
     environment:
       ASPNETCORE_Environment: Development
+      SQLCONNSTR_Identity: "Server=identity_mssql,36191;Database=Identity;User Id=SA;Password=Ks875v3qctRxE6Z4;Persist Security Info=False;Encrypt=False;"
     ports:
       - 36190:8080

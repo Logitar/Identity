@@ -1,4 +1,14 @@
-﻿namespace Logitar.Identity;
+﻿using Logitar.EventSourcing.EntityFrameworkCore.Relational;
+using Logitar.EventSourcing.Infrastructure;
+using Logitar.Identity.Application.Account;
+using Logitar.Identity.Domain;
+using Logitar.Identity.Domain.Settings;
+using Logitar.Identity.EntityFrameworkCore.Relational;
+using Logitar.Identity.EntityFrameworkCore.SqlServer;
+using Logitar.Identity.Filters;
+using Logitar.Identity.Infrastructure;
+
+namespace Logitar.Identity;
 
 internal class Startup : StartupBase
 {
@@ -15,12 +25,15 @@ internal class Startup : StartupBase
   {
     base.ConfigureServices(services);
 
-    services.AddControllers()
+    services.AddControllers(options => options.Filters.Add<IdentityExceptionFilter>())
       .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
     CorsSettings corsSettings = _configuration.GetSection("Cors").Get<CorsSettings>() ?? new();
     services.AddSingleton(corsSettings);
     services.AddCors(corsSettings);
+
+    UserSettings userSettings = _configuration.GetSection("User").Get<UserSettings>() ?? new();
+    services.AddSingleton<IUserSettings>(userSettings);
 
     // TODO(fpion): Authentication
     // TODO(fpion): Authorization
@@ -34,7 +47,10 @@ internal class Startup : StartupBase
       services.AddOpenApi();
     }
 
+    services.AddLogitarIdentityDomain();
     services.AddMediatR(config => config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+    services.AddTransient<IAccountService, AccountService>();
+    services.AddTransient<IEventBus, EventBus>();
 
     string connectionString;
     DatabaseProvider databaseProvider = _configuration.GetValue<DatabaseProvider?>("DatabaseProvider")
@@ -42,10 +58,10 @@ internal class Startup : StartupBase
     switch (databaseProvider)
     {
       case DatabaseProvider.EntityFrameworkCoreSqlServer:
-        //connectionString = _configuration.GetValue<string>("POSTGRESQLCONNSTR_Portal") ?? string.Empty;
-        //services.AddLogitarPortalWithEntityFrameworkCorePostgreSQL(connectionString);
-        //healthChecks.AddDbContextCheck<EventContext>();
-        //healthChecks.AddDbContextCheck<PortalContext>(); // TODO(fpion): Persistence
+        connectionString = _configuration.GetValue<string>("SQLCONNSTR_Identity") ?? string.Empty;
+        services.AddLogitarIdentityWithEntityFrameworkCoreSqlServer(connectionString);
+        healthChecks.AddDbContextCheck<EventContext>();
+        healthChecks.AddDbContextCheck<IdentityContext>();
         break;
       default:
         throw new DatabaseProviderNotSupportedException(databaseProvider);
