@@ -70,6 +70,17 @@ public class UserEventHandler : IUserEventHandler
     await _context.SaveChangesAsync(cancellationToken);
   }
 
+  public async Task HandleAsync(UserPasswordChangedEvent @event, CancellationToken cancellationToken)
+  {
+    UserEntity user = await _context.Users
+     .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
+     ?? throw new InvalidOperationException($"The user 'AggregateId={@event.AggregateId}' could not be found.");
+
+    user.SetPassword(@event);
+
+    await _context.SaveChangesAsync(cancellationToken);
+  }
+
   public async Task HandleAsync(UserUniqueNameChangedEvent @event, CancellationToken cancellationToken)
   {
     UserEntity user = await _context.Users

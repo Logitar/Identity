@@ -10,8 +10,8 @@ public class PersonNameConverter : JsonConverter<PersonNameUnit>
     return value == null ? null : new PersonNameUnit(value);
   }
 
-  public override void Write(Utf8JsonWriter writer, PersonNameUnit value, JsonSerializerOptions options)
+  public override void Write(Utf8JsonWriter writer, PersonNameUnit personName, JsonSerializerOptions options)
   {
-    writer.WriteStringValue(value.Value);
+    writer.WriteStringValue(personName.Value);
   }
 }

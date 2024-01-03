@@ -1,4 +1,5 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Shared;
 using Logitar.Identity.Domain.Users.Events;
 
@@ -14,6 +15,9 @@ public class UserAggregate : AggregateRoot
 
   private UniqueNameUnit? _uniqueName = null;
   public UniqueNameUnit UniqueName => _uniqueName ?? throw new InvalidOperationException("The unique name has not been initialized yet.");
+
+  private Password? _password = null;
+  public bool HasPassword => _password != null;
 
   public bool IsDisabled { get; private set; }
 
@@ -136,6 +140,15 @@ public class UserAggregate : AggregateRoot
   protected virtual void Apply(UserEmailChangedEvent @event)
   {
     Email = @event.Email;
+  }
+
+  public void SetPassword(Password password, ActorId actorId = default)
+  {
+    Raise(new UserPasswordChangedEvent(actorId, password));
+  }
+  protected virtual void Apply(UserPasswordChangedEvent @event)
+  {
+    _password = @event.Password;
   }
 
   public void SetUniqueName(UniqueNameUnit uniqueName, ActorId actorId = default)

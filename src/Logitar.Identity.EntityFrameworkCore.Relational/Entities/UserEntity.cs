@@ -15,6 +15,15 @@ public class UserEntity : AggregateEntity
     private set { }
   }
 
+  public string? PasswordHash { get; private set; }
+  public string? PasswordChangedBy { get; private set; }
+  public DateTime? PasswordChangedOn { get; private set; }
+  public bool HasPassword
+  {
+    get => PasswordHash != null;
+    private set { }
+  }
+
   public string? DisabledBy { get; private set; }
   public DateTime? DisabledOn { get; private set; }
   public bool IsDisabled
@@ -92,6 +101,15 @@ public class UserEntity : AggregateEntity
       EmailVerifiedBy = null;
       EmailVerifiedOn = null;
     }
+  }
+
+  public void SetPassword(UserPasswordChangedEvent @event)
+  {
+    Update(@event);
+
+    PasswordHash = @event.Password.Encode();
+    PasswordChangedBy = @event.ActorId.Value;
+    PasswordChangedOn = @event.OccurredOn.ToUniversalTime();
   }
 
   public void SetUniqueName(UserUniqueNameChangedEvent @event)

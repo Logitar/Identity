@@ -1,5 +1,4 @@
 ﻿using Logitar.Identity.Domain.Shared;
-using System.Text.Json;
 
 namespace Logitar.Identity.Infrastructure.Converters;
 
@@ -11,8 +10,8 @@ public class TenantIdConverter : JsonConverter<TenantId>
     return value == null ? null : new TenantId(value);
   }
 
-  public override void Write(Utf8JsonWriter writer, TenantId value, JsonSerializerOptions options)
+  public override void Write(Utf8JsonWriter writer, TenantId tenantId, JsonSerializerOptions options)
   {
-    writer.WriteStringValue(value.Value);
+    writer.WriteStringValue(tenantId.Value);
   }
 }

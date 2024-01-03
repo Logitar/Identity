@@ -2,6 +2,7 @@
 using Logitar.EventSourcing;
 using Logitar.Identity.Application.Account.Validators;
 using Logitar.Identity.Contracts.Account;
+using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Shared;
 using Logitar.Identity.Domain.Users;
@@ -12,13 +13,15 @@ namespace Logitar.Identity.Application.Account.Commands;
 
 internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, Unit>
 {
+  private readonly IPasswordManager _passwordManager;
   private readonly RegisterSettings _registerSettings;
   private readonly IUserManager _userManager;
   private readonly IUserSettings _userSettings;
 
-  public RegisterCommandHandler(IConfiguration configuration, IUserManager userManager, IUserSettings userSettings)
+  public RegisterCommandHandler(IConfiguration configuration, IPasswordManager passwordManager, IUserManager userManager, IUserSettings userSettings)
   {
     _registerSettings = configuration.GetSection("Register").Get<RegisterSettings>() ?? new();
+    _passwordManager = passwordManager;
     _userManager = userManager;
     _userSettings = userSettings;
   }
@@ -38,6 +41,12 @@ internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, Unit>
     if (_registerSettings.DisableUserOnRegistration)
     {
       user.Disable(actorId);
+    }
+
+    if (payload.Password != null)
+    {
+      Password password = _passwordManager.Create(payload.Password);
+      user.SetPassword(password, actorId);
     }
 
     if (!string.IsNullOrWhiteSpace(payload.EmailAddress))

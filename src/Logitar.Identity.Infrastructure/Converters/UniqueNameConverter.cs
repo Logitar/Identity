@@ -16,8 +16,8 @@ public class UniqueNameConverter : JsonConverter<UniqueNameUnit>
     return value == null ? null : new UniqueNameUnit(uniqueNameSettings, value);
   }
 
-  public override void Write(Utf8JsonWriter writer, UniqueNameUnit value, JsonSerializerOptions options)
+  public override void Write(Utf8JsonWriter writer, UniqueNameUnit uniqueName, JsonSerializerOptions options)
   {
-    writer.WriteStringValue(value.Value);
+    writer.WriteStringValue(uniqueName.Value);
   }
 }

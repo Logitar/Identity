@@ -2,4 +2,5 @@
 
 public interface IPasswordSettings
 {
+  string HashingStrategy { get; }
 }
