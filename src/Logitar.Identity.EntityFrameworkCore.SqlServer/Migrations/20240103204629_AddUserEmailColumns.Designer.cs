@@ -4,6 +4,7 @@ using Logitar.Identity.EntityFrameworkCore.Relational;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Migrations
 {
     [DbContext(typeof(IdentityContext))]
-    partial class IdentityContextModelSnapshot : ModelSnapshot
+    [Migration("20240103204629_AddUserEmailColumns")]
+    partial class AddUserEmailColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,16 +68,9 @@ namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Migrations
                     b.Property<DateTime?>("EmailVerifiedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("FirstName")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
                     b.Property<string>("FullName")
                         .HasMaxLength(767)
                         .HasColumnType("nvarchar(767)");
-
-                    b.Property<bool>("HasPassword")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("IsConfirmed")
                         .HasColumnType("bit");
@@ -84,29 +80,6 @@ namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Migrations
 
                     b.Property<bool>("IsEmailVerified")
                         .HasColumnType("bit");
-
-                    b.Property<string>("LastName")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("MiddleName")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("Nickname")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("PasswordChangedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<DateTime?>("PasswordChangedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PasswordHash")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("TenantId")
                         .HasMaxLength(255)
@@ -148,25 +121,11 @@ namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Migrations
 
                     b.HasIndex("EmailVerifiedOn");
 
-                    b.HasIndex("FirstName");
-
                     b.HasIndex("FullName");
-
-                    b.HasIndex("HasPassword");
 
                     b.HasIndex("IsConfirmed");
 
                     b.HasIndex("IsEmailVerified");
-
-                    b.HasIndex("LastName");
-
-                    b.HasIndex("MiddleName");
-
-                    b.HasIndex("Nickname");
-
-                    b.HasIndex("PasswordChangedBy");
-
-                    b.HasIndex("PasswordChangedOn");
 
                     b.HasIndex("TenantId");
 

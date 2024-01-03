@@ -4,6 +4,7 @@ using Logitar.Identity.EntityFrameworkCore.Relational;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Migrations
 {
     [DbContext(typeof(IdentityContext))]
-    partial class IdentityContextModelSnapshot : ModelSnapshot
+    [Migration("20240103201448_AddUserDisabledColumns")]
+    partial class AddUserDisabledColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,63 +53,12 @@ namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Migrations
                     b.Property<DateTime?>("DisabledOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("EmailAddress")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("EmailAddressNormalized")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("EmailVerifiedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<DateTime?>("EmailVerifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("FirstName")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
                     b.Property<string>("FullName")
                         .HasMaxLength(767)
                         .HasColumnType("nvarchar(767)");
 
-                    b.Property<bool>("HasPassword")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsConfirmed")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("bit");
-
-                    b.Property<bool>("IsEmailVerified")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastName")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("MiddleName")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("Nickname")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("PasswordChangedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<DateTime?>("PasswordChangedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PasswordHash")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("TenantId")
                         .HasMaxLength(255)
@@ -142,31 +94,7 @@ namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Migrations
 
                     b.HasIndex("CreatedOn");
 
-                    b.HasIndex("EmailAddress");
-
-                    b.HasIndex("EmailVerifiedBy");
-
-                    b.HasIndex("EmailVerifiedOn");
-
-                    b.HasIndex("FirstName");
-
                     b.HasIndex("FullName");
-
-                    b.HasIndex("HasPassword");
-
-                    b.HasIndex("IsConfirmed");
-
-                    b.HasIndex("IsEmailVerified");
-
-                    b.HasIndex("LastName");
-
-                    b.HasIndex("MiddleName");
-
-                    b.HasIndex("Nickname");
-
-                    b.HasIndex("PasswordChangedBy");
-
-                    b.HasIndex("PasswordChangedOn");
 
                     b.HasIndex("TenantId");
 
@@ -177,8 +105,6 @@ namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Migrations
                     b.HasIndex("UpdatedOn");
 
                     b.HasIndex("Version");
-
-                    b.HasIndex("TenantId", "EmailAddressNormalized");
 
                     b.HasIndex("TenantId", "UniqueNameNormalized")
                         .IsUnique()
