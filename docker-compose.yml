@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  identity_mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: Logitar.Identity_mssql
+    ports:
+      - 36191:1433
+    environment:
+      ACCEPT_EULA: 'Y'
+      SA_PASSWORD: Ks875v3qctRxE6Z4
