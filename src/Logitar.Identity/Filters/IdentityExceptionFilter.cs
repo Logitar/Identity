@@ -32,6 +32,12 @@ public class IdentityExceptionFilter : ExceptionFilterAttribute
       context.Result = new ConflictObjectResult(error);
       context.ExceptionHandled = true;
     }
+    else if (context.Exception is InvalidCredentialsException)
+    {
+      Error error = new(code: "InvalidCredentials", message: "The specified credentials did not match.");
+      context.Result = new BadRequestObjectResult(error);
+      context.ExceptionHandled = true;
+    }
     else
     {
       base.OnException(context);

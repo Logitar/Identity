@@ -22,6 +22,7 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
     builder.HasIndex(x => x.PasswordChangedBy);
     builder.HasIndex(x => x.PasswordChangedOn);
     builder.HasIndex(x => x.HasPassword);
+    builder.HasIndex(x => x.AuthenticatedOn);
     builder.HasIndex(x => x.EmailAddress);
     builder.HasIndex(x => new { x.TenantId, x.EmailAddressNormalized });
     builder.HasIndex(x => x.EmailVerifiedBy);
