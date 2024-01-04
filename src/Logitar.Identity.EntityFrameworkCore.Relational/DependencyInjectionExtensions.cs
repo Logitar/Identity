@@ -1,4 +1,5 @@
 ﻿using Logitar.EventSourcing.EntityFrameworkCore.Relational;
+using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Users;
 using Logitar.Identity.EntityFrameworkCore.Relational.Handlers;
 using Logitar.Identity.EntityFrameworkCore.Relational.Repositories;
@@ -20,11 +21,15 @@ public static class DependencyInjectionExtensions
 
   private static IServiceCollection AddEventHandlers(this IServiceCollection services)
   {
-    return services.AddTransient<IUserEventHandler, UserEventHandler>();
+    return services
+      .AddTransient<ISessionEventHandler, SessionEventHandler>()
+      .AddTransient<IUserEventHandler, UserEventHandler>();
   }
 
   private static IServiceCollection AddRepositories(this IServiceCollection services)
   {
-    return services.AddTransient<IUserRepository, UserRepository>();
+    return services
+      .AddTransient<ISessionRepository, SessionRepository>()
+      .AddTransient<IUserRepository, UserRepository>();
   }
 }

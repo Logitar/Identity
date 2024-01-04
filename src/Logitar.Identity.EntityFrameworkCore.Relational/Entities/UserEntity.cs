@@ -1,4 +1,5 @@
-﻿using Logitar.Identity.Domain.Users.Events;
+﻿using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Users.Events;
 
 namespace Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 
@@ -32,6 +33,8 @@ public class UserEntity : AggregateEntity
     private set { }
   }
 
+  public DateTime? AuthenticatedOn { get; private set; }
+
   public string? EmailAddress { get; private set; }
   public string? EmailAddressNormalized
   {
@@ -58,6 +61,8 @@ public class UserEntity : AggregateEntity
   public string? FullName { get; private set; }
   public string? Nickname { get; private set; }
 
+  public List<SessionEntity> Sessions { get; private set; } = [];
+
   public UserEntity(UserCreatedEvent @event) : base(@event)
   {
     TenantId = @event.TenantId?.Value;
@@ -83,6 +88,22 @@ public class UserEntity : AggregateEntity
 
     DisabledBy = null;
     DisabledOn = null;
+  }
+
+  public IEnumerable<ActorId> GetActorIds(bool ignoreSessions = false)
+  {
+    List<ActorId> actorIds = [];
+    actorIds.AddRange(base.GetActorIds());
+
+    if (!ignoreSessions)
+    {
+      foreach (SessionEntity session in Sessions)
+      {
+        actorIds.AddRange(session.GetActorIds(ignoreUser: true));
+      }
+    }
+
+    return actorIds.AsReadOnly();
   }
 
   public void SetEmail(UserEmailChangedEvent @event)
@@ -117,6 +138,13 @@ public class UserEntity : AggregateEntity
     Update(@event);
 
     UniqueName = @event.UniqueName.Value;
+  }
+
+  public void SignIn(UserSignedInEvent @event)
+  {
+    Update(@event);
+
+    AuthenticatedOn = @event.OccurredOn.ToUniversalTime();
   }
 
   public void Update(UserUpdatedEvent @event)

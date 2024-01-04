@@ -163,6 +163,24 @@ public class UserAggregate : AggregateRoot
     _uniqueName = @event.UniqueName;
   }
 
+  public void SignIn(string password, ActorId actorId = default)
+  {
+    if (_password == null)
+    {
+      throw new UserHasNoPasswordException(this);
+    }
+    else if (!_password.IsMatch(password))
+    {
+      throw new IncorrectUserPasswordException(this, password);
+    }
+    else if (IsDisabled)
+    {
+      throw new UserIsDisabledException(this);
+    }
+
+    Raise(new UserSignedInEvent(actorId));
+  }
+
   public void Update(ActorId actorId = default)
   {
     if (_updatedEvent.HasChanges)

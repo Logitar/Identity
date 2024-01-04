@@ -1,12 +1,18 @@
 ﻿using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using Logitar.EventSourcing.Infrastructure;
 using Logitar.Identity.Application.Account;
+using Logitar.Identity.Application.Caching;
+using Logitar.Identity.Application.Sessions;
 using Logitar.Identity.Domain;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.EntityFrameworkCore.Relational;
+using Logitar.Identity.EntityFrameworkCore.Relational.Actors;
+using Logitar.Identity.EntityFrameworkCore.Relational.Queriers;
 using Logitar.Identity.EntityFrameworkCore.SqlServer;
 using Logitar.Identity.Filters;
 using Logitar.Identity.Infrastructure;
+using Logitar.Identity.Infrastructure.Caching;
+using Logitar.Identity.Settings;
 
 namespace Logitar.Identity;
 
@@ -37,7 +43,14 @@ internal class Startup : StartupBase
 
     // TODO(fpion): Authentication
     // TODO(fpion): Authorization
-    // TODO(fpion): Cookies/Session
+
+    CookiesSettings cookiesSettings = _configuration.GetSection("Cookies").Get<CookiesSettings>() ?? new();
+    services.AddSingleton(cookiesSettings);
+    services.AddSession(options =>
+    {
+      options.Cookie.SameSite = cookiesSettings.Session.SameSite;
+      options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    });
 
     services.AddApplicationInsightsTelemetry();
     IHealthChecksBuilder healthChecks = services.AddHealthChecks();
@@ -47,10 +60,15 @@ internal class Startup : StartupBase
       services.AddOpenApi();
     }
 
+    services.AddDistributedMemoryCache();
     services.AddLogitarIdentityDomain();
     services.AddMediatR(config => config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+    services.AddMemoryCache();
+    services.AddSingleton<ICacheService, CacheService>();
     services.AddTransient<IAccountService, AccountService>();
+    services.AddTransient<IActorService, ActorService>();
     services.AddTransient<IEventBus, EventBus>();
+    services.AddTransient<ISessionQuerier, SessionQuerier>();
 
     string connectionString;
     DatabaseProvider databaseProvider = _configuration.GetValue<DatabaseProvider?>("DatabaseProvider")
@@ -78,7 +96,7 @@ internal class Startup : StartupBase
 
     builder.UseHttpsRedirection();
     builder.UseCors();
-    // TODO(fpion): Cookies/Session
+    builder.UseSession();
     builder.UseAuthentication();
     builder.UseAuthorization();
 
