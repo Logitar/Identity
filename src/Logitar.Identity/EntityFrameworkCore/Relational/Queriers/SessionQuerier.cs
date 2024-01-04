@@ -30,6 +30,7 @@ internal class SessionQuerier : ISessionQuerier
     string aggregateId = new AggregateId(id).Value;
 
     SessionEntity? session = await _sessions.AsNoTracking()
+      .Include(x => x.User)
       .SingleOrDefaultAsync(x => x.AggregateId == aggregateId, cancellationToken);
 
     return session == null ? null : await MapAsync(session, cancellationToken);

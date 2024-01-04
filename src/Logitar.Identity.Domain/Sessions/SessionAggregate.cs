@@ -11,6 +11,8 @@ public class SessionAggregate : AggregateRoot
   private UserId? _userId = null;
   public UserId UserId => _userId ?? throw new InvalidOperationException("The user identifier has not been initialized yet.");
 
+  public bool IsActive { get; private set; }
+
   public SessionAggregate(AggregateId id) : base(id)
   {
   }
@@ -23,5 +25,7 @@ public class SessionAggregate : AggregateRoot
   protected virtual void Apply(SessionCreatedEvent @event)
   {
     _userId = @event.UserId;
+
+    IsActive = true;
   }
 }
