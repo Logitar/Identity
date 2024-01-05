@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  identity_mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: Logitar.Identity_mssql
+    ports:
+      - 36191:1433
+    environment:
+      ACCEPT_EULA: 'Y'
+      SA_PASSWORD: Ks875v3qctRxE6Z4
+
+  identity_demo:
+    build:
+      context: .
+      dockerfile: /src/Logitar.Identity.Demo/Dockerfile
+    image: identity_demo
+    container_name: Logitar.Identity.Demo
+    depends_on:
+      - identity_mssql
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_Environment: Development
+      SQLCONNSTR_Identity: "Server=identity_mssql;Database=Identity;User Id=SA;Password=Ks875v3qctRxE6Z4;Persist Security Info=False;Encrypt=False;"
+    ports:
+      - 36190:8080
