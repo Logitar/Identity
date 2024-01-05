@@ -14,4 +14,6 @@ public record TenantId
     Value = value.Trim();
     new TenantIdValidator().ValidateAndThrow(Value);
   }
+
+  public static TenantId? TryCreate(string? value) => string.IsNullOrWhiteSpace(value) ? null : new(value);
 }
