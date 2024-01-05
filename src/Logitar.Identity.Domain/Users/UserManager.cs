@@ -1,5 +1,6 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Sessions;
+using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Shared;
 using Logitar.Identity.Domain.Users.Events;
 
@@ -14,6 +15,22 @@ public class UserManager : IUserManager
   {
     _sessionRepository = sessionRepository;
     _userRepository = userRepository;
+  }
+
+  public async Task<UserAggregate?> FindAsync(string? tenantIdValue, string uniqueNameOrEmailAddress, CancellationToken cancellationToken)
+  {
+    UniqueNameSettings uniqueNameSettings = new()
+    {
+      AllowedCharacters = null
+    };
+
+    TenantId? tenantId = TenantId.TryCreate(tenantIdValue); // TODO(fpion): shouldn't validate
+    UniqueNameUnit uniqueName = new(uniqueNameSettings, uniqueNameOrEmailAddress); // TODO(fpion): shouldn't validate
+    UserAggregate? user = await _userRepository.LoadAsync(tenantId, uniqueName, cancellationToken);
+
+    // TODO(fpion): try finding by email address if unique
+
+    return user;
   }
 
   public async Task SaveAsync(UserAggregate user, ActorId actorId, CancellationToken cancellationToken)
