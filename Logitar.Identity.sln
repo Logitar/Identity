@@ -5,53 +5,15 @@ VisualStudioVersion = 17.7.34202.233
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{23566904-DB95-4A2F-9535-D34B39F0655D}"
 	ProjectSection(SolutionItems) = preProject
-		.dockerignore = .dockerignore
 		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		CHANGELOG.md = CHANGELOG.md
-		docker-compose.yml = docker-compose.yml
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Identity", "src\Logitar.Identity\Logitar.Identity.csproj", "{7D392FED-9B0B-48E1-8D63-D545C1990BAB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.Domain", "src\Logitar.Identity.Domain\Logitar.Identity.Domain.csproj", "{6CFD5E10-5633-4AC2-B950-01334F2B26CE}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.EntityFrameworkCore.Relational", "src\Logitar.Identity.EntityFrameworkCore.Relational\Logitar.Identity.EntityFrameworkCore.Relational.csproj", "{5D3A45C3-CB13-4C65-B446-7E09CF681D60}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.Infrastructure", "src\Logitar.Identity.Infrastructure\Logitar.Identity.Infrastructure.csproj", "{FD847DD9-DC98-4065-819B-E1DE9530301C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.EntityFrameworkCore.SqlServer", "src\Logitar.Identity.EntityFrameworkCore.SqlServer\Logitar.Identity.EntityFrameworkCore.SqlServer.csproj", "{2D324068-C293-4E4B-ADC3-063D06F7C828}"
-EndProject
 Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7D392FED-9B0B-48E1-8D63-D545C1990BAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7D392FED-9B0B-48E1-8D63-D545C1990BAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7D392FED-9B0B-48E1-8D63-D545C1990BAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7D392FED-9B0B-48E1-8D63-D545C1990BAB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6CFD5E10-5633-4AC2-B950-01334F2B26CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6CFD5E10-5633-4AC2-B950-01334F2B26CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6CFD5E10-5633-4AC2-B950-01334F2B26CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6CFD5E10-5633-4AC2-B950-01334F2B26CE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5D3A45C3-CB13-4C65-B446-7E09CF681D60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5D3A45C3-CB13-4C65-B446-7E09CF681D60}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5D3A45C3-CB13-4C65-B446-7E09CF681D60}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5D3A45C3-CB13-4C65-B446-7E09CF681D60}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FD847DD9-DC98-4065-819B-E1DE9530301C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FD847DD9-DC98-4065-819B-E1DE9530301C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FD847DD9-DC98-4065-819B-E1DE9530301C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FD847DD9-DC98-4065-819B-E1DE9530301C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2D324068-C293-4E4B-ADC3-063D06F7C828}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D324068-C293-4E4B-ADC3-063D06F7C828}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2D324068-C293-4E4B-ADC3-063D06F7C828}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2D324068-C293-4E4B-ADC3-063D06F7C828}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
