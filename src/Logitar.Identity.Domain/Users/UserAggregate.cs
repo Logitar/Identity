@@ -24,7 +24,9 @@ public class UserAggregate : AggregateRoot
 
   public bool IsDisabled { get; private set; }
 
+  // TODO(fpion): Address
   public EmailUnit? Email { get; private set; }
+  // TODO(fpion): Phone
   public bool IsConfirmed => Email?.IsVerified == true;
 
   private PersonNameUnit? _firstName = null;
@@ -265,7 +267,11 @@ public class UserAggregate : AggregateRoot
 
   public SessionAggregate SignIn(string? password = null, Password? secret = null, ActorId actorId = default, SessionId? id = null)
   {
-    if (password != null)
+    if (IsDeleted)
+    {
+      throw new UserIsDisabledException(this);
+    }
+    else if (password != null)
     {
       if (_password == null)
       {
@@ -275,10 +281,6 @@ public class UserAggregate : AggregateRoot
       {
         throw new IncorrectUserPasswordException(this, password);
       }
-    }
-    else if (IsDisabled)
-    {
-      throw new UserIsDisabledException(this);
     }
 
     SessionAggregate session = new(this, secret, actorId, id);

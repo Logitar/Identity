@@ -42,4 +42,38 @@ public class SessionAggregate : AggregateRoot
       Raise(new SessionDeletedEvent(actorId));
     }
   }
+
+  public void Renew(string currentSecret, Password newSecret, ActorId actorId = default)
+  {
+    if (!IsActive)
+    {
+      throw new SessionIsNotActiveException(this);
+    }
+    else if (_secret == null)
+    {
+      throw new SessionIsNotPersistentException(this);
+    }
+    else if (!_secret.IsMatch(currentSecret))
+    {
+      throw new IncorrectSessionSecretException(this, currentSecret);
+    }
+
+    Raise(new SessionRenewedEvent(actorId, newSecret));
+  }
+  protected virtual void Apply(SessionRenewedEvent @event)
+  {
+    _secret = @event.Secret;
+  }
+
+  public void SignOut(ActorId actorId = default)
+  {
+    if (IsActive)
+    {
+      Raise(new SessionSignedOutEvent(actorId));
+    }
+  }
+  protected virtual void Apply(SessionSignedOutEvent _)
+  {
+    IsActive = false;
+  }
 }
