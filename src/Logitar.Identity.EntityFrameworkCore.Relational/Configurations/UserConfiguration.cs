@@ -22,6 +22,9 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
     builder.HasIndex(x => x.PasswordChangedBy);
     builder.HasIndex(x => x.PasswordChangedOn);
     builder.HasIndex(x => x.HasPassword);
+    builder.HasIndex(x => x.DisabledBy);
+    builder.HasIndex(x => x.DisabledOn);
+    builder.HasIndex(x => x.IsDisabled);
     builder.HasIndex(x => x.EmailAddress);
     builder.HasIndex(x => new { x.TenantId, x.EmailAddressNormalized }).IsUnique();
     builder.HasIndex(x => x.EmailVerifiedBy);
@@ -44,6 +47,7 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
     builder.Property(x => x.UniqueNameNormalized).HasMaxLength(UniqueNameUnit.MaximumLength);
     builder.Property(x => x.PasswordHash).HasMaxLength(byte.MaxValue);
     builder.Property(x => x.PasswordChangedBy).HasMaxLength(ActorId.MaximumLength);
+    builder.Property(x => x.DisabledBy).HasMaxLength(ActorId.MaximumLength);
     builder.Property(x => x.EmailAddress).HasMaxLength(EmailUnit.MaximumLength);
     builder.Property(x => x.EmailAddressNormalized).HasMaxLength(EmailUnit.MaximumLength);
     builder.Property(x => x.EmailVerifiedBy).HasMaxLength(ActorId.MaximumLength);

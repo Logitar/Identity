@@ -22,6 +22,8 @@ public class UserAggregate : AggregateRoot
   private Password? _password = null;
   public bool HasPassword => _password != null;
 
+  public bool IsDisabled { get; private set; }
+
   public EmailUnit? Email { get; private set; }
   public bool IsConfirmed => Email?.IsVerified == true;
 
@@ -216,6 +218,30 @@ public class UserAggregate : AggregateRoot
     }
   }
 
+  public void Disable(ActorId actorId = default)
+  {
+    if (!IsDisabled)
+    {
+      Raise(new UserDisabledEvent(actorId));
+    }
+  }
+  protected virtual void Apply(UserDisabledEvent _)
+  {
+    IsDisabled = true;
+  }
+
+  public void Enable(ActorId actorId = default)
+  {
+    if (IsDisabled)
+    {
+      Raise(new UserEnabledEvent(actorId));
+    }
+  }
+  protected virtual void Apply(UserEnabledEvent _)
+  {
+    IsDisabled = false;
+  }
+
   public void SetEmail(EmailUnit? email, ActorId actorId = default)
   {
     if (email != Email)
@@ -249,6 +275,10 @@ public class UserAggregate : AggregateRoot
       {
         throw new IncorrectUserPasswordException(this, password);
       }
+    }
+    else if (IsDisabled)
+    {
+      throw new UserIsDisabledException(this);
     }
 
     SessionAggregate session = new(this, secret, actorId, id);

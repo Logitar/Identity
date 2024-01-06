@@ -41,6 +41,28 @@ public class UserEventHandler : IUserEventHandler
     }
   }
 
+  public virtual async Task HandleAsync(UserDisabledEvent @event, CancellationToken cancellationToken)
+  {
+    UserEntity user = await _context.Users
+      .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
+      ?? throw new InvalidOperationException($"The user entity 'AggregateId={@event.AggregateId}' could not be found.");
+
+    user.Disable(@event);
+
+    await _context.SaveChangesAsync(cancellationToken);
+  }
+
+  public virtual async Task HandleAsync(UserEnabledEvent @event, CancellationToken cancellationToken)
+  {
+    UserEntity user = await _context.Users
+      .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
+      ?? throw new InvalidOperationException($"The user entity 'AggregateId={@event.AggregateId}' could not be found.");
+
+    user.Enable(@event);
+
+    await _context.SaveChangesAsync(cancellationToken);
+  }
+
   public virtual async Task HandleAsync(UserEmailChangedEvent @event, CancellationToken cancellationToken)
   {
     UserEntity user = await _context.Users
