@@ -1,4 +1,5 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Users;
 using MediatR;
 
@@ -8,9 +9,12 @@ public record SessionCreatedEvent : DomainEvent, INotification
 {
   public UserId UserId { get; }
 
-  public SessionCreatedEvent(ActorId actorId, UserId userId)
+  public Password? Secret { get; }
+
+  public SessionCreatedEvent(ActorId actorId, Password? secret, UserId userId)
   {
     ActorId = actorId;
+    Secret = secret;
     UserId = userId;
   }
 }

@@ -13,7 +13,10 @@ public class SessionConfiguration : AggregateConfiguration<SessionEntity>, IEnti
     builder.ToTable(nameof(IdentityContext.Sessions));
     builder.HasKey(x => x.SessionId);
 
+    builder.HasIndex(x => x.IsPersistent);
     builder.HasIndex(x => x.IsActive);
+
+    builder.Property(x => x.SecretHash).HasMaxLength(byte.MaxValue);
 
     builder.HasOne(x => x.User).WithMany(x => x.Sessions)
       .HasPrincipalKey(x => x.UserId).HasForeignKey(x => x.UserId)

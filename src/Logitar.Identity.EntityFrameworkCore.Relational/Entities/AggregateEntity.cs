@@ -27,6 +27,8 @@ public abstract class AggregateEntity
     Update(@event);
   }
 
+  public virtual IEnumerable<ActorId> GetActorIds() => new ActorId[] { new(CreatedBy), new(UpdatedBy) };
+
   protected void Update(DomainEvent @event)
   {
     Version = @event.Version;
