@@ -20,6 +20,9 @@ public class UserAggregate : AggregateRoot
   private Password? _password = null;
   public bool HasPassword => _password != null;
 
+  public EmailUnit? Email { get; private set; }
+  public bool IsConfirmed => Email?.IsVerified == true;
+
   public string? FullName { get; private set; }
 
   public DateTime? AuthenticatedOn { get; private set; }
@@ -46,6 +49,18 @@ public class UserAggregate : AggregateRoot
     {
       Raise(new UserDeletedEvent(actorId));
     }
+  }
+
+  public void SetEmail(EmailUnit? email, ActorId actorId = default)
+  {
+    if (email != Email)
+    {
+      Raise(new UserEmailChangedEvent(actorId, email));
+    }
+  }
+  protected virtual void Apply(UserEmailChangedEvent @event)
+  {
+    Email = @event.Email;
   }
 
   public void SetPassword(Password password, ActorId actorId = default)

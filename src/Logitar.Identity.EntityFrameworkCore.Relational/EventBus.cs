@@ -23,8 +23,6 @@ public class EventBus : IEventBus
 
   public virtual async Task PublishAsync(DomainEvent @event, CancellationToken cancellationToken)
   {
-    await Publisher.Publish(@event, cancellationToken);
-
     switch (@event)
     {
       case SessionCreatedEvent sessionCreated:
@@ -39,6 +37,9 @@ public class EventBus : IEventBus
       case UserDeletedEvent userDeleted:
         await UserEventHandler.HandleAsync(userDeleted, cancellationToken);
         break;
+      case UserEmailChangedEvent userEmailChanged:
+        await UserEventHandler.HandleAsync(userEmailChanged, cancellationToken);
+        break;
       case UserPasswordChangedEvent userPasswordChanged:
         await UserEventHandler.HandleAsync(userPasswordChanged, cancellationToken);
         break;
@@ -52,5 +53,7 @@ public class EventBus : IEventBus
         await UserEventHandler.HandleAsync(userUpdated, cancellationToken);
         break;
     }
+
+    await Publisher.Publish(@event, cancellationToken);
   }
 }
