@@ -6,9 +6,9 @@ namespace Logitar.Identity.Infrastructure.Passwords;
 
 public class PasswordManager : IPasswordManager
 {
-  public PasswordManager(IUserSettings userSettings, IEnumerable<IPasswordStrategy> strategies) // TODO(fpion): not multitenant
+  public PasswordManager(IUserSettingsResolver settingsResolver, IEnumerable<IPasswordStrategy> strategies)
   {
-    Settings = userSettings.Password;
+    SettingsResolver = settingsResolver;
 
     foreach (IPasswordStrategy strategy in strategies)
     {
@@ -16,13 +16,15 @@ public class PasswordManager : IPasswordManager
     }
   }
 
-  protected IPasswordSettings Settings { get; }
+  protected IUserSettingsResolver SettingsResolver { get; }
   protected Dictionary<string, IPasswordStrategy> Strategies { get; } = [];
 
   public virtual Password Create(string password)
   {
-    new PasswordValidator(Settings).ValidateAndThrow(password);
-    return GetStrategy(Settings.HashingStrategy).Create(password);
+    IPasswordSettings passwordSettings = SettingsResolver.Resolve().Password;
+    new PasswordValidator(passwordSettings).ValidateAndThrow(password);
+
+    return GetStrategy(passwordSettings.HashingStrategy).Create(password);
   }
 
   public virtual Password Decode(string password)
@@ -34,7 +36,9 @@ public class PasswordManager : IPasswordManager
   public virtual Password Generate(int length, out byte[] password)
   {
     password = RandomNumberGenerator.GetBytes(length);
-    return GetStrategy(Settings.HashingStrategy).Create(Convert.ToBase64String(password));
+
+    IPasswordSettings passwordSettings = SettingsResolver.Resolve().Password;
+    return GetStrategy(passwordSettings.HashingStrategy).Create(Convert.ToBase64String(password));
   }
 
   protected virtual IPasswordStrategy GetStrategy(string key)
