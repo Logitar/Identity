@@ -40,4 +40,26 @@ public class SessionEventHandler : ISessionEventHandler
       await _context.SaveChangesAsync(cancellationToken);
     }
   }
+
+  public virtual async Task HandleAsync(SessionRenewedEvent @event, CancellationToken cancellationToken)
+  {
+    SessionEntity session = await _context.Sessions
+     .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
+     ?? throw new InvalidOperationException($"The session entity 'AggregateId={@event.AggregateId}' could not be found.");
+
+    session.Renew(@event);
+
+    await _context.SaveChangesAsync(cancellationToken);
+  }
+
+  public virtual async Task HandleAsync(SessionSignedOutEvent @event, CancellationToken cancellationToken)
+  {
+    SessionEntity session = await _context.Sessions
+     .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
+     ?? throw new InvalidOperationException($"The session entity 'AggregateId={@event.AggregateId}' could not be found.");
+
+    session.SignOut(@event);
+
+    await _context.SaveChangesAsync(cancellationToken);
+  }
 }

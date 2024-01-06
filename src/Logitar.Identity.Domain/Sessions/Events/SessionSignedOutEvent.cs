@@ -3,11 +3,10 @@ using MediatR;
 
 namespace Logitar.Identity.Domain.Sessions.Events;
 
-public record SessionDeletedEvent : DomainEvent, INotification
+public record SessionSignedOutEvent : DomainEvent, INotification
 {
-  public SessionDeletedEvent(ActorId actorId)
+  public SessionSignedOutEvent(ActorId actorId)
   {
     ActorId = actorId;
-    IsDeleted = true;
   }
 }
