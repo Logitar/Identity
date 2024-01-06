@@ -28,7 +28,11 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
     builder.HasIndex(x => x.EmailVerifiedOn);
     builder.HasIndex(x => x.IsEmailVerified);
     builder.HasIndex(x => x.IsConfirmed);
+    builder.HasIndex(x => x.FirstName);
+    builder.HasIndex(x => x.MiddleName);
+    builder.HasIndex(x => x.LastName);
     builder.HasIndex(x => x.FullName);
+    builder.HasIndex(x => x.Nickname);
     builder.HasIndex(x => x.AuthenticatedOn);
 
     builder.Property(x => x.TenantId).HasMaxLength(AggregateId.MaximumLength);
@@ -39,6 +43,10 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
     builder.Property(x => x.EmailAddress).HasMaxLength(EmailUnit.MaximumLength);
     builder.Property(x => x.EmailAddressNormalized).HasMaxLength(EmailUnit.MaximumLength);
     builder.Property(x => x.EmailVerifiedBy).HasMaxLength(ActorId.MaximumLength);
-    builder.Property(x => x.FullName).HasMaxLength(byte.MaxValue * 3 + 2); // TODO(fpion): use constants and document
+    builder.Property(x => x.FirstName).HasMaxLength(PersonNameUnit.MaximumLength);
+    builder.Property(x => x.MiddleName).HasMaxLength(PersonNameUnit.MaximumLength);
+    builder.Property(x => x.LastName).HasMaxLength(PersonNameUnit.MaximumLength);
+    builder.Property(x => x.FullName).HasMaxLength(PersonNameUnit.MaximumLength * 3 + 2); // NOTE(fpion): enough space to contain the first, middle and last names, separator by a space ' '.
+    builder.Property(x => x.Nickname).HasMaxLength(PersonNameUnit.MaximumLength);
   }
 }

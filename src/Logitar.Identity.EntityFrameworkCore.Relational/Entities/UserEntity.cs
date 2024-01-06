@@ -45,7 +45,11 @@ public class UserEntity : AggregateEntity
     private set { }
   }
 
+  public string? FirstName { get; private set; }
+  public string? MiddleName { get; private set; }
+  public string? LastName { get; private set; }
   public string? FullName { get; private set; }
+  public string? Nickname { get; private set; }
 
   public DateTime? AuthenticatedOn { get; private set; }
 
@@ -133,5 +137,26 @@ public class UserEntity : AggregateEntity
   public void Update(UserUpdatedEvent @event)
   {
     base.Update(@event);
+
+    if (@event.FirstName != null)
+    {
+      FirstName = @event.FirstName.Value?.Value;
+    }
+    if (@event.MiddleName != null)
+    {
+      MiddleName = @event.MiddleName.Value?.Value;
+    }
+    if (@event.LastName != null)
+    {
+      LastName = @event.LastName.Value?.Value;
+    }
+    if (@event.FullName != null)
+    {
+      FullName = @event.FullName.Value;
+    }
+    if (@event.Nickname != null)
+    {
+      Nickname = @event.Nickname.Value?.Value;
+    }
   }
 }

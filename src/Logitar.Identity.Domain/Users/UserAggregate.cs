@@ -23,7 +23,68 @@ public class UserAggregate : AggregateRoot
   public EmailUnit? Email { get; private set; }
   public bool IsConfirmed => Email?.IsVerified == true;
 
+  private PersonNameUnit? _firstName = null;
+  public PersonNameUnit? FirstName
+  {
+    get => _firstName;
+    private set
+    {
+      if (value != _firstName)
+      {
+        _firstName = value;
+        FullName = PersonHelper.BuildFullName(_firstName, _middleName, _lastName);
+
+        _updatedEvent.FirstName = new Modification<PersonNameUnit>(value);
+        _updatedEvent.FullName = new Modification<string>(FullName);
+      }
+    }
+  }
+  private PersonNameUnit? _middleName = null;
+  public PersonNameUnit? MiddleName
+  {
+    get => _middleName;
+    private set
+    {
+      if (value != _middleName)
+      {
+        _middleName = value;
+        FullName = PersonHelper.BuildFullName(_firstName, _middleName, _lastName);
+
+        _updatedEvent.MiddleName = new Modification<PersonNameUnit>(value);
+        _updatedEvent.FullName = new Modification<string>(FullName);
+      }
+    }
+  }
+  private PersonNameUnit? _lastName = null;
+  public PersonNameUnit? LastName
+  {
+    get => _lastName;
+    private set
+    {
+      if (value != _lastName)
+      {
+        _lastName = value;
+        FullName = PersonHelper.BuildFullName(_firstName, _middleName, _lastName);
+
+        _updatedEvent.LastName = new Modification<PersonNameUnit>(value);
+        _updatedEvent.FullName = new Modification<string>(FullName);
+      }
+    }
+  }
   public string? FullName { get; private set; }
+  private PersonNameUnit? _nickname = null;
+  public PersonNameUnit? Nickname
+  {
+    get => _nickname;
+    private set
+    {
+      if (value != _nickname)
+      {
+        _nickname = value;
+        _updatedEvent.Nickname = new Modification<PersonNameUnit>(value);
+      }
+    }
+  }
 
   public DateTime? AuthenticatedOn { get; private set; }
 
@@ -104,6 +165,29 @@ public class UserAggregate : AggregateRoot
       _updatedEvent.ActorId = actorId;
       Raise(_updatedEvent);
       _updatedEvent = new();
+    }
+  }
+  protected virtual void Apply(UserUpdatedEvent @event)
+  {
+    if (@event.FirstName != null)
+    {
+      _firstName = @event.FirstName.Value;
+    }
+    if (@event.MiddleName != null)
+    {
+      _middleName = @event.MiddleName.Value;
+    }
+    if (@event.LastName != null)
+    {
+      _lastName = @event.LastName.Value;
+    }
+    if (@event.FullName != null)
+    {
+      FullName = @event.FullName.Value;
+    }
+    if (@event.Nickname != null)
+    {
+      _nickname = @event.Nickname.Value;
     }
   }
 
