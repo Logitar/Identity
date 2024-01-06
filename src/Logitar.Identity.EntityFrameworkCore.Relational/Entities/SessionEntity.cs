@@ -21,7 +21,7 @@ public class SessionEntity : AggregateEntity
   public DateTime? SignedOutOn { get; private set; }
   public bool IsActive
   {
-    get => SignedOutBy != null && SignedOutOn != null;
+    get => SignedOutBy == null && SignedOutOn == null;
     private set { }
   }
 

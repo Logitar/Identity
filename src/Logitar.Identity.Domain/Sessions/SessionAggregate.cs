@@ -43,7 +43,7 @@ public class SessionAggregate : AggregateRoot
     }
   }
 
-  public void Renew(string currentSecret, Password newSecret, ActorId actorId = default)
+  public void Renew(byte[] currentSecret, Password newSecret, ActorId actorId = default)
   {
     if (!IsActive)
     {

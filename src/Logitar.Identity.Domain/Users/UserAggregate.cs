@@ -33,7 +33,7 @@ public class UserAggregate : AggregateRoot
   public PersonNameUnit? FirstName
   {
     get => _firstName;
-    private set
+    set
     {
       if (value != _firstName)
       {
@@ -49,7 +49,7 @@ public class UserAggregate : AggregateRoot
   public PersonNameUnit? MiddleName
   {
     get => _middleName;
-    private set
+    set
     {
       if (value != _middleName)
       {
@@ -65,7 +65,7 @@ public class UserAggregate : AggregateRoot
   public PersonNameUnit? LastName
   {
     get => _lastName;
-    private set
+    set
     {
       if (value != _lastName)
       {
@@ -82,7 +82,7 @@ public class UserAggregate : AggregateRoot
   public PersonNameUnit? Nickname
   {
     get => _nickname;
-    private set
+    set
     {
       if (value != _nickname)
       {

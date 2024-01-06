@@ -1,7 +1,9 @@
 ﻿using Logitar.Data;
+using Logitar.EventSourcing;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using Logitar.EventSourcing.Infrastructure;
 using Logitar.Identity.Domain.Sessions;
+using Logitar.Identity.Domain.Shared;
 using Logitar.Identity.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,11 +20,54 @@ public class SessionRepository : EventSourcing.EntityFrameworkCore.Relational.Ag
   protected string AggregateType { get; } = typeof(SessionAggregate).GetNamespaceQualifiedName();
   protected ISqlHelper SqlHelper { get; }
 
+  public async Task<SessionAggregate?> LoadAsync(SessionId id, CancellationToken cancellationToken)
+    => await LoadAsync(id, version: null, cancellationToken);
+  public async Task<SessionAggregate?> LoadAsync(SessionId id, long? version, CancellationToken cancellationToken)
+    => await LoadAsync(id, version, includeDeleted: false, cancellationToken);
+  public async Task<SessionAggregate?> LoadAsync(SessionId id, bool includeDeleted, CancellationToken cancellationToken)
+    => await LoadAsync(id, version: null, includeDeleted, cancellationToken);
+  public async Task<SessionAggregate?> LoadAsync(SessionId id, long? version, bool includeDeleted, CancellationToken cancellationToken)
+    => await LoadAsync<SessionAggregate>(id.AggregateId, version, includeDeleted, cancellationToken);
+
+  public async Task<IEnumerable<SessionAggregate>> LoadAsync(CancellationToken cancellationToken)
+    => await LoadAsync(includeDeleted: false, cancellationToken);
+  public async Task<IEnumerable<SessionAggregate>> LoadAsync(bool includeDeleted, CancellationToken cancellationToken)
+    => await LoadAsync<SessionAggregate>(cancellationToken);
+
+  public async Task<IEnumerable<SessionAggregate>> LoadAsync(IEnumerable<SessionId> ids, CancellationToken cancellationToken)
+    => await LoadAsync(ids, includeDeleted: false, cancellationToken);
+  public async Task<IEnumerable<SessionAggregate>> LoadAsync(IEnumerable<SessionId> ids, bool includeDeleted, CancellationToken cancellationToken)
+  {
+    IEnumerable<AggregateId> aggregateIds = ids.Select(id => id.AggregateId);
+    return await LoadAsync<SessionAggregate>(aggregateIds, includeDeleted, cancellationToken);
+  }
+
+  public async Task<IEnumerable<SessionAggregate>> LoadAsync(TenantId? tenantId, CancellationToken cancellationToken)
+    => await LoadAsync(tenantId, includeDeleted: false, cancellationToken);
+  public async Task<IEnumerable<SessionAggregate>> LoadAsync(TenantId? tenantId, bool includeDeleted, CancellationToken cancellationToken)
+  {
+    IQuery query = SqlHelper.QueryFrom(EventDb.Events.Table)
+      .Join(IdentityDb.Sessions.AggregateId, EventDb.Events.AggregateId,
+        new OperatorCondition(EventDb.Events.AggregateType, Operators.IsEqualTo(AggregateType))
+      )
+      .Join(IdentityDb.Users.UserId, IdentityDb.Sessions.UserId)
+      .Where(IdentityDb.Users.TenantId, tenantId == null ? Operators.IsNull() : Operators.IsEqualTo(tenantId.Value))
+      .SelectAll(EventDb.Events.Table)
+      .Build();
+
+    EventEntity[] events = await EventContext.Events.FromQuery(query)
+      .AsNoTracking()
+      .OrderBy(e => e.Version)
+      .ToArrayAsync(cancellationToken);
+
+    return Load<SessionAggregate>(events.Select(EventSerializer.Deserialize), includeDeleted);
+  }
+
   public async Task<IEnumerable<SessionAggregate>> LoadAsync(UserAggregate user, CancellationToken cancellationToken)
     => await LoadAsync(user, includeDeleted: false, cancellationToken);
   public async Task<IEnumerable<SessionAggregate>> LoadAsync(UserAggregate user, bool includeDeleted, CancellationToken cancellationToken)
   {
-    IQuery builder = SqlHelper.QueryFrom(EventDb.Events.Table)
+    IQuery query = SqlHelper.QueryFrom(EventDb.Events.Table)
       .Join(IdentityDb.Sessions.AggregateId, EventDb.Events.AggregateId,
         new OperatorCondition(EventDb.Events.AggregateType, Operators.IsEqualTo(AggregateType))
       )
@@ -31,7 +76,7 @@ public class SessionRepository : EventSourcing.EntityFrameworkCore.Relational.Ag
       .SelectAll(EventDb.Events.Table)
       .Build();
 
-    EventEntity[] events = await EventContext.Events.FromQuery(builder)
+    EventEntity[] events = await EventContext.Events.FromQuery(query)
       .AsNoTracking()
       .OrderBy(e => e.Version)
       .ToArrayAsync(cancellationToken);

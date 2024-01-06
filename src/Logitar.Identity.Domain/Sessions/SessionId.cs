@@ -12,7 +12,15 @@ public record SessionId
   public SessionId(AggregateId aggregateId)
   {
     new IdValidator().ValidateAndThrow(aggregateId.Value);
+
     AggregateId = aggregateId;
+  }
+  public SessionId(string value)
+  {
+    value = value.Trim();
+    new IdValidator().ValidateAndThrow(value);
+
+    AggregateId = new(value);
   }
 
   public static SessionId NewId() => new(AggregateId.NewId());
