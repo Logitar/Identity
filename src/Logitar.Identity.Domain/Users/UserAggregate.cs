@@ -106,6 +106,19 @@ public class UserAggregate : AggregateRoot
       }
     }
   }
+  private GenderUnit? _gender = null;
+  public GenderUnit? Gender
+  {
+    get => _gender;
+    set
+    {
+      if (value != _gender)
+      {
+        _gender = value;
+        _updatedEvent.Gender = new Modification<GenderUnit>(value);
+      }
+    }
+  }
 
   public DateTime? AuthenticatedOn { get; private set; }
 
@@ -218,6 +231,10 @@ public class UserAggregate : AggregateRoot
     if (@event.Birthdate != null)
     {
       _birthdate = @event.Birthdate.Value;
+    }
+    if (@event.Gender != null)
+    {
+      _gender = @event.Gender.Value;
     }
   }
 

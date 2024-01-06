@@ -52,6 +52,7 @@ public class UserEntity : AggregateEntity
   public string? Nickname { get; private set; }
 
   public DateTime? Birthdate { get; private set; }
+  public string? Gender { get; private set; }
 
   public DateTime? AuthenticatedOn { get; private set; }
 
@@ -159,6 +160,15 @@ public class UserEntity : AggregateEntity
     if (@event.Nickname != null)
     {
       Nickname = @event.Nickname.Value?.Value;
+    }
+
+    if (@event.Birthdate != null)
+    {
+      Birthdate = @event.Birthdate.Value?.ToUniversalTime();
+    }
+    if (@event.Gender != null)
+    {
+      Gender = @event.Gender.Value?.Value;
     }
   }
 }

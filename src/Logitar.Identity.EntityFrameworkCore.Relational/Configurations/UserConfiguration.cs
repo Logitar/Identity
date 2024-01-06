@@ -34,6 +34,7 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
     builder.HasIndex(x => x.FullName);
     builder.HasIndex(x => x.Nickname);
     builder.HasIndex(x => x.Birthdate);
+    builder.HasIndex(x => x.Gender);
     builder.HasIndex(x => x.AuthenticatedOn);
 
     builder.Property(x => x.TenantId).HasMaxLength(AggregateId.MaximumLength);
@@ -49,5 +50,6 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
     builder.Property(x => x.LastName).HasMaxLength(PersonNameUnit.MaximumLength);
     builder.Property(x => x.FullName).HasMaxLength(PersonNameUnit.MaximumLength * 3 + 2); // NOTE(fpion): enough space to contain the first, middle and last names, separator by a space ' '.
     builder.Property(x => x.Nickname).HasMaxLength(PersonNameUnit.MaximumLength);
+    builder.Property(x => x.Gender).HasMaxLength(GenderUnit.MaximumLength);
   }
 }

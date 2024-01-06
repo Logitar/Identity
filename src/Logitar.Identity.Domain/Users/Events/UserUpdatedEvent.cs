@@ -12,7 +12,8 @@ public record UserUpdatedEvent : DomainEvent, INotification
   public Modification<PersonNameUnit>? Nickname { get; set; }
 
   public Modification<DateTime?>? Birthdate { get; set; }
+  public Modification<GenderUnit>? Gender { get; set; }
 
   public bool HasChanges => FirstName != null || MiddleName != null || LastName != null || FullName != null || Nickname != null
-    || Birthdate != null;
+    || Birthdate != null || Gender != null;
 }
