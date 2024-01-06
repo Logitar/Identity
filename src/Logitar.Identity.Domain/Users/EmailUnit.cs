@@ -14,4 +14,6 @@ public record EmailUnit : ContactUnit, IEmail
     Address = address.Trim();
     new EmailValidator().ValidateAndThrow(this);
   }
+
+  public static EmailUnit? TryCreate(string? address, bool isVerified = false) => string.IsNullOrWhiteSpace(address) ? null : new(address, isVerified);
 }

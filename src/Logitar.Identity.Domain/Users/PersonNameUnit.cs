@@ -14,4 +14,6 @@ public record PersonNameUnit
     Value = value.Trim();
     new PersonNameValidator().ValidateAndThrow(Value);
   }
+
+  public static PersonNameUnit? TryCreate(string? value) => string.IsNullOrWhiteSpace(value) ? null : new(value);
 }

@@ -18,6 +18,8 @@ public record GenderUnit
     new GenderValidator().ValidateAndThrow(Value);
   }
 
+  public static GenderUnit? TryCreate(string? value) => string.IsNullOrWhiteSpace(value) ? null : new(value);
+
   public static bool IsKnownGender(string value) => KnownGenders.Contains(value.ToLower());
 
   private static string Format(string value)
