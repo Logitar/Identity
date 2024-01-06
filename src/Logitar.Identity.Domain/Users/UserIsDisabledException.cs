@@ -4,7 +4,7 @@ namespace Logitar.Identity.Domain.Users;
 
 public class UserIsDisabledException : InvalidCredentialsException
 {
-  public new const string ErrorMessage = "The specified is disabled.";
+  public new const string ErrorMessage = "The specified user is disabled.";
 
   public string User
   {
