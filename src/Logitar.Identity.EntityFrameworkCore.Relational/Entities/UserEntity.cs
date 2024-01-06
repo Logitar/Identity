@@ -1,4 +1,5 @@
-﻿using Logitar.Identity.Domain.Users.Events;
+﻿using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Users.Events;
 
 namespace Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 
@@ -12,6 +13,15 @@ public class UserEntity : AggregateEntity
   public string UniqueNameNormalized
   {
     get => UniqueName.ToUpper();
+    private set { }
+  }
+
+  public string? PasswordHash { get; private set; }
+  public string? PasswordChangedBy { get; private set; }
+  public DateTime? PasswordChangedOn { get; private set; }
+  public bool HasPassword
+  {
+    get => PasswordChangedBy != null && PasswordChangedOn != null;
     private set { }
   }
 
@@ -30,6 +40,32 @@ public class UserEntity : AggregateEntity
 
   private UserEntity() : base()
   {
+  }
+
+  public override IEnumerable<ActorId> GetActorIds() => GetActorIds(skipSessions: false);
+  public IEnumerable<ActorId> GetActorIds(bool skipSessions)
+  {
+    List<ActorId> actorIds = [];
+    actorIds.AddRange(base.GetActorIds());
+
+    if (!skipSessions)
+    {
+      foreach (SessionEntity session in Sessions)
+      {
+        actorIds.AddRange(session.GetActorIds(skipUser: true));
+      }
+    }
+
+    return actorIds.AsReadOnly();
+  }
+
+  public void SetPassword(UserPasswordChangedEvent @event)
+  {
+    Update(@event);
+
+    PasswordHash = @event.Password.Encode();
+    PasswordChangedBy = @event.ActorId.Value;
+    PasswordChangedOn = @event.OccurredOn.ToUniversalTime();
   }
 
   public void SetUniqueName(UserUniqueNameChangedEvent @event)

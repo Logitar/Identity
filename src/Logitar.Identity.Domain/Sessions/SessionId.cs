@@ -1,4 +1,6 @@
-﻿using Logitar.EventSourcing;
+﻿using FluentValidation;
+using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Shared;
 
 namespace Logitar.Identity.Domain.Sessions;
 
@@ -9,6 +11,7 @@ public record SessionId
 
   public SessionId(AggregateId aggregateId)
   {
+    new IdValidator().ValidateAndThrow(aggregateId.Value);
     AggregateId = aggregateId;
   }
 

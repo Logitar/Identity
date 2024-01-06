@@ -3,4 +3,5 @@
 public interface IUserSettings
 {
   IUniqueNameSettings UniqueName { get; }
+  IPasswordSettings Password { get; }
 }

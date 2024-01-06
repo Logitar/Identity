@@ -16,11 +16,11 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Logitar/Identity</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <AssemblyVersion>0.2.2.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>0.1.0</Version>
+    <Version>0.2.2</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
     <PackageReleaseNotes>TODO</PackageReleaseNotes>
@@ -45,6 +45,7 @@
 
   <ItemGroup>
     <PackageReference Include="Logitar.EventSourcing.Infrastructure" Version="5.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,6 +53,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="System.Security.Cryptography" />
     <Using Include="System.Text.Json" />
     <Using Include="System.Text.Json.Serialization" />
   </ItemGroup>

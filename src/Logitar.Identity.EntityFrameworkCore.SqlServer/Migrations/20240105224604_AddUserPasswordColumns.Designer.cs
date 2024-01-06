@@ -4,6 +4,7 @@ using Logitar.Identity.EntityFrameworkCore.Relational;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Migrations
 {
     [DbContext(typeof(IdentityContext))]
-    partial class IdentityContextModelSnapshot : ModelSnapshot
+    [Migration("20240105224604_AddUserPasswordColumns")]
+    partial class AddUserPasswordColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,56 +24,6 @@ namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Logitar.Identity.EntityFrameworkCore.Relational.Entities.ActorEntity", b =>
-                {
-                    b.Property<int>("ActorId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ActorId"));
-
-                    b.Property<string>("DisplayName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("EmailAddress")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("Id")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("PictureUrl")
-                        .HasMaxLength(2048)
-                        .HasColumnType("nvarchar(2048)");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.HasKey("ActorId");
-
-                    b.HasIndex("DisplayName");
-
-                    b.HasIndex("EmailAddress");
-
-                    b.HasIndex("Id")
-                        .IsUnique();
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("Type");
-
-                    b.ToTable("Actors", (string)null);
-                });
 
             modelBuilder.Entity("Logitar.Identity.EntityFrameworkCore.Relational.Entities.SessionEntity", b =>
                 {
@@ -96,13 +49,6 @@ namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsPersistent")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SecretHash")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -127,8 +73,6 @@ namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Migrations
                     b.HasIndex("CreatedOn");
 
                     b.HasIndex("IsActive");
-
-                    b.HasIndex("IsPersistent");
 
                     b.HasIndex("UpdatedBy");
 

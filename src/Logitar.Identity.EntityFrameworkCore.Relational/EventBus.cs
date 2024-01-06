@@ -39,6 +39,9 @@ public class EventBus : IEventBus
       case UserDeletedEvent userDeleted:
         await UserEventHandler.HandleAsync(userDeleted, cancellationToken);
         break;
+      case UserPasswordChangedEvent userPasswordChanged:
+        await UserEventHandler.HandleAsync(userPasswordChanged, cancellationToken);
+        break;
       case UserSignedInEvent userSignedIn:
         await UserEventHandler.HandleAsync(userSignedIn, cancellationToken);
         break;

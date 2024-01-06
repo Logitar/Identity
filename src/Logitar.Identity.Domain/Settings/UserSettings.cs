@@ -3,4 +3,5 @@
 public record UserSettings : IUserSettings
 {
   public IUniqueNameSettings UniqueName { get; set; } = new UniqueNameSettings();
+  public IPasswordSettings Password { get; set; } = new PasswordSettings();
 }

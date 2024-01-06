@@ -1,4 +1,5 @@
-﻿using Logitar.Identity.EntityFrameworkCore.SqlServer;
+﻿using Logitar.Identity.Domain.Settings;
+using Logitar.Identity.EntityFrameworkCore.SqlServer;
 
 namespace Logitar.Identity.Demo;
 
@@ -28,6 +29,7 @@ internal class Startup : StartupBase
 
     string connectionString = _configuration.GetValue<string>("SQLCONNSTR_Identity") ?? string.Empty;
     services.AddLogitarIdentityWithEntityFrameworkCoreSqlServer(connectionString);
+    services.AddSingleton<IUserSettings>(_configuration.GetSection("User").Get<UserSettings>() ?? new());
   }
 
   public override void Configure(IApplicationBuilder builder)

@@ -14,4 +14,6 @@ public record UniqueNameUnit
     Value = value.Trim();
     new UniqueNameValidator(uniqueNameSettings).ValidateAndThrow(Value);
   }
+
+  public static UniqueNameUnit? TryCreate(IUniqueNameSettings uniqueNameSettings, string? value) => string.IsNullOrWhiteSpace(value) ? null : new(uniqueNameSettings, value);
 }
