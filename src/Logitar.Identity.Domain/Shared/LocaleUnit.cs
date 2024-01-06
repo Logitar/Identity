@@ -12,8 +12,10 @@ public class LocaleUnit
 
   public LocaleUnit(string code)
   {
+    code = code.Trim();
+    new LocaleValidator().ValidateAndThrow(code);
+
     Culture = CultureInfo.GetCultureInfo(code.Trim());
-    new LocaleValidator().ValidateAndThrow(Code);
   }
 
   public static LocaleUnit? TryCreate(string? code) => string.IsNullOrWhiteSpace(code) ? null : new(code);

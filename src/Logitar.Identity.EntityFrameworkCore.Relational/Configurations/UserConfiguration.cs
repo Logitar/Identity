@@ -55,5 +55,8 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
     builder.Property(x => x.Gender).HasMaxLength(GenderUnit.MaximumLength);
     builder.Property(x => x.Locale).HasMaxLength(LocaleUnit.MaximumLength);
     builder.Property(x => x.TimeZone).HasMaxLength(TimeZoneUnit.MaximumLength);
+    builder.Property(x => x.Picture).HasMaxLength(UrlUnit.MaximumLength);
+    builder.Property(x => x.Profile).HasMaxLength(UrlUnit.MaximumLength);
+    builder.Property(x => x.Website).HasMaxLength(UrlUnit.MaximumLength);
   }
 }

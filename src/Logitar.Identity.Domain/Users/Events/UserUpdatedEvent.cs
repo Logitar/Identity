@@ -17,6 +17,11 @@ public record UserUpdatedEvent : DomainEvent, INotification
   public Modification<LocaleUnit>? Locale { get; set; }
   public Modification<TimeZoneUnit>? TimeZone { get; set; }
 
+  public Modification<UrlUnit>? Picture { get; set; }
+  public Modification<UrlUnit>? Profile { get; set; }
+  public Modification<UrlUnit>? Website { get; set; }
+
   public bool HasChanges => FirstName != null || MiddleName != null || LastName != null || FullName != null || Nickname != null
-    || Birthdate != null || Gender != null || Locale != null || TimeZone != null;
+    || Birthdate != null || Gender != null || Locale != null || TimeZone != null
+    || Picture != null || Profile != null || Website != null;
 }

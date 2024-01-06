@@ -56,6 +56,10 @@ public class UserEntity : AggregateEntity
   public string? Locale { get; private set; }
   public string? TimeZone { get; private set; }
 
+  public string? Picture { get; private set; }
+  public string? Profile { get; private set; }
+  public string? Website { get; private set; }
+
   public DateTime? AuthenticatedOn { get; private set; }
 
   public List<SessionEntity> Sessions { get; private set; } = [];
@@ -179,6 +183,19 @@ public class UserEntity : AggregateEntity
     if (@event.TimeZone != null)
     {
       TimeZone = @event.TimeZone.Value?.Id;
+    }
+
+    if (@event.Picture != null)
+    {
+      Picture = @event.Picture.Value?.Value;
+    }
+    if (@event.Profile != null)
+    {
+      Profile = @event.Profile.Value?.Value;
+    }
+    if (@event.Website != null)
+    {
+      Website = @event.Website.Value?.Value;
     }
   }
 }

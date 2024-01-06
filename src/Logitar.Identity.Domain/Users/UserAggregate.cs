@@ -146,6 +146,46 @@ public class UserAggregate : AggregateRoot
     }
   }
 
+  private UrlUnit? _picture = null;
+  public UrlUnit? Picture
+  {
+    get => _picture;
+    set
+    {
+      if (value != _picture)
+      {
+        _picture = value;
+        _updatedEvent.Picture = new Modification<UrlUnit>(value);
+      }
+    }
+  }
+  private UrlUnit? _profile = null;
+  public UrlUnit? Profile
+  {
+    get => _profile;
+    set
+    {
+      if (value != _profile)
+      {
+        _profile = value;
+        _updatedEvent.Profile = new Modification<UrlUnit>(value);
+      }
+    }
+  }
+  private UrlUnit? _website = null;
+  public UrlUnit? Website
+  {
+    get => _website;
+    set
+    {
+      if (value != _website)
+      {
+        _website = value;
+        _updatedEvent.Website = new Modification<UrlUnit>(value);
+      }
+    }
+  }
+
   public DateTime? AuthenticatedOn { get; private set; }
 
   // TODO(fpion): Custom Attributes
@@ -269,6 +309,19 @@ public class UserAggregate : AggregateRoot
     if (@event.TimeZone != null)
     {
       _timeZone = @event.TimeZone.Value;
+    }
+
+    if (@event.Picture != null)
+    {
+      _picture = @event.Picture.Value;
+    }
+    if (@event.Profile != null)
+    {
+      _profile = @event.Profile.Value;
+    }
+    if (@event.Website != null)
+    {
+      _website = @event.Website.Value;
     }
   }
 

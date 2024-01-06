@@ -122,6 +122,6 @@ public class UserEventHandler : IUserEventHandler
 
     actor.DisplayName = user.FullName ?? user.UniqueName;
     actor.EmailAddress = user.EmailAddress;
-    actor.PictureUrl = null; // TODO(fpion): implement
+    actor.PictureUrl = user.Picture;
   }
 }

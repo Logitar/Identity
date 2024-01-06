@@ -54,4 +54,11 @@ public static class FluentValidationExtensions
       .WithErrorCode("TimeZoneValidator")
       .WithMessage("'{PropertyName}' did not resolve to a tz entry.");
   }
+
+  public static IRuleBuilderOptions<T, string> Url<T>(this IRuleBuilder<T, string> ruleBuilder)
+  {
+    return ruleBuilder.Must(urlString => Uri.IsWellFormedUriString(urlString, UriKind.Absolute))
+      .WithErrorCode("UrlValidator")
+      .WithMessage("'{PropertyName}' must be a valid Uniform Resource Locator. See https://en.wikipedia.org/wiki/URL for more info.");
+  }
 }
