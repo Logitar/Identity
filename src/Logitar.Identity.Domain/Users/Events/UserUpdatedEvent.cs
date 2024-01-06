@@ -14,9 +14,9 @@ public record UserUpdatedEvent : DomainEvent, INotification
 
   public Modification<DateTime?>? Birthdate { get; set; }
   public Modification<GenderUnit>? Gender { get; set; }
-  // TODO(fpion): Locale
+  public Modification<LocaleUnit>? Locale { get; set; }
   public Modification<TimeZoneUnit>? TimeZone { get; set; }
 
   public bool HasChanges => FirstName != null || MiddleName != null || LastName != null || FullName != null || Nickname != null
-    || Birthdate != null || Gender != null || TimeZone != null;
+    || Birthdate != null || Gender != null || Locale != null || TimeZone != null;
 }

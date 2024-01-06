@@ -53,7 +53,7 @@ public class UserEntity : AggregateEntity
 
   public DateTime? Birthdate { get; private set; }
   public string? Gender { get; private set; }
-  // TODO(fpion): Locale
+  public string? Locale { get; private set; }
   public string? TimeZone { get; private set; }
 
   public DateTime? AuthenticatedOn { get; private set; }
@@ -172,7 +172,10 @@ public class UserEntity : AggregateEntity
     {
       Gender = @event.Gender.Value?.Value;
     }
-    // TODO(fpion): Locale
+    if (@event.Locale != null)
+    {
+      Locale = @event.Locale.Value?.Code;
+    }
     if (@event.TimeZone != null)
     {
       TimeZone = @event.TimeZone.Value?.Id;
