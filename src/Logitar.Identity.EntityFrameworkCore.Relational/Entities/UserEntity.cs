@@ -51,6 +51,8 @@ public class UserEntity : AggregateEntity
   public string? FullName { get; private set; }
   public string? Nickname { get; private set; }
 
+  public DateTime? Birthdate { get; private set; }
+
   public DateTime? AuthenticatedOn { get; private set; }
 
   public List<SessionEntity> Sessions { get; private set; } = [];

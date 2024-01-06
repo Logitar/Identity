@@ -1,8 +1,10 @@
-﻿using Logitar.EventSourcing;
+﻿using FluentValidation;
+using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Shared;
 using Logitar.Identity.Domain.Users.Events;
+using Logitar.Identity.Domain.Users.Validators;
 
 namespace Logitar.Identity.Domain.Users;
 
@@ -86,7 +88,30 @@ public class UserAggregate : AggregateRoot
     }
   }
 
+  private DateTime? _birthdate = null;
+  public DateTime? Birthdate
+  {
+    get => _birthdate;
+    set
+    {
+      if (value != _birthdate)
+      {
+        if (value.HasValue)
+        {
+          new BirthdateValidator().ValidateAndThrow(value.Value);
+        }
+
+        _birthdate = value;
+        _updatedEvent.Birthdate = new Modification<DateTime?>(value);
+      }
+    }
+  }
+
   public DateTime? AuthenticatedOn { get; private set; }
+
+  // TODO(fpion): Custom Attributes
+
+  // TODO(fpion): Roles
 
   public UserAggregate(AggregateId id) : base(id)
   {
@@ -188,6 +213,11 @@ public class UserAggregate : AggregateRoot
     if (@event.Nickname != null)
     {
       _nickname = @event.Nickname.Value;
+    }
+
+    if (@event.Birthdate != null)
+    {
+      _birthdate = @event.Birthdate.Value;
     }
   }
 

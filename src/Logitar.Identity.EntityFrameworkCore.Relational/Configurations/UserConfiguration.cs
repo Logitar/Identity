@@ -33,6 +33,7 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
     builder.HasIndex(x => x.LastName);
     builder.HasIndex(x => x.FullName);
     builder.HasIndex(x => x.Nickname);
+    builder.HasIndex(x => x.Birthdate);
     builder.HasIndex(x => x.AuthenticatedOn);
 
     builder.Property(x => x.TenantId).HasMaxLength(AggregateId.MaximumLength);
