@@ -1,4 +1,5 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Shared;
 using MediatR;
 
 namespace Logitar.Identity.Domain.Users.Events;
@@ -13,7 +14,9 @@ public record UserUpdatedEvent : DomainEvent, INotification
 
   public Modification<DateTime?>? Birthdate { get; set; }
   public Modification<GenderUnit>? Gender { get; set; }
+  // TODO(fpion): Locale
+  public Modification<TimeZoneUnit>? TimeZone { get; set; }
 
   public bool HasChanges => FirstName != null || MiddleName != null || LastName != null || FullName != null || Nickname != null
-    || Birthdate != null || Gender != null;
+    || Birthdate != null || Gender != null || TimeZone != null;
 }

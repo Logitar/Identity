@@ -119,6 +119,20 @@ public class UserAggregate : AggregateRoot
       }
     }
   }
+  // TODO(fpion): Locale
+  private TimeZoneUnit? _timeZone = null;
+  public TimeZoneUnit? TimeZone
+  {
+    get => _timeZone;
+    set
+    {
+      if (value != _timeZone)
+      {
+        _timeZone = value;
+        _updatedEvent.TimeZone = new Modification<TimeZoneUnit>(value);
+      }
+    }
+  }
 
   public DateTime? AuthenticatedOn { get; private set; }
 
@@ -235,6 +249,11 @@ public class UserAggregate : AggregateRoot
     if (@event.Gender != null)
     {
       _gender = @event.Gender.Value;
+    }
+    // TODO(fpion): Locale
+    if (@event.TimeZone != null)
+    {
+      _timeZone = @event.TimeZone.Value;
     }
   }
 
