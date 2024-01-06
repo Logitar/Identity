@@ -11,5 +11,6 @@ public static class EventDb
 
     public static readonly ColumnId AggregateId = new(nameof(EventEntity.AggregateId), Table);
     public static readonly ColumnId AggregateType = new(nameof(EventEntity.AggregateType), Table);
+    // TODO(fpion): complete
   }
 }

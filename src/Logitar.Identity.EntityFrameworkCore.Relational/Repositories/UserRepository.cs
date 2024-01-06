@@ -36,6 +36,24 @@ public class UserRepository : EventSourcing.EntityFrameworkCore.Relational.Aggre
 
     return Load<UserAggregate>(events.Select(EventSerializer.Deserialize)).SingleOrDefault();
   }
+  public virtual async Task<IEnumerable<UserAggregate>> LoadAsync(TenantId? tenantId, EmailUnit email, CancellationToken cancellationToken)
+  {
+    IQuery builder = SqlHelper.QueryFrom(EventDb.Events.Table)
+      .Join(IdentityDb.Users.AggregateId, EventDb.Events.AggregateId,
+        new OperatorCondition(EventDb.Events.AggregateType, Operators.IsEqualTo(AggregateType))
+      )
+      .Where(IdentityDb.Users.TenantId, tenantId == null ? Operators.IsNull() : Operators.IsEqualTo(tenantId.Value))
+      .Where(IdentityDb.Users.EmailAddressNormalized, Operators.IsEqualTo(email.Address.ToUpper()))
+      .SelectAll(EventDb.Events.Table)
+      .Build();
+
+    EventEntity[] events = await EventContext.Events.FromQuery(builder)
+      .AsNoTracking()
+      .OrderBy(e => e.Version)
+      .ToArrayAsync(cancellationToken);
+
+    return Load<UserAggregate>(events.Select(EventSerializer.Deserialize));
+  }
 
   public virtual async Task SaveAsync(UserAggregate user, CancellationToken cancellationToken)
     => await base.SaveAsync(user, cancellationToken);

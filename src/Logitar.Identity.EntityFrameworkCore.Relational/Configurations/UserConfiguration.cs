@@ -26,7 +26,7 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
     builder.HasIndex(x => x.DisabledOn);
     builder.HasIndex(x => x.IsDisabled);
     builder.HasIndex(x => x.EmailAddress);
-    builder.HasIndex(x => new { x.TenantId, x.EmailAddressNormalized }).IsUnique();
+    builder.HasIndex(x => new { x.TenantId, x.EmailAddressNormalized });
     builder.HasIndex(x => x.EmailVerifiedBy);
     builder.HasIndex(x => x.EmailVerifiedOn);
     builder.HasIndex(x => x.IsEmailVerified);

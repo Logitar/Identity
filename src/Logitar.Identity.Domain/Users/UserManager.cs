@@ -10,25 +10,32 @@ public class UserManager : IUserManager
 {
   private readonly ISessionRepository _sessionRepository;
   private readonly IUserRepository _userRepository;
+  private readonly IUserSettingsResolver _userSettingsResolver;
 
-  public UserManager(ISessionRepository sessionRepository, IUserRepository userRepository)
+  public UserManager(ISessionRepository sessionRepository, IUserRepository userRepository, IUserSettingsResolver userSettingsResolver)
   {
     _sessionRepository = sessionRepository;
     _userRepository = userRepository;
+    _userSettingsResolver = userSettingsResolver;
   }
 
   public async Task<UserAggregate?> FindAsync(string? tenantIdValue, string uniqueNameOrEmailAddress, CancellationToken cancellationToken)
   {
-    UniqueNameSettings uniqueNameSettings = new()
-    {
-      AllowedCharacters = null
-    };
+    IUserSettings userSettings = _userSettingsResolver.Resolve();
 
     TenantId? tenantId = TenantId.TryCreate(tenantIdValue); // TODO(fpion): shouldn't validate
-    UniqueNameUnit uniqueName = new(uniqueNameSettings, uniqueNameOrEmailAddress); // TODO(fpion): shouldn't validate
+    UniqueNameUnit uniqueName = new(userSettings.UniqueName, uniqueNameOrEmailAddress); // TODO(fpion): shouldn't validate
     UserAggregate? user = await _userRepository.LoadAsync(tenantId, uniqueName, cancellationToken);
 
-    // TODO(fpion): try finding by email address if unique
+    if (user == null && userSettings.RequireUniqueEmail)
+    {
+      EmailUnit email = new(uniqueNameOrEmailAddress);
+      IEnumerable<UserAggregate> users = await _userRepository.LoadAsync(tenantId, email, cancellationToken);
+      if (users.Count() == 1)
+      {
+        user = users.Single();
+      }
+    }
 
     return user;
   }
@@ -36,6 +43,7 @@ public class UserManager : IUserManager
   public async Task SaveAsync(UserAggregate user, ActorId actorId, CancellationToken cancellationToken)
   {
     bool hasBeenDeleted = false;
+    bool hasEmailChanged = false;
     bool hasUniqueNameChanged = false;
     foreach (DomainEvent change in user.Changes)
     {
@@ -43,13 +51,15 @@ public class UserManager : IUserManager
       {
         hasUniqueNameChanged = true;
       }
+      else if (change is UserEmailChangedEvent)
+      {
+        hasEmailChanged = true;
+      }
       else if (change is UserDeletedEvent)
       {
         hasBeenDeleted = true;
       }
     }
-
-    // TODO(fpion): enforce email address unicity
 
     if (hasUniqueNameChanged)
     {
@@ -57,6 +67,16 @@ public class UserManager : IUserManager
       if (other?.Equals(user) == false)
       {
         throw new UniqueNameAlreadyUsedException<UserAggregate>(user.TenantId, user.UniqueName);
+      }
+    }
+
+    IUserSettings userSettings = _userSettingsResolver.Resolve();
+    if (hasEmailChanged && user.Email != null && userSettings.RequireUniqueEmail)
+    {
+      IEnumerable<UserAggregate> users = await _userRepository.LoadAsync(user.TenantId, user.Email, cancellationToken);
+      if (users.Any(other => !other.Equals(user)))
+      {
+        throw new EmailAddressAlreadyUsedException(user.TenantId, user.Email);
       }
     }
 
