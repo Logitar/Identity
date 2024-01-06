@@ -9,6 +9,6 @@ public class IdValidator : AbstractValidator<string>
   {
     RuleFor(x => x).NotEmpty()
       .MaximumLength(AggregateId.MaximumLength)
-      .AllowedCharacters(Constants.UriSafeCharacters);
+      .AllowedCharacters(UrlUnit.SafeCharacters);
   }
 }

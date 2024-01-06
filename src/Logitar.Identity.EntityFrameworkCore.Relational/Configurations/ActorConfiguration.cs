@@ -1,4 +1,5 @@
-﻿using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
+﻿using Logitar.Identity.Domain.Shared;
+using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -21,6 +22,6 @@ public class ActorConfiguration : IEntityTypeConfiguration<ActorEntity>
     builder.Property(x => x.Type).HasMaxLength(byte.MaxValue);
     builder.Property(x => x.DisplayName).HasMaxLength(byte.MaxValue);
     builder.Property(x => x.EmailAddress).HasMaxLength(byte.MaxValue);
-    builder.Property(x => x.PictureUrl).HasMaxLength(2048);
+    builder.Property(x => x.PictureUrl).HasMaxLength(UrlUnit.MaximumLength);
   }
 }

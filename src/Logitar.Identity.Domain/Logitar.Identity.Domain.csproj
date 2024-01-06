@@ -46,8 +46,14 @@
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.9.0" />
     <PackageReference Include="Logitar.EventSourcing" Version="5.0.0" />
+    <PackageReference Include="Logitar.Security" Version="5.2.1" />
     <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+    <PackageReference Include="NodaTime" Version="3.1.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="System.Globalization" />
   </ItemGroup>
 
 </Project>
