@@ -26,4 +26,11 @@ public static class FluentValidationExtensions
       .WithErrorCode("PastValidator")
       .WithMessage("'{PropertyName}' must be a date and time set in the past.");
   }
+
+  public static IRuleBuilderOptions<T, string> TimeZone<T>(this IRuleBuilder<T, string> ruleBuilder)
+  {
+    return ruleBuilder.Must(id => DateTimeZoneProviders.Tzdb.GetZoneOrNull(id) != null)
+      .WithErrorCode("TimeZoneValidator")
+      .WithMessage("'{PropertyName}' did not resolve to a tz entry.");
+  }
 }
