@@ -8,7 +8,6 @@ public class UrlValidator : AbstractValidator<string>
   {
     RuleFor(x => x).NotEmpty()
       .MaximumLength(UrlUnit.MaximumLength)
-      .AllowedCharacters(UrlUnit.SafeCharacters)
       .Url();
   }
 }

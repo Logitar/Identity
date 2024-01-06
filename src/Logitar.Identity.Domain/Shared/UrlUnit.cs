@@ -17,4 +17,6 @@ public record UrlUnit
 
     Uri = new(value);
   }
+
+  public static UrlUnit? TryCreate(string? value) => string.IsNullOrWhiteSpace(value) ? null : new(value);
 }
