@@ -17,14 +17,14 @@ public class IncorrectSessionSecretException : InvalidCredentialsException
     private set => Data[nameof(Secret)] = value;
   }
 
-  public IncorrectSessionSecretException(SessionAggregate session, string secret) : base(BuildMessage(session, secret))
+  public IncorrectSessionSecretException(SessionAggregate session, byte[] secret) : base(BuildMessage(session, secret))
   {
     Session = session.ToString();
-    Secret = secret;
+    Secret = Convert.ToBase64String(secret);
   }
 
-  private static string BuildMessage(SessionAggregate session, string secret) => new ErrorMessageBuilder(ErrorMessage)
+  private static string BuildMessage(SessionAggregate session, byte[] secret) => new ErrorMessageBuilder(ErrorMessage)
     .AddData(nameof(Session), session.ToString())
-    .AddData(nameof(Secret), secret)
+    .AddData(nameof(Secret), Convert.ToBase64String(secret))
     .Build();
 }

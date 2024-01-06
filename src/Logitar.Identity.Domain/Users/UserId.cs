@@ -12,7 +12,15 @@ public record UserId
   public UserId(AggregateId aggregateId)
   {
     new IdValidator().ValidateAndThrow(aggregateId.Value);
+
     AggregateId = aggregateId;
+  }
+  public UserId(string value)
+  {
+    value = value.Trim();
+    new IdValidator().ValidateAndThrow(value);
+
+    AggregateId = new(value);
   }
 
   public static UserId NewId() => new(AggregateId.NewId());

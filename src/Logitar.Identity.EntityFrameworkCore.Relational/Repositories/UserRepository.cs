@@ -1,4 +1,5 @@
 ﻿using Logitar.Data;
+using Logitar.EventSourcing;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using Logitar.EventSourcing.Infrastructure;
 using Logitar.Identity.Domain.Shared;
@@ -18,9 +19,51 @@ public class UserRepository : EventSourcing.EntityFrameworkCore.Relational.Aggre
   protected string AggregateType { get; } = typeof(UserAggregate).GetNamespaceQualifiedName();
   protected ISqlHelper SqlHelper { get; }
 
+  public async Task<UserAggregate?> LoadAsync(UserId id, CancellationToken cancellationToken)
+    => await LoadAsync(id, version: null, cancellationToken);
+  public async Task<UserAggregate?> LoadAsync(UserId id, long? version, CancellationToken cancellationToken)
+    => await LoadAsync(id, version, includeDeleted: false, cancellationToken);
+  public async Task<UserAggregate?> LoadAsync(UserId id, bool includeDeleted, CancellationToken cancellationToken)
+    => await LoadAsync(id, version: null, includeDeleted, cancellationToken);
+  public async Task<UserAggregate?> LoadAsync(UserId id, long? version, bool includeDeleted, CancellationToken cancellationToken)
+    => await LoadAsync<UserAggregate>(id.AggregateId, version, includeDeleted, cancellationToken);
+
+  public async Task<IEnumerable<UserAggregate>> LoadAsync(CancellationToken cancellationToken)
+     => await LoadAsync(includeDeleted: false, cancellationToken);
+  public async Task<IEnumerable<UserAggregate>> LoadAsync(bool includeDeleted, CancellationToken cancellationToken)
+     => await LoadAsync<UserAggregate>(includeDeleted, cancellationToken);
+
+  public async Task<IEnumerable<UserAggregate>> LoadAsync(IEnumerable<UserId> ids, CancellationToken cancellationToken = default)
+    => await LoadAsync(ids, includeDeleted: false, cancellationToken);
+  public async Task<IEnumerable<UserAggregate>> LoadAsync(IEnumerable<UserId> ids, bool includeDeleted, CancellationToken cancellationToken = default)
+  {
+    IEnumerable<AggregateId> aggregateIds = ids.Select(id => id.AggregateId);
+    return await LoadAsync<UserAggregate>(aggregateIds, includeDeleted, cancellationToken);
+  }
+
+  public async Task<IEnumerable<UserAggregate>> LoadAsync(TenantId? tenantId, CancellationToken cancellationToken = default)
+    => await LoadAsync(tenantId, includeDeleted: false, cancellationToken);
+  public async Task<IEnumerable<UserAggregate>> LoadAsync(TenantId? tenantId, bool includeDeleted, CancellationToken cancellationToken = default)
+  {
+    IQuery query = SqlHelper.QueryFrom(EventDb.Events.Table)
+      .Join(IdentityDb.Users.AggregateId, EventDb.Events.AggregateId,
+        new OperatorCondition(EventDb.Events.AggregateType, Operators.IsEqualTo(AggregateType))
+      )
+      .Where(IdentityDb.Users.TenantId, tenantId == null ? Operators.IsNull() : Operators.IsEqualTo(tenantId.Value))
+      .SelectAll(EventDb.Events.Table)
+      .Build();
+
+    EventEntity[] events = await EventContext.Events.FromQuery(query)
+      .AsNoTracking()
+      .OrderBy(e => e.Version)
+      .ToArrayAsync(cancellationToken);
+
+    return Load<UserAggregate>(events.Select(EventSerializer.Deserialize));
+  }
+
   public virtual async Task<UserAggregate?> LoadAsync(TenantId? tenantId, UniqueNameUnit uniqueName, CancellationToken cancellationToken)
   {
-    IQuery builder = SqlHelper.QueryFrom(EventDb.Events.Table)
+    IQuery query = SqlHelper.QueryFrom(EventDb.Events.Table)
       .Join(IdentityDb.Users.AggregateId, EventDb.Events.AggregateId,
         new OperatorCondition(EventDb.Events.AggregateType, Operators.IsEqualTo(AggregateType))
       )
@@ -29,7 +72,7 @@ public class UserRepository : EventSourcing.EntityFrameworkCore.Relational.Aggre
       .SelectAll(EventDb.Events.Table)
       .Build();
 
-    EventEntity[] events = await EventContext.Events.FromQuery(builder)
+    EventEntity[] events = await EventContext.Events.FromQuery(query)
       .AsNoTracking()
       .OrderBy(e => e.Version)
       .ToArrayAsync(cancellationToken);
@@ -38,7 +81,7 @@ public class UserRepository : EventSourcing.EntityFrameworkCore.Relational.Aggre
   }
   public virtual async Task<IEnumerable<UserAggregate>> LoadAsync(TenantId? tenantId, EmailUnit email, CancellationToken cancellationToken)
   {
-    IQuery builder = SqlHelper.QueryFrom(EventDb.Events.Table)
+    IQuery query = SqlHelper.QueryFrom(EventDb.Events.Table)
       .Join(IdentityDb.Users.AggregateId, EventDb.Events.AggregateId,
         new OperatorCondition(EventDb.Events.AggregateType, Operators.IsEqualTo(AggregateType))
       )
@@ -47,7 +90,7 @@ public class UserRepository : EventSourcing.EntityFrameworkCore.Relational.Aggre
       .SelectAll(EventDb.Events.Table)
       .Build();
 
-    EventEntity[] events = await EventContext.Events.FromQuery(builder)
+    EventEntity[] events = await EventContext.Events.FromQuery(query)
       .AsNoTracking()
       .OrderBy(e => e.Version)
       .ToArrayAsync(cancellationToken);
