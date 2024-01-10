@@ -70,6 +70,9 @@ public class EventBus : IEventBus
       case UserPasswordUpdatedEvent userPasswordUpdated:
         await UserEventHandler.HandleAsync(userPasswordUpdated, cancellationToken);
         break;
+      case UserPhoneChangedEvent userPhoneChanged:
+        await UserEventHandler.HandleAsync(userPhoneChanged, cancellationToken);
+        break;
       case UserSignedInEvent userSignedIn:
         await UserEventHandler.HandleAsync(userSignedIn, cancellationToken);
         break;

@@ -1,4 +1,5 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Users;
 using Logitar.Identity.Domain.Users.Events;
 
 namespace Logitar.Identity.EntityFrameworkCore.Relational.Entities;
@@ -47,9 +48,21 @@ public class UserEntity : AggregateEntity
     private set { }
   }
 
+  public string? PhoneCountryCode { get; private set; }
+  public string? PhoneNumber { get; private set; }
+  public string? PhoneExtension { get; private set; }
+  public string? PhoneE164Formatted { get; private set; }
+  public string? PhoneVerifiedBy { get; private set; }
+  public DateTime? PhoneVerifiedOn { get; private set; }
+  public bool IsPhoneVerified
+  {
+    get => PhoneVerifiedBy != null && PhoneVerifiedOn != null;
+    private set { }
+  }
+
   public bool IsConfirmed
   {
-    get => IsEmailVerified;
+    get => IsEmailVerified || IsPhoneVerified;
     private set { }
   }
 
@@ -120,6 +133,10 @@ public class UserEntity : AggregateEntity
     {
       actorIds.Add(new ActorId(EmailVerifiedBy));
     }
+    if (PhoneVerifiedBy != null)
+    {
+      actorIds.Add(new ActorId(PhoneVerifiedBy));
+    }
 
     if (!skipSessions)
     {
@@ -180,6 +197,27 @@ public class UserEntity : AggregateEntity
     PasswordHash = @event.Password.Encode();
     PasswordChangedBy = @event.ActorId.Value;
     PasswordChangedOn = @event.OccurredOn.ToUniversalTime();
+  }
+
+  public void SetPhone(UserPhoneChangedEvent @event)
+  {
+    Update(@event);
+
+    PhoneCountryCode = @event.Phone?.CountryCode;
+    PhoneNumber = @event.Phone?.Number;
+    PhoneExtension = @event.Phone?.Extension;
+    PhoneE164Formatted = @event.Phone?.FormatToE164();
+
+    if (!IsPhoneVerified && @event.Phone?.IsVerified == true)
+    {
+      PhoneVerifiedBy = @event.ActorId.Value;
+      PhoneVerifiedOn = @event.OccurredOn.ToUniversalTime();
+    }
+    else if (IsPhoneVerified && @event.Phone?.IsVerified != true)
+    {
+      PhoneVerifiedBy = null;
+      PhoneVerifiedOn = null;
+    }
   }
 
   public void SetUniqueName(UserUniqueNameChangedEvent @event)

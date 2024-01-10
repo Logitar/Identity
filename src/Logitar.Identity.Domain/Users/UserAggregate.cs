@@ -26,8 +26,8 @@ public class UserAggregate : AggregateRoot
 
   // TODO(fpion): Address
   public EmailUnit? Email { get; private set; }
-  // TODO(fpion): Phone
-  public bool IsConfirmed => Email?.IsVerified == true;
+  public PhoneUnit? Phone { get; private set; }
+  public bool IsConfirmed => Email?.IsVerified == true || Phone?.IsVerified == true;
 
   private PersonNameUnit? _firstName = null;
   public PersonNameUnit? FirstName
@@ -356,6 +356,18 @@ public class UserAggregate : AggregateRoot
   protected virtual void Apply(UserPasswordUpdatedEvent @event)
   {
     _password = @event.Password;
+  }
+
+  public void SetPhone(PhoneUnit? phone, ActorId actorId = default)
+  {
+    if (phone != Phone)
+    {
+      Raise(new UserPhoneChangedEvent(actorId, phone));
+    }
+  }
+  protected virtual void Apply(UserPhoneChangedEvent @event)
+  {
+    Phone = @event.Phone;
   }
 
   public SessionAggregate SignIn(Password? secret = null, ActorId actorId = default, SessionId? id = null)
