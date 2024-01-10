@@ -9,6 +9,9 @@ namespace Logitar.Identity.EntityFrameworkCore.Relational.Configurations;
 
 public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityTypeConfiguration<UserEntity>
 {
+  public const int FullNameMaximumLength = PersonNameUnit.MaximumLength * 3 + 2; // NOTE(fpion): enough space to contain the first, middle and last names, separator by a space ' '.
+  public const int PhoneE164FormattedMaximumLength = PhoneUnit.CountryCodeLength + 1 + PhoneUnit.NumberMaximumLength + 7 + PhoneUnit.ExtensionMaximumLength; // NOTE(fpion): enough space to contain the following format '{CountryCode} {Number}, ext. {Extension}'.
+
   public override void Configure(EntityTypeBuilder<UserEntity> builder)
   {
     base.Configure(builder);
@@ -30,6 +33,13 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
     builder.HasIndex(x => x.EmailVerifiedBy);
     builder.HasIndex(x => x.EmailVerifiedOn);
     builder.HasIndex(x => x.IsEmailVerified);
+    builder.HasIndex(x => x.PhoneCountryCode);
+    builder.HasIndex(x => x.PhoneNumber);
+    builder.HasIndex(x => x.PhoneExtension);
+    builder.HasIndex(x => x.PhoneE164Formatted);
+    builder.HasIndex(x => x.PhoneVerifiedBy);
+    builder.HasIndex(x => x.PhoneVerifiedOn);
+    builder.HasIndex(x => x.IsPhoneVerified);
     builder.HasIndex(x => x.IsConfirmed);
     builder.HasIndex(x => x.FirstName);
     builder.HasIndex(x => x.MiddleName);
@@ -53,10 +63,15 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
     builder.Property(x => x.EmailAddress).HasMaxLength(EmailUnit.MaximumLength);
     builder.Property(x => x.EmailAddressNormalized).HasMaxLength(EmailUnit.MaximumLength);
     builder.Property(x => x.EmailVerifiedBy).HasMaxLength(ActorId.MaximumLength);
+    builder.Property(x => x.PhoneCountryCode).HasMaxLength(PhoneUnit.CountryCodeLength);
+    builder.Property(x => x.PhoneNumber).HasMaxLength(PhoneUnit.NumberMaximumLength);
+    builder.Property(x => x.PhoneExtension).HasMaxLength(PhoneUnit.ExtensionMaximumLength);
+    builder.Property(x => x.PhoneE164Formatted).HasMaxLength(PhoneE164FormattedMaximumLength);
+    builder.Property(x => x.PhoneVerifiedBy).HasMaxLength(ActorId.MaximumLength);
     builder.Property(x => x.FirstName).HasMaxLength(PersonNameUnit.MaximumLength);
     builder.Property(x => x.MiddleName).HasMaxLength(PersonNameUnit.MaximumLength);
     builder.Property(x => x.LastName).HasMaxLength(PersonNameUnit.MaximumLength);
-    builder.Property(x => x.FullName).HasMaxLength(PersonNameUnit.MaximumLength * 3 + 2); // NOTE(fpion): enough space to contain the first, middle and last names, separator by a space ' '.
+    builder.Property(x => x.FullName).HasMaxLength(FullNameMaximumLength);
     builder.Property(x => x.Nickname).HasMaxLength(PersonNameUnit.MaximumLength);
     builder.Property(x => x.Gender).HasMaxLength(GenderUnit.MaximumLength);
     builder.Property(x => x.Locale).HasMaxLength(LocaleUnit.MaximumLength);

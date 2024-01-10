@@ -97,6 +97,18 @@ public class UserEventHandler : IUserEventHandler
     await _context.SaveChangesAsync(cancellationToken);
   }
 
+  public virtual async Task HandleAsync(UserPhoneChangedEvent @event, CancellationToken cancellationToken)
+  {
+    UserEntity user = await _context.Users
+      .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
+      ?? throw new InvalidOperationException($"The user entity 'AggregateId={@event.AggregateId}' could not be found.");
+
+    user.SetPhone(@event);
+
+    await SaveActorAsync(user, cancellationToken);
+    await _context.SaveChangesAsync(cancellationToken);
+  }
+
   public virtual async Task HandleAsync(UserSignedInEvent @event, CancellationToken cancellationToken)
   {
     UserEntity user = await _context.Users
