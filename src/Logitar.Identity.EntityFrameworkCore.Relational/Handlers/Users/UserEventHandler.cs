@@ -105,7 +105,6 @@ public class UserEventHandler : IUserEventHandler
 
     user.SetPhone(@event);
 
-    await SaveActorAsync(user, cancellationToken);
     await _context.SaveChangesAsync(cancellationToken);
   }
 
