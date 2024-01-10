@@ -92,6 +92,7 @@ public class UserAggregate : AggregateRoot
     }
   }
 
+  private readonly BirthdateValidator _birthdateValidator = new();
   private DateTime? _birthdate = null;
   public DateTime? Birthdate
   {
@@ -102,7 +103,7 @@ public class UserAggregate : AggregateRoot
       {
         if (value.HasValue)
         {
-          new BirthdateValidator().ValidateAndThrow(value.Value);
+          _birthdateValidator.ValidateAndThrow(value.Value);
         }
 
         _birthdate = value;
@@ -192,7 +193,11 @@ public class UserAggregate : AggregateRoot
 
   public DateTime? AuthenticatedOn { get; private set; }
 
-  // TODO(fpion): Custom Attributes
+  private readonly Dictionary<string, string> _customAttributes = [];
+  public IReadOnlyDictionary<string, string> CustomAttributes => _customAttributes.AsReadOnly();
+
+  private readonly Dictionary<string, string> _customIdentifiers = [];
+  public IReadOnlyDictionary<string, string> CustomIdentifiers => _customIdentifiers.AsReadOnly();
 
   // TODO(fpion): Roles
 
@@ -210,6 +215,52 @@ public class UserAggregate : AggregateRoot
     TenantId = @event.TenantId;
 
     _uniqueName = @event.UniqueName;
+  }
+
+  // TODO(fpion): AddRole
+
+  public void Authenticate(string password, ActorId actorId = default)
+  {
+    if (IsDisabled)
+    {
+      throw new UserIsDisabledException(this);
+    }
+    else if (_password == null)
+    {
+      throw new UserHasNoPasswordException(this);
+    }
+    else if (!_password.IsMatch(password))
+    {
+      throw new IncorrectUserPasswordException(this, password);
+    }
+
+    Raise(new UserAuthenticatedEvent(actorId));
+  }
+  protected virtual void Apply(UserAuthenticatedEvent @event)
+  {
+    AuthenticatedOn = @event.OccurredOn;
+  }
+
+  public void ChangePassword(string currentPassword, Password newPassword, ActorId actorId = default)
+  {
+    if (IsDisabled)
+    {
+      throw new UserIsDisabledException(this);
+    }
+    else if (_password == null)
+    {
+      throw new UserHasNoPasswordException(this);
+    }
+    else if (!_password.IsMatch(currentPassword))
+    {
+      throw new IncorrectUserPasswordException(this, currentPassword);
+    }
+
+    Raise(new UserPasswordChangedEvent(actorId, newPassword));
+  }
+  protected virtual void Apply(UserPasswordChangedEvent @event)
+  {
+    _password = @event.Password;
   }
 
   public void Delete(ActorId actorId = default)
@@ -244,6 +295,48 @@ public class UserAggregate : AggregateRoot
     IsDisabled = false;
   }
 
+  // TODO(fpion): HasRole
+
+  public void RemoveCustomAttribute(string key)
+  {
+    key = key.Trim();
+
+    if (_customAttributes.ContainsKey(key))
+    {
+      _updatedEvent.CustomAttributes[key] = null;
+      _customAttributes.Remove(key);
+    }
+  }
+
+  // TODO(fpion): RemoveCustomIdentifier
+
+  // TODO(fpion): RemoveRole
+
+  public void ResetPassword(Password password, ActorId actorId = default)
+  {
+    Raise(new UserPasswordResetEvent(actorId, password));
+  }
+  protected virtual void Apply(UserPasswordResetEvent @event)
+  {
+    _password = @event.Password;
+  }
+
+  private readonly CustomAttributeValidator _customAttributeValidator = new();
+  public void SetCustomAttribute(string key, string value)
+  {
+    key = key.Trim();
+    value = value.Trim();
+    _customAttributeValidator.ValidateAndThrow(key, value);
+
+    if (!_customAttributes.TryGetValue(key, out string? existingValue) || existingValue != value)
+    {
+      _updatedEvent.CustomAttributes[key] = value;
+      _customAttributes[key] = value;
+    }
+  }
+
+  // TODO(fpion): SetCustomIdentifier
+
   public void SetEmail(EmailUnit? email, ActorId actorId = default)
   {
     if (email != Email)
@@ -258,16 +351,20 @@ public class UserAggregate : AggregateRoot
 
   public void SetPassword(Password password, ActorId actorId = default)
   {
-    Raise(new UserPasswordChangedEvent(actorId, password));
+    Raise(new UserPasswordUpdatedEvent(actorId, password));
   }
-  protected virtual void Apply(UserPasswordChangedEvent @event)
+  protected virtual void Apply(UserPasswordUpdatedEvent @event)
   {
     _password = @event.Password;
   }
 
+  public SessionAggregate SignIn(Password? secret = null, ActorId actorId = default, SessionId? id = null)
+  {
+    return SignIn(password: null, secret, actorId, id);
+  }
   public SessionAggregate SignIn(string? password = null, Password? secret = null, ActorId actorId = default, SessionId? id = null)
   {
-    if (IsDeleted)
+    if (IsDisabled)
     {
       throw new UserIsDisabledException(this);
     }
@@ -354,6 +451,18 @@ public class UserAggregate : AggregateRoot
     if (@event.Website != null)
     {
       _website = @event.Website.Value;
+    }
+
+    foreach (KeyValuePair<string, string?> custonAttribute in @event.CustomAttributes)
+    {
+      if (custonAttribute.Value == null)
+      {
+        _customAttributes.Remove(custonAttribute.Key);
+      }
+      else
+      {
+        _customAttributes[custonAttribute.Key] = custonAttribute.Value;
+      }
     }
   }
 

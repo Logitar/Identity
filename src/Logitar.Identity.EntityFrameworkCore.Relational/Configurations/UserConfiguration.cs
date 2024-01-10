@@ -42,6 +42,8 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
     builder.HasIndex(x => x.TimeZone);
     builder.HasIndex(x => x.AuthenticatedOn);
 
+    builder.Ignore(x => x.CustomAttributes);
+
     builder.Property(x => x.TenantId).HasMaxLength(AggregateId.MaximumLength);
     builder.Property(x => x.UniqueName).HasMaxLength(UniqueNameUnit.MaximumLength);
     builder.Property(x => x.UniqueNameNormalized).HasMaxLength(UniqueNameUnit.MaximumLength);
@@ -62,5 +64,6 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
     builder.Property(x => x.Picture).HasMaxLength(UrlUnit.MaximumLength);
     builder.Property(x => x.Profile).HasMaxLength(UrlUnit.MaximumLength);
     builder.Property(x => x.Website).HasMaxLength(UrlUnit.MaximumLength);
+    builder.Property(x => x.CustomAttributesSerialized).HasColumnName(nameof(UserEntity.CustomAttributes));
   }
 }

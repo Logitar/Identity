@@ -25,6 +25,23 @@ public class SessionEntity : AggregateEntity
     private set { }
   }
 
+  public Dictionary<string, string> CustomAttributes { get; private set; } = [];
+  public string? CustomAttributesSerialized
+  {
+    get => CustomAttributes.Count == 0 ? null : JsonSerializer.Serialize(CustomAttributes);
+    private set
+    {
+      if (value == null)
+      {
+        CustomAttributes.Clear();
+      }
+      else
+      {
+        CustomAttributes = JsonSerializer.Deserialize<Dictionary<string, string>>(value) ?? [];
+      }
+    }
+  }
+
   public SessionEntity(UserEntity user, SessionCreatedEvent @event) : base(@event)
   {
     User = user;
@@ -69,5 +86,22 @@ public class SessionEntity : AggregateEntity
 
     SignedOutBy = @event.ActorId.Value;
     SignedOutOn = @event.OccurredOn.ToUniversalTime();
+  }
+
+  public void Update(SessionUpdatedEvent @event)
+  {
+    base.Update(@event);
+
+    foreach (KeyValuePair<string, string?> customAttribute in @event.CustomAttributes)
+    {
+      if (customAttribute.Value == null)
+      {
+        CustomAttributes.Remove(customAttribute.Key);
+      }
+      else
+      {
+        CustomAttributes[customAttribute.Key] = customAttribute.Value;
+      }
+    }
   }
 }

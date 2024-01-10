@@ -25,11 +25,26 @@ public class EventBus : IEventBus
   {
     switch (@event)
     {
+      #region Sessions
       case SessionCreatedEvent sessionCreated:
         await SessionEventHandler.HandleAsync(sessionCreated, cancellationToken);
         break;
       case SessionDeletedEvent sessionDeleted:
         await SessionEventHandler.HandleAsync(sessionDeleted, cancellationToken);
+        break;
+      case SessionRenewedEvent sessionRenewed:
+        await SessionEventHandler.HandleAsync(sessionRenewed, cancellationToken);
+        break;
+      case SessionSignedOutEvent sessionSignedOut:
+        await SessionEventHandler.HandleAsync(sessionSignedOut, cancellationToken);
+        break;
+      case SessionUpdatedEvent sessionUpdated:
+        await SessionEventHandler.HandleAsync(sessionUpdated, cancellationToken);
+        break;
+      #endregion
+      #region Users
+      case UserAuthenticatedEvent userAuthenticated:
+        await UserEventHandler.HandleAsync(userAuthenticated, cancellationToken);
         break;
       case UserCreatedEvent userCreated:
         await UserEventHandler.HandleAsync(userCreated, cancellationToken);
@@ -40,14 +55,20 @@ public class EventBus : IEventBus
       case UserDisabledEvent userDisabled:
         await UserEventHandler.HandleAsync(userDisabled, cancellationToken);
         break;
-      case UserEnabledEvent userEnabled:
-        await UserEventHandler.HandleAsync(userEnabled, cancellationToken);
-        break;
       case UserEmailChangedEvent userEmailChanged:
         await UserEventHandler.HandleAsync(userEmailChanged, cancellationToken);
         break;
+      case UserEnabledEvent userEnabled:
+        await UserEventHandler.HandleAsync(userEnabled, cancellationToken);
+        break;
       case UserPasswordChangedEvent userPasswordChanged:
         await UserEventHandler.HandleAsync(userPasswordChanged, cancellationToken);
+        break;
+      case UserPasswordResetEvent userPasswordReset:
+        await UserEventHandler.HandleAsync(userPasswordReset, cancellationToken);
+        break;
+      case UserPasswordUpdatedEvent userPasswordUpdated:
+        await UserEventHandler.HandleAsync(userPasswordUpdated, cancellationToken);
         break;
       case UserSignedInEvent userSignedIn:
         await UserEventHandler.HandleAsync(userSignedIn, cancellationToken);
@@ -58,6 +79,7 @@ public class EventBus : IEventBus
       case UserUpdatedEvent userUpdated:
         await UserEventHandler.HandleAsync(userUpdated, cancellationToken);
         break;
+        #endregion
     }
 
     await Publisher.Publish(@event, cancellationToken);

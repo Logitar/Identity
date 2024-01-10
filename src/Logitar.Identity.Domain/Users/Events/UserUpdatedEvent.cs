@@ -21,7 +21,10 @@ public record UserUpdatedEvent : DomainEvent, INotification
   public Modification<UrlUnit>? Profile { get; set; }
   public Modification<UrlUnit>? Website { get; set; }
 
+  public Dictionary<string, string?> CustomAttributes { get; init; } = [];
+
   public bool HasChanges => FirstName != null || MiddleName != null || LastName != null || FullName != null || Nickname != null
     || Birthdate != null || Gender != null || Locale != null || TimeZone != null
-    || Picture != null || Profile != null || Website != null;
+    || Picture != null || Profile != null || Website != null
+    || CustomAttributes.Count > 0;
 }
