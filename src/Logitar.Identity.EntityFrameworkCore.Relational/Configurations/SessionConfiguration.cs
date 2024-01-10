@@ -19,8 +19,11 @@ public class SessionConfiguration : AggregateConfiguration<SessionEntity>, IEnti
     builder.HasIndex(x => x.SignedOutOn);
     builder.HasIndex(x => x.IsActive);
 
+    builder.Ignore(x => x.CustomAttributes);
+
     builder.Property(x => x.SecretHash).HasMaxLength(byte.MaxValue);
     builder.Property(x => x.SignedOutBy).HasMaxLength(ActorId.MaximumLength);
+    builder.Property(x => x.CustomAttributesSerialized).HasColumnName(nameof(SessionEntity.CustomAttributes));
 
     builder.HasOne(x => x.User).WithMany(x => x.Sessions)
       .HasPrincipalKey(x => x.UserId).HasForeignKey(x => x.UserId)

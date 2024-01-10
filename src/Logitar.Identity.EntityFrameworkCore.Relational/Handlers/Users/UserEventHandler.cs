@@ -13,6 +13,17 @@ public class UserEventHandler : IUserEventHandler
     _context = context;
   }
 
+  public virtual async Task HandleAsync(UserAuthenticatedEvent @event, CancellationToken cancellationToken)
+  {
+    UserEntity user = await _context.Users
+     .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
+     ?? throw new InvalidOperationException($"The user entity 'AggregateId={@event.AggregateId}' could not be found.");
+
+    user.Authenticate(@event);
+
+    await _context.SaveChangesAsync(cancellationToken);
+  }
+
   public virtual async Task HandleAsync(UserCreatedEvent @event, CancellationToken cancellationToken)
   {
     UserEntity? user = await _context.Users.AsNoTracking()
@@ -75,7 +86,7 @@ public class UserEventHandler : IUserEventHandler
     await _context.SaveChangesAsync(cancellationToken);
   }
 
-  public virtual async Task HandleAsync(UserPasswordChangedEvent @event, CancellationToken cancellationToken)
+  public virtual async Task HandleAsync(UserPasswordEvent @event, CancellationToken cancellationToken)
   {
     UserEntity user = await _context.Users
       .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
@@ -117,6 +128,7 @@ public class UserEventHandler : IUserEventHandler
 
     user.Update(@event);
 
+    // TODO(fpion): materialize custom attributes
     await SaveActorAsync(user, cancellationToken);
     await _context.SaveChangesAsync(cancellationToken);
   }

@@ -70,6 +70,23 @@ public class UserEntity : AggregateEntity
 
   public DateTime? AuthenticatedOn { get; private set; }
 
+  public Dictionary<string, string> CustomAttributes { get; private set; } = [];
+  public string? CustomAttributesSerialized
+  {
+    get => CustomAttributes.Count == 0 ? null : JsonSerializer.Serialize(CustomAttributes);
+    private set
+    {
+      if (value == null)
+      {
+        CustomAttributes.Clear();
+      }
+      else
+      {
+        CustomAttributes = JsonSerializer.Deserialize<Dictionary<string, string>>(value) ?? [];
+      }
+    }
+  }
+
   public List<SessionEntity> Sessions { get; private set; } = [];
 
   public UserEntity(UserCreatedEvent @event) : base(@event)
@@ -115,6 +132,13 @@ public class UserEntity : AggregateEntity
     return actorIds.AsReadOnly();
   }
 
+  public void Authenticate(UserAuthenticatedEvent @event)
+  {
+    Update(@event);
+
+    AuthenticatedOn = @event.OccurredOn;
+  }
+
   public void Disable(UserDisabledEvent @event)
   {
     Update(@event);
@@ -149,7 +173,7 @@ public class UserEntity : AggregateEntity
     }
   }
 
-  public void SetPassword(UserPasswordChangedEvent @event)
+  public void SetPassword(UserPasswordEvent @event)
   {
     Update(@event);
 
@@ -225,6 +249,18 @@ public class UserEntity : AggregateEntity
     if (@event.Website != null)
     {
       Website = @event.Website.Value?.Value;
+    }
+
+    foreach (KeyValuePair<string, string?> customAttribute in @event.CustomAttributes)
+    {
+      if (customAttribute.Value == null)
+      {
+        CustomAttributes.Remove(customAttribute.Key);
+      }
+      else
+      {
+        CustomAttributes[customAttribute.Key] = customAttribute.Value;
+      }
     }
   }
 }
