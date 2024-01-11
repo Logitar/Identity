@@ -85,6 +85,29 @@ public class UserEventHandler : EventHandler, IUserEventHandler
     await Context.SaveChangesAsync(cancellationToken);
   }
 
+  public virtual async Task HandleAsync(UserIdentifierChangedEvent @event, CancellationToken cancellationToken)
+  {
+    UserEntity user = await Context.Users
+      .Include(x => x.Identifiers)
+      .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
+      ?? throw new InvalidOperationException($"The user entity 'AggregateId={@event.AggregateId}' could not be found.");
+
+    user.SetCustomIdentifier(@event);
+
+    await Context.SaveChangesAsync(cancellationToken);
+  }
+  public virtual async Task HandleAsync(UserIdentifierRemovedEvent @event, CancellationToken cancellationToken)
+  {
+    UserEntity user = await Context.Users
+      .Include(x => x.Identifiers)
+      .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
+      ?? throw new InvalidOperationException($"The user entity 'AggregateId={@event.AggregateId}' could not be found.");
+
+    user.RemoveCustomIdentifier(@event);
+
+    await Context.SaveChangesAsync(cancellationToken);
+  }
+
   public virtual async Task HandleAsync(UserEnabledEvent @event, CancellationToken cancellationToken)
   {
     UserEntity user = await Context.Users

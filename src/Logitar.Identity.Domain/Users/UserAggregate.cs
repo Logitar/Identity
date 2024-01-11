@@ -308,7 +308,19 @@ public class UserAggregate : AggregateRoot
     }
   }
 
-  // TODO(fpion): RemoveCustomIdentifier
+  public void RemoveCustomIdentifier(string key, ActorId actorId = default)
+  {
+    key = key.Trim();
+
+    if (_customIdentifiers.ContainsKey(key))
+    {
+      Raise(new UserIdentifierRemovedEvent(actorId, key));
+    }
+  }
+  protected virtual void Apply(UserIdentifierRemovedEvent @event)
+  {
+    _customIdentifiers.Remove(@event.Key);
+  }
 
   // TODO(fpion): RemoveRole
 
@@ -347,7 +359,22 @@ public class UserAggregate : AggregateRoot
     }
   }
 
-  // TODO(fpion): SetCustomIdentifier
+  private readonly CustomIdentifierValidator _customIdentifierValidator = new();
+  public void SetCustomIdentifier(string key, string value, ActorId actorId = default)
+  {
+    key = key.Trim();
+    value = value.Trim();
+    _customIdentifierValidator.ValidateAndThrow(key, value);
+
+    if (!_customIdentifiers.TryGetValue(key, out string? existingValue) || existingValue != value)
+    {
+      Raise(new UserIdentifierChangedEvent(actorId, key, value));
+    }
+  }
+  protected virtual void Apply(UserIdentifierChangedEvent @event)
+  {
+    _customIdentifiers[@event.Key] = @event.Value;
+  }
 
   public void SetEmail(EmailUnit? email, ActorId actorId = default)
   {

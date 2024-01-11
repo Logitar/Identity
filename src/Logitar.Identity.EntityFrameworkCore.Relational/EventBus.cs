@@ -64,6 +64,12 @@ public class EventBus : IEventBus
       case UserEnabledEvent userEnabled:
         await UserEventHandler.HandleAsync(userEnabled, cancellationToken);
         break;
+      case UserIdentifierChangedEvent userIdentifierChanged:
+        await UserEventHandler.HandleAsync(userIdentifierChanged, cancellationToken);
+        break;
+      case UserIdentifierRemovedEvent userIdentifierRemoved:
+        await UserEventHandler.HandleAsync(userIdentifierRemoved, cancellationToken);
+        break;
       case UserPasswordChangedEvent userPasswordChanged:
         await UserEventHandler.HandleAsync(userPasswordChanged, cancellationToken);
         break;
