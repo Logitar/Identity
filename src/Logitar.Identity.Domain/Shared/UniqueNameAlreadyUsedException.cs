@@ -30,7 +30,7 @@ public class UniqueNameAlreadyUsedException : Exception
 
   private static string BuildMessage(Type type, TenantId? tenantId, UniqueNameUnit uniqueName) => new ErrorMessageBuilder(ErrorMessage)
     .AddData(nameof(TypeName), type.GetNamespaceQualifiedName())
-    .AddData(nameof(TenantId), tenantId?.Value ?? "<null>")
+    .AddData(nameof(TenantId), tenantId?.Value, "<null>")
     .AddData(nameof(UniqueName), uniqueName.Value)
     .Build();
 }

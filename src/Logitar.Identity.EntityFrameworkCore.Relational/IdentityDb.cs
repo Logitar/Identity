@@ -18,6 +18,34 @@ public static class IdentityDb
     public static readonly ColumnId Type = new(nameof(ActorEntity.Type), Table);
   }
 
+  public static class ApiKeyRoles
+  {
+    public static readonly TableId Table = new(nameof(IdentityContext.ApiKeyRoles));
+
+    public static readonly ColumnId ApiKeyId = new(nameof(ApiKeyRoleEntity.ApiKeyId), Table);
+    public static readonly ColumnId RoleId = new(nameof(ApiKeyRoleEntity.RoleId), Table);
+  }
+
+  public static class ApiKeys
+  {
+    public static readonly TableId Table = new(nameof(IdentityContext.ApiKeys));
+
+    public static readonly ColumnId AggregateId = new(nameof(ApiKeyEntity.AggregateId), Table);
+    public static readonly ColumnId ApiKeyId = new(nameof(ApiKeyEntity.ApiKeyId), Table);
+    public static readonly ColumnId AuthenticatedOn = new(nameof(ApiKeyEntity.AuthenticatedOn), Table);
+    public static readonly ColumnId CreatedBy = new(nameof(ApiKeyEntity.CreatedBy), Table);
+    public static readonly ColumnId CreatedOn = new(nameof(ApiKeyEntity.CreatedOn), Table);
+    public static readonly ColumnId CustomAttributes = new(nameof(ApiKeyEntity.CustomAttributes), Table);
+    public static readonly ColumnId Description = new(nameof(ApiKeyEntity.Description), Table);
+    public static readonly ColumnId DisplayName = new(nameof(ApiKeyEntity.DisplayName), Table);
+    public static readonly ColumnId ExpiresOn = new(nameof(ApiKeyEntity.ExpiresOn), Table);
+    public static readonly ColumnId SecretHash = new(nameof(ApiKeyEntity.SecretHash), Table);
+    public static readonly ColumnId TenantId = new(nameof(ApiKeyEntity.TenantId), Table);
+    public static readonly ColumnId UpdatedBy = new(nameof(ApiKeyEntity.UpdatedBy), Table);
+    public static readonly ColumnId UpdatedOn = new(nameof(ApiKeyEntity.UpdatedOn), Table);
+    public static readonly ColumnId Version = new(nameof(ApiKeyEntity.Version), Table);
+  }
+
   public static class CustomAttributes
   {
     public static readonly TableId Table = new(nameof(IdentityContext.CustomAttributes));

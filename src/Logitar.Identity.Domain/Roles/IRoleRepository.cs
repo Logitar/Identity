@@ -1,4 +1,5 @@
-﻿using Logitar.Identity.Domain.Shared;
+﻿using Logitar.Identity.Domain.ApiKeys;
+using Logitar.Identity.Domain.Shared;
 using Logitar.Identity.Domain.Users;
 
 namespace Logitar.Identity.Domain.Roles;
@@ -21,6 +22,7 @@ public interface IRoleRepository
 
   Task<RoleAggregate?> LoadAsync(TenantId? tenantId, UniqueNameUnit uniqueName, CancellationToken cancellationToken = default);
 
+  Task<IEnumerable<RoleAggregate>> LoadAsync(ApiKeyAggregate apiKey, CancellationToken cancellationToken = default);
   Task<IEnumerable<RoleAggregate>> LoadAsync(UserAggregate user, CancellationToken cancellationToken = default);
 
   Task SaveAsync(RoleAggregate role, CancellationToken cancellationToken = default);
