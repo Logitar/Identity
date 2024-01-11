@@ -1,13 +1,14 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Shared;
+using MediatR;
 
 namespace Logitar.Identity.Domain.ApiKeys.Events;
 
 /// <summary>
 /// The event raised when a new API key is created.
 /// </summary>
-public record ApiKeyCreatedEvent : DomainEvent
+public record ApiKeyCreatedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Gets the secret of the API key.

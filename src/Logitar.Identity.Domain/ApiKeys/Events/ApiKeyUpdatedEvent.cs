@@ -1,12 +1,13 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Shared;
+using MediatR;
 
 namespace Logitar.Identity.Domain.ApiKeys.Events;
 
 /// <summary>
 /// The event raised when an existing API key is modified.
 /// </summary>
-public record ApiKeyUpdatedEvent : DomainEvent
+public record ApiKeyUpdatedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Gets or sets the display name of the API key.
