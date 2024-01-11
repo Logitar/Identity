@@ -2,22 +2,35 @@
 
 namespace Logitar.Identity.Domain.Sessions;
 
+/// <summary>
+/// The exception raised when an ephemeral (not persistent) session is renewed.
+/// </summary>
 public class SessionIsNotPersistentException : InvalidCredentialsException
 {
+  /// <summary>
+  /// A generic error message for this exception.
+  /// </summary>
   public new const string ErrorMessage = "The specified session is not persistent.";
 
-  public string Session
+  /// <summary>
+  /// Gets the identifier of the ephemeral session.
+  /// </summary>
+  public SessionId SessionId
   {
-    get => (string)Data[nameof(Session)]!;
-    private set => Data[nameof(Session)] = value;
+    get => new((string)Data[nameof(SessionId)]!);
+    private set => Data[nameof(SessionId)] = value.Value;
   }
 
+  /// <summary>
+  /// Initializes a new instance of the <see cref="SessionIsNotPersistentException"/> class.
+  /// </summary>
+  /// <param name="session">The session that is ephemeral.</param>
   public SessionIsNotPersistentException(SessionAggregate session) : base(BuildMessage(session))
   {
-    Session = session.ToString();
+    SessionId = session.Id;
   }
 
   private static string BuildMessage(SessionAggregate session) => new ErrorMessageBuilder(ErrorMessage)
-    .AddData(nameof(Session), session.ToString())
+    .AddData(nameof(SessionId), session.Id.Value)
     .Build();
 }

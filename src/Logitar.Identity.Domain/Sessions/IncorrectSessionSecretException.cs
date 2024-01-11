@@ -2,29 +2,47 @@
 
 namespace Logitar.Identity.Domain.Sessions;
 
+/// <summary>
+/// The exception raised when a session secret check fails.
+/// </summary>
 public class IncorrectSessionSecretException : InvalidCredentialsException
 {
-  public new const string ErrorMessage = "The specified secret did not match the specified session.";
+  /// <summary>
+  /// A generic error message for this exception.
+  /// </summary>
+  public new const string ErrorMessage = "The specified secret did not match the session.";
 
-  public string Session
+  /// <summary>
+  /// Gets or sets the identifier of the session.
+  /// </summary>
+  public SessionId SessionId
   {
-    get => (string)Data[nameof(Session)]!;
-    private set => Data[nameof(Session)] = value;
+    get => new((string)Data[nameof(SessionId)]!);
+    private set => Data[nameof(SessionId)] = value.Value;
   }
-  public string Secret
+  /// <summary>
+  /// Gets or sets the attempted secret.
+  /// </summary>
+  public string AttemptedSecret
   {
-    get => (string)Data[nameof(Secret)]!;
-    private set => Data[nameof(Secret)] = value;
+    get => (string)Data[nameof(AttemptedSecret)]!;
+    private set => Data[nameof(AttemptedSecret)] = value;
   }
 
-  public IncorrectSessionSecretException(SessionAggregate session, byte[] secret) : base(BuildMessage(session, secret))
+  /// <summary>
+  /// Initializes a new instance of the <see cref="IncorrectSessionSecretException"/> class.
+  /// </summary>
+  /// <param name="attemptedSecret">The attempted secret.</param>
+  /// <param name="session">The session.</param>
+  public IncorrectSessionSecretException(SessionAggregate session, string attemptedSecret)
+    : base(BuildMessage(session, attemptedSecret))
   {
-    Session = session.ToString();
-    Secret = Convert.ToBase64String(secret);
+    SessionId = session.Id;
+    AttemptedSecret = attemptedSecret;
   }
 
-  private static string BuildMessage(SessionAggregate session, byte[] secret) => new ErrorMessageBuilder(ErrorMessage)
-    .AddData(nameof(Session), session.ToString())
-    .AddData(nameof(Secret), Convert.ToBase64String(secret))
+  private static string BuildMessage(SessionAggregate session, string attemptedSecret) => new ErrorMessageBuilder(ErrorMessage)
+    .AddData(nameof(AttemptedSecret), attemptedSecret)
+    .AddData(nameof(SessionId), session.Id.Value)
     .Build();
 }
