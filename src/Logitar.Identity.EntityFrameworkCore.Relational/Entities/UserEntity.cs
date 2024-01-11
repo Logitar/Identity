@@ -34,6 +34,20 @@ public class UserEntity : AggregateEntity
     private set { }
   }
 
+  public string? AddressStreet { get; private set; }
+  public string? AddressLocality { get; private set; }
+  public string? AddressPostalCode { get; private set; }
+  public string? AddressRegion { get; private set; }
+  public string? AddressCountry { get; private set; }
+  public string? AddressFormatted { get; private set; }
+  public string? AddressVerifiedBy { get; private set; }
+  public DateTime? AddressVerifiedOn { get; private set; }
+  public bool IsAddressVerified
+  {
+    get => AddressVerifiedBy != null && AddressVerifiedOn != null;
+    private set { }
+  }
+
   public string? EmailAddress { get; private set; }
   public string? EmailAddressNormalized
   {
@@ -62,7 +76,7 @@ public class UserEntity : AggregateEntity
 
   public bool IsConfirmed
   {
-    get => IsEmailVerified || IsPhoneVerified;
+    get => IsAddressVerified || IsEmailVerified || IsPhoneVerified;
     private set { }
   }
 
@@ -129,6 +143,10 @@ public class UserEntity : AggregateEntity
       actorIds.Add(new ActorId(DisabledBy));
     }
 
+    if (AddressVerifiedBy != null)
+    {
+      actorIds.Add(new ActorId(AddressVerifiedBy));
+    }
     if (EmailVerifiedBy != null)
     {
       actorIds.Add(new ActorId(EmailVerifiedBy));
@@ -170,6 +188,29 @@ public class UserEntity : AggregateEntity
 
     DisabledBy = null;
     DisabledOn = null;
+  }
+
+  public void SetAddress(UserAddressChangedEvent @event)
+  {
+    Update(@event);
+
+    AddressStreet = @event.Address?.Street;
+    AddressLocality = @event.Address?.Locality;
+    AddressPostalCode = @event.Address?.PostalCode;
+    AddressRegion = @event.Address?.Region;
+    AddressCountry = @event.Address?.Country;
+    AddressFormatted = @event.Address?.Format();
+
+    if (!IsAddressVerified && @event.Address?.IsVerified == true)
+    {
+      AddressVerifiedBy = @event.ActorId.Value;
+      AddressVerifiedOn = @event.OccurredOn.ToUniversalTime();
+    }
+    else if (IsAddressVerified && @event.Address?.IsVerified != true)
+    {
+      AddressVerifiedBy = null;
+      AddressVerifiedOn = null;
+    }
   }
 
   public void SetEmail(UserEmailChangedEvent @event)

@@ -9,6 +9,7 @@ namespace Logitar.Identity.EntityFrameworkCore.Relational.Configurations;
 
 public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityTypeConfiguration<UserEntity>
 {
+  public const int AddressFormattedMaximumLength = AddressUnit.MaximumLength * 5 + 4; // TODO(fpion): enough space to contain the five address components, each separated by one character.
   public const int FullNameMaximumLength = PersonNameUnit.MaximumLength * 3 + 2; // NOTE(fpion): enough space to contain the first, middle and last names, separator by a space ' '.
   public const int PhoneE164FormattedMaximumLength = PhoneUnit.CountryCodeLength + 1 + PhoneUnit.NumberMaximumLength + 7 + PhoneUnit.ExtensionMaximumLength; // NOTE(fpion): enough space to contain the following format '{CountryCode} {Number}, ext. {Extension}'.
 
@@ -28,6 +29,15 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
     builder.HasIndex(x => x.DisabledBy);
     builder.HasIndex(x => x.DisabledOn);
     builder.HasIndex(x => x.IsDisabled);
+    builder.HasIndex(x => x.AddressStreet);
+    builder.HasIndex(x => x.AddressLocality);
+    builder.HasIndex(x => x.AddressPostalCode);
+    builder.HasIndex(x => x.AddressRegion);
+    builder.HasIndex(x => x.AddressCountry);
+    builder.HasIndex(x => x.AddressFormatted);
+    builder.HasIndex(x => x.AddressVerifiedBy);
+    builder.HasIndex(x => x.AddressVerifiedOn);
+    builder.HasIndex(x => x.IsAddressVerified);
     builder.HasIndex(x => x.EmailAddress);
     builder.HasIndex(x => new { x.TenantId, x.EmailAddressNormalized });
     builder.HasIndex(x => x.EmailVerifiedBy);
@@ -60,6 +70,13 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
     builder.Property(x => x.PasswordHash).HasMaxLength(byte.MaxValue);
     builder.Property(x => x.PasswordChangedBy).HasMaxLength(ActorId.MaximumLength);
     builder.Property(x => x.DisabledBy).HasMaxLength(ActorId.MaximumLength);
+    builder.Property(x => x.AddressStreet).HasMaxLength(AddressUnit.MaximumLength);
+    builder.Property(x => x.AddressLocality).HasMaxLength(AddressUnit.MaximumLength);
+    builder.Property(x => x.AddressPostalCode).HasMaxLength(AddressUnit.MaximumLength);
+    builder.Property(x => x.AddressRegion).HasMaxLength(AddressUnit.MaximumLength);
+    builder.Property(x => x.AddressCountry).HasMaxLength(AddressUnit.MaximumLength);
+    builder.Property(x => x.AddressFormatted).HasMaxLength(AddressFormattedMaximumLength);
+    builder.Property(x => x.AddressVerifiedBy).HasMaxLength(ActorId.MaximumLength);
     builder.Property(x => x.EmailAddress).HasMaxLength(EmailUnit.MaximumLength);
     builder.Property(x => x.EmailAddressNormalized).HasMaxLength(EmailUnit.MaximumLength);
     builder.Property(x => x.EmailVerifiedBy).HasMaxLength(ActorId.MaximumLength);

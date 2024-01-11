@@ -43,6 +43,9 @@ public class EventBus : IEventBus
         break;
       #endregion
       #region Users
+      case UserAddressChangedEvent userAddressChanged:
+        await UserEventHandler.HandleAsync(userAddressChanged, cancellationToken);
+        break;
       case UserAuthenticatedEvent userAuthenticated:
         await UserEventHandler.HandleAsync(userAuthenticated, cancellationToken);
         break;
