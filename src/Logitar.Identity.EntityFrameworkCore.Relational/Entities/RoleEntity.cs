@@ -35,6 +35,7 @@ public class RoleEntity : AggregateEntity
     }
   }
 
+  public List<ApiKeyEntity> ApiKeys { get; private set; } = [];
   public List<UserEntity> Users { get; private set; } = [];
 
   public RoleEntity(RoleCreatedEvent @event) : base(@event)

@@ -1,4 +1,5 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Identity.Domain.ApiKeys;
 using Logitar.Identity.Domain.Roles.Events;
 using Logitar.Identity.Domain.Shared;
 using Logitar.Identity.Domain.Users;
@@ -7,11 +8,13 @@ namespace Logitar.Identity.Domain.Roles;
 
 public class RoleManager : IRoleManager
 {
+  private readonly IApiKeyRepository _apiKeyRepository;
   private readonly IRoleRepository _roleRepository;
   private readonly IUserRepository _userRepository;
 
-  public RoleManager(IRoleRepository roleRepository, IUserRepository userRepository)
+  public RoleManager(IApiKeyRepository apiKeyRepository, IRoleRepository roleRepository, IUserRepository userRepository)
   {
+    _apiKeyRepository = apiKeyRepository;
     _roleRepository = roleRepository;
     _userRepository = userRepository;
   }
@@ -43,7 +46,12 @@ public class RoleManager : IRoleManager
 
     if (hasBeenDeleted)
     {
-      // TODO(fpion): remove role from API keys
+      IEnumerable<ApiKeyAggregate> apiKeys = await _apiKeyRepository.LoadAsync(role, cancellationToken);
+      foreach (ApiKeyAggregate apiKey in apiKeys)
+      {
+        apiKey.RemoveRole(role, actorId);
+      }
+      await _apiKeyRepository.SaveAsync(apiKeys, cancellationToken);
 
       IEnumerable<UserAggregate> users = await _userRepository.LoadAsync(role, cancellationToken);
       foreach (UserAggregate user in users)

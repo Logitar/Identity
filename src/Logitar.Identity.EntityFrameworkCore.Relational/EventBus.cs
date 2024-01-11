@@ -1,8 +1,10 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.EventSourcing.Infrastructure;
+using Logitar.Identity.Domain.ApiKeys.Events;
 using Logitar.Identity.Domain.Roles.Events;
 using Logitar.Identity.Domain.Sessions.Events;
 using Logitar.Identity.Domain.Users.Events;
+using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.ApiKeys;
 using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Roles;
 using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Sessions;
 using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Users;
@@ -12,15 +14,17 @@ namespace Logitar.Identity.EntityFrameworkCore.Relational;
 
 public class EventBus : IEventBus
 {
-  public EventBus(IPublisher publisher, IRoleEventHandler roleEventHandler, ISessionEventHandler sessionEventHandler, IUserEventHandler userEventHandler)
+  public EventBus(IPublisher publisher, IApiKeyEventHandler apiKeyEventHandler, IRoleEventHandler roleEventHandler, ISessionEventHandler sessionEventHandler, IUserEventHandler userEventHandler)
   {
     Publisher = publisher;
+    ApiKeyEventHandler = apiKeyEventHandler;
     RoleEventHandler = roleEventHandler;
     SessionEventHandler = sessionEventHandler;
     UserEventHandler = userEventHandler;
   }
 
   protected IPublisher Publisher { get; }
+  protected IApiKeyEventHandler ApiKeyEventHandler { get; }
   protected IRoleEventHandler RoleEventHandler { get; }
   protected ISessionEventHandler SessionEventHandler { get; }
   protected IUserEventHandler UserEventHandler { get; }
@@ -29,6 +33,26 @@ public class EventBus : IEventBus
   {
     switch (@event)
     {
+      #region ApiKeys
+      case ApiKeyAuthenticatedEvent apiKeyAuthenticated:
+        await ApiKeyEventHandler.HandleAsync(apiKeyAuthenticated, cancellationToken);
+        break;
+      case ApiKeyCreatedEvent apiKeyCreated:
+        await ApiKeyEventHandler.HandleAsync(apiKeyCreated, cancellationToken);
+        break;
+      case ApiKeyDeletedEvent apiKeyDeleted:
+        await ApiKeyEventHandler.HandleAsync(apiKeyDeleted, cancellationToken);
+        break;
+      case ApiKeyRoleAddedEvent apiKeyRoleAdded:
+        await ApiKeyEventHandler.HandleAsync(apiKeyRoleAdded, cancellationToken);
+        break;
+      case ApiKeyRoleRemovedEvent apiKeyRoleRemoved:
+        await ApiKeyEventHandler.HandleAsync(apiKeyRoleRemoved, cancellationToken);
+        break;
+      case ApiKeyUpdatedEvent apiKeyUpdated:
+        await ApiKeyEventHandler.HandleAsync(apiKeyUpdated, cancellationToken);
+        break;
+      #endregion
       #region Roles
       case RoleCreatedEvent roleCreated:
         await RoleEventHandler.HandleAsync(roleCreated, cancellationToken);

@@ -2,6 +2,7 @@
 using Logitar.EventSourcing;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using Logitar.EventSourcing.Infrastructure;
+using Logitar.Identity.Domain.ApiKeys;
 using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Shared;
 using Logitar.Identity.Domain.Users;
@@ -81,6 +82,8 @@ public class RoleRepository : EventSourcing.EntityFrameworkCore.Relational.Aggre
     return Load<RoleAggregate>(events.Select(EventSerializer.Deserialize)).SingleOrDefault();
   }
 
+  public virtual async Task<IEnumerable<RoleAggregate>> LoadAsync(ApiKeyAggregate apiKey, CancellationToken cancellationToken)
+    => await LoadAsync(apiKey.Roles, cancellationToken);
   public virtual async Task<IEnumerable<RoleAggregate>> LoadAsync(UserAggregate user, CancellationToken cancellationToken)
     => await LoadAsync(user.Roles, cancellationToken);
 

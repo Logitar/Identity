@@ -349,6 +349,11 @@ public class UserAggregate : AggregateRoot
 
   public void ResetPassword(Password password, ActorId actorId = default)
   {
+    if (IsDisabled)
+    {
+      throw new UserIsDisabledException(this);
+    }
+
     Raise(new UserPasswordResetEvent(actorId, password));
   }
   protected virtual void Apply(UserPasswordResetEvent @event)

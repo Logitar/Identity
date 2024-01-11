@@ -1,8 +1,10 @@
 ﻿using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using Logitar.EventSourcing.Infrastructure;
+using Logitar.Identity.Domain.ApiKeys;
 using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Users;
+using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.ApiKeys;
 using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Roles;
 using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Sessions;
 using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Users;
@@ -28,6 +30,7 @@ public static class DependencyInjectionExtensions
   private static IServiceCollection AddEventHandlers(this IServiceCollection services)
   {
     return services
+      .AddTransient<IApiKeyEventHandler, ApiKeyEventHandler>()
       .AddTransient<IRoleEventHandler, RoleEventHandler>()
       .AddTransient<ISessionEventHandler, SessionEventHandler>()
       .AddTransient<IUserEventHandler, UserEventHandler>();
@@ -36,6 +39,7 @@ public static class DependencyInjectionExtensions
   private static IServiceCollection AddRepositories(this IServiceCollection services)
   {
     return services
+      .AddTransient<IApiKeyRepository, ApiKeyRepository>()
       .AddTransient<IRoleRepository, RoleRepository>()
       .AddTransient<ISessionRepository, SessionRepository>()
       .AddTransient<IUserRepository, UserRepository>();

@@ -25,7 +25,7 @@ public class EmailAddressAlreadyUsedException : Exception
   }
 
   private static string BuildMessage(TenantId? tenantId, EmailUnit email) => new ErrorMessageBuilder(ErrorMessage)
-    .AddData(nameof(TenantId), tenantId?.Value ?? "<null>")
+    .AddData(nameof(TenantId), tenantId?.Value, "<null>")
     .AddData(nameof(EmailAddress), email.Address)
     .Build();
 }

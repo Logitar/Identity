@@ -24,7 +24,7 @@ public class UserNotFoundException : InvalidCredentialsException
   }
 
   private static string BuildMessage(string? tenantId, string uniqueName) => new ErrorMessageBuilder(ErrorMessage)
-    .AddData(nameof(TenantId), tenantId ?? "<null>")
+    .AddData(nameof(TenantId), tenantId, "<null>")
     .AddData(nameof(UniqueName), uniqueName)
     .Build();
 }

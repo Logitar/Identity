@@ -1,0 +1,15 @@
+﻿using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Roles;
+
+namespace Logitar.Identity.Domain.ApiKeys.Events;
+
+public record ApiKeyRoleRemovedEvent : DomainEvent
+{
+  public RoleId RoleId { get; }
+
+  public ApiKeyRoleRemovedEvent(ActorId actorId, RoleId roleId)
+  {
+    ActorId = actorId;
+    RoleId = roleId;
+  }
+}
