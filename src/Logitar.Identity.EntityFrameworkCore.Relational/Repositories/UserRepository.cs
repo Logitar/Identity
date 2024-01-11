@@ -3,6 +3,7 @@ using Logitar.EventSourcing;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using Logitar.EventSourcing.Infrastructure;
 using Logitar.Identity.Domain.Roles;
+using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Shared;
 using Logitar.Identity.Domain.Users;
 using Microsoft.EntityFrameworkCore;
@@ -137,6 +138,11 @@ public class UserRepository : EventSourcing.EntityFrameworkCore.Relational.Aggre
       .ToArrayAsync(cancellationToken);
 
     return Load<UserAggregate>(events.Select(EventSerializer.Deserialize));
+  }
+  public virtual async Task<UserAggregate> LoadAsync(SessionAggregate session, CancellationToken cancellationToken)
+  {
+    return await LoadAsync(session.UserId, cancellationToken)
+      ?? throw new InvalidOperationException($"The user 'Id={session.UserId.Value}' could not be found.");
   }
 
   public virtual async Task SaveAsync(UserAggregate user, CancellationToken cancellationToken)
