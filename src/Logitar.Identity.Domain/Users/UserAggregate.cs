@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Passwords;
+using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Shared;
 using Logitar.Identity.Domain.Users.Events;
@@ -199,7 +200,8 @@ public class UserAggregate : AggregateRoot
   private readonly Dictionary<string, string> _customIdentifiers = [];
   public IReadOnlyDictionary<string, string> CustomIdentifiers => _customIdentifiers.AsReadOnly();
 
-  // TODO(fpion): Roles
+  private readonly HashSet<RoleId> _roles = [];
+  public IReadOnlyCollection<RoleId> Roles => _roles.ToList().AsReadOnly();
 
   public UserAggregate(AggregateId id) : base(id)
   {
@@ -217,7 +219,17 @@ public class UserAggregate : AggregateRoot
     _uniqueName = @event.UniqueName;
   }
 
-  // TODO(fpion): AddRole
+  public void AddRole(RoleAggregate role, ActorId actorId = default)
+  {
+    if (!HasRole(role))
+    {
+      Raise(new UserRoleAddedEvent(actorId, role.Id));
+    }
+  }
+  protected virtual void Apply(UserRoleAddedEvent @event)
+  {
+    _roles.Add(@event.RoleId);
+  }
 
   public void Authenticate(string password, ActorId actorId = default)
   {
@@ -295,7 +307,8 @@ public class UserAggregate : AggregateRoot
     IsDisabled = false;
   }
 
-  // TODO(fpion): HasRole
+  public bool HasRole(RoleAggregate role) => HasRole(role.Id);
+  public bool HasRole(RoleId id) => _roles.Contains(id);
 
   public void RemoveCustomAttribute(string key)
   {
@@ -322,7 +335,17 @@ public class UserAggregate : AggregateRoot
     _customIdentifiers.Remove(@event.Key);
   }
 
-  // TODO(fpion): RemoveRole
+  public void RemoveRole(RoleAggregate role, ActorId actorId = default)
+  {
+    if (HasRole(role))
+    {
+      Raise(new UserRoleRemovedEvent(actorId, role.Id));
+    }
+  }
+  protected virtual void Apply(UserRoleRemovedEvent @event)
+  {
+    _roles.Remove(@event.RoleId);
+  }
 
   public void ResetPassword(Password password, ActorId actorId = default)
   {

@@ -2,6 +2,7 @@
 using Logitar.EventSourcing;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using Logitar.EventSourcing.Infrastructure;
+using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Shared;
 using Logitar.Identity.Domain.Users;
 using Microsoft.EntityFrameworkCore;
@@ -116,6 +117,26 @@ public class UserRepository : EventSourcing.EntityFrameworkCore.Relational.Aggre
       .ToArrayAsync(cancellationToken);
 
     return Load<UserAggregate>(events.Select(EventSerializer.Deserialize)).SingleOrDefault();
+  }
+
+  public virtual async Task<IEnumerable<UserAggregate>> LoadAsync(RoleAggregate role, CancellationToken cancellationToken)
+  {
+    IQuery query = SqlHelper.QueryFrom(EventDb.Events.Table)
+      .Join(IdentityDb.Users.AggregateId, EventDb.Events.AggregateId,
+        new OperatorCondition(EventDb.Events.AggregateId, Operators.IsEqualTo(AggregateType))
+      )
+      .Join(IdentityDb.UserRoles.UserId, IdentityDb.Users.UserId)
+      .Join(IdentityDb.Roles.RoleId, IdentityDb.UserRoles.RoleId)
+      .Where(IdentityDb.Roles.AggregateId, Operators.IsEqualTo(role.Id.Value))
+      .SelectAll(EventDb.Events.Table)
+      .Build();
+
+    EventEntity[] events = await EventContext.Events.FromQuery(query)
+      .AsNoTracking()
+      .OrderBy(e => e.Version)
+      .ToArrayAsync(cancellationToken);
+
+    return Load<UserAggregate>(events.Select(EventSerializer.Deserialize));
   }
 
   public virtual async Task SaveAsync(UserAggregate user, CancellationToken cancellationToken)

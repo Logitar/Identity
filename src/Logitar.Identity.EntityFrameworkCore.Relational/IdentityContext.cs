@@ -14,6 +14,7 @@ public class IdentityContext : DbContext
   public DbSet<RoleEntity> Roles { get; private set; }
   public DbSet<SessionEntity> Sessions { get; private set; }
   public DbSet<UserIdentifierEntity> UserIdentifiers { get; private set; }
+  public DbSet<UserRoleEntity> UserRoles { get; private set; }
   public DbSet<UserEntity> Users { get; private set; }
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
