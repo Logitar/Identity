@@ -10,9 +10,9 @@ public static class DependencyInjectionExtensions
   public static IServiceCollection AddLogitarIdentityDomain(this IServiceCollection services)
   {
     return services
-      .AddSingleton<IRoleManager, RoleManager>()
       .AddSingleton<IRoleSettingsResolver, RoleSettingsResolver>()
-      .AddTransient<IUserManager, UserManager>()
-      .AddSingleton<IUserSettingsResolver, UserSettingsResolver>();
+      .AddSingleton<IUserSettingsResolver, UserSettingsResolver>()
+      .AddTransient<IRoleManager, RoleManager>()
+      .AddTransient<IUserManager, UserManager>();
   }
 }

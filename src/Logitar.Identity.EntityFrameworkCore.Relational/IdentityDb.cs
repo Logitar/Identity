@@ -80,6 +80,14 @@ public static class IdentityDb
     public static readonly ColumnId Value = new(nameof(UserIdentifierEntity.Value), Table);
   }
 
+  public static class UserRoles
+  {
+    public static readonly TableId Table = new(nameof(IdentityContext.UserRoles));
+
+    public static readonly ColumnId RoleId = new(nameof(UserRoleEntity.RoleId), Table);
+    public static readonly ColumnId UserId = new(nameof(UserRoleEntity.UserId), Table);
+  }
+
   public static class Users
   {
     public static readonly TableId Table = new(nameof(IdentityContext.Users));

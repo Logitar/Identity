@@ -67,7 +67,7 @@ public class SessionEntity : AggregateEntity
 
     if (!skipUser && User != null)
     {
-      actorIds.AddRange(User.GetActorIds(skipSessions: true));
+      actorIds.AddRange(User.GetActorIds(skipRoles: false, skipSessions: true));
     }
 
     return actorIds.AsReadOnly();

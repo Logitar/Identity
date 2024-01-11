@@ -35,6 +35,8 @@ public class RoleEntity : AggregateEntity
     }
   }
 
+  public List<UserEntity> Users { get; private set; } = [];
+
   public RoleEntity(RoleCreatedEvent @event) : base(@event)
   {
     TenantId = @event.TenantId?.Value;

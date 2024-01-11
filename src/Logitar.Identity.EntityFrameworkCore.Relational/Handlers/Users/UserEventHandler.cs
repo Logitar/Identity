@@ -1,4 +1,5 @@
-﻿using Logitar.Identity.Domain.Users.Events;
+﻿using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Users.Events;
 using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,9 +15,7 @@ public class UserEventHandler : EventHandler, IUserEventHandler
 
   public virtual async Task HandleAsync(UserAddressChangedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await Context.Users
-      .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'AggregateId={@event.AggregateId}' could not be found.");
+    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
 
     user.SetAddress(@event);
 
@@ -25,9 +24,7 @@ public class UserEventHandler : EventHandler, IUserEventHandler
 
   public virtual async Task HandleAsync(UserAuthenticatedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await Context.Users
-     .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
-     ?? throw new InvalidOperationException($"The user entity 'AggregateId={@event.AggregateId}' could not be found.");
+    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
 
     user.Authenticate(@event);
 
@@ -36,8 +33,7 @@ public class UserEventHandler : EventHandler, IUserEventHandler
 
   public virtual async Task HandleAsync(UserCreatedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity? user = await Context.Users.AsNoTracking()
-      .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken);
+    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (user == null)
     {
       user = new(@event);
@@ -51,8 +47,7 @@ public class UserEventHandler : EventHandler, IUserEventHandler
 
   public virtual async Task HandleAsync(UserDeletedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity? user = await Context.Users
-     .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken);
+    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (user != null)
     {
       Context.Users.Remove(user);
@@ -64,9 +59,7 @@ public class UserEventHandler : EventHandler, IUserEventHandler
 
   public virtual async Task HandleAsync(UserDisabledEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await Context.Users
-      .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'AggregateId={@event.AggregateId}' could not be found.");
+    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
 
     user.Disable(@event);
 
@@ -75,9 +68,7 @@ public class UserEventHandler : EventHandler, IUserEventHandler
 
   public virtual async Task HandleAsync(UserEmailChangedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await Context.Users
-      .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'AggregateId={@event.AggregateId}' could not be found.");
+    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
 
     user.SetEmail(@event);
 
@@ -87,10 +78,7 @@ public class UserEventHandler : EventHandler, IUserEventHandler
 
   public virtual async Task HandleAsync(UserIdentifierChangedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await Context.Users
-      .Include(x => x.Identifiers)
-      .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'AggregateId={@event.AggregateId}' could not be found.");
+    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
 
     user.SetCustomIdentifier(@event);
 
@@ -98,10 +86,7 @@ public class UserEventHandler : EventHandler, IUserEventHandler
   }
   public virtual async Task HandleAsync(UserIdentifierRemovedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await Context.Users
-      .Include(x => x.Identifiers)
-      .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'AggregateId={@event.AggregateId}' could not be found.");
+    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
 
     user.RemoveCustomIdentifier(@event);
 
@@ -110,9 +95,7 @@ public class UserEventHandler : EventHandler, IUserEventHandler
 
   public virtual async Task HandleAsync(UserEnabledEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await Context.Users
-      .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'AggregateId={@event.AggregateId}' could not be found.");
+    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
 
     user.Enable(@event);
 
@@ -121,9 +104,7 @@ public class UserEventHandler : EventHandler, IUserEventHandler
 
   public virtual async Task HandleAsync(UserPasswordEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await Context.Users
-      .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'AggregateId={@event.AggregateId}' could not be found.");
+    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
 
     user.SetPassword(@event);
 
@@ -132,20 +113,38 @@ public class UserEventHandler : EventHandler, IUserEventHandler
 
   public virtual async Task HandleAsync(UserPhoneChangedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await Context.Users
-      .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'AggregateId={@event.AggregateId}' could not be found.");
+    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
 
     user.SetPhone(@event);
 
     await Context.SaveChangesAsync(cancellationToken);
   }
 
+  public virtual async Task HandleAsync(UserRoleAddedEvent @event, CancellationToken cancellationToken)
+  {
+    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
+
+    RoleEntity role = await Context.Roles
+      .SingleOrDefaultAsync(x => x.AggregateId == @event.RoleId.AggregateId.Value, cancellationToken)
+      ?? throw new InvalidOperationException($"The role entity 'AggregateId={@event.AggregateId}' could not be found.");
+
+    user.AddRole(role, @event);
+
+    await Context.SaveChangesAsync(cancellationToken);
+  }
+
+  public virtual async Task HandleAsync(UserRoleRemovedEvent @event, CancellationToken cancellationToken)
+  {
+    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
+
+    user.RemoveRole(@event);
+
+    await Context.SaveChangesAsync(cancellationToken);
+  }
+
   public virtual async Task HandleAsync(UserSignedInEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await Context.Users
-     .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
-     ?? throw new InvalidOperationException($"The user entity 'AggregateId={@event.AggregateId}' could not be found.");
+    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
 
     user.SignIn(@event);
 
@@ -154,9 +153,7 @@ public class UserEventHandler : EventHandler, IUserEventHandler
 
   public virtual async Task HandleAsync(UserUniqueNameChangedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await Context.Users
-     .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
-     ?? throw new InvalidOperationException($"The user entity 'AggregateId={@event.AggregateId}' could not be found.");
+    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
 
     user.SetUniqueName(@event);
 
@@ -166,9 +163,7 @@ public class UserEventHandler : EventHandler, IUserEventHandler
 
   public virtual async Task HandleAsync(UserUpdatedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await Context.Users
-     .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
-     ?? throw new InvalidOperationException($"The user entity 'AggregateId={@event.AggregateId}' could not be found.");
+    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
 
     user.Update(@event);
 
@@ -177,11 +172,24 @@ public class UserEventHandler : EventHandler, IUserEventHandler
     await Context.SaveChangesAsync(cancellationToken);
   }
 
-  private async Task DeleteActorAsync(UserEntity user, CancellationToken cancellationToken)
+  protected virtual async Task<UserEntity> LoadAsync(AggregateId aggregateId, CancellationToken cancellationToken)
+  {
+    return await TryLoadAsync(aggregateId, cancellationToken)
+      ?? throw new InvalidOperationException($"The user entity 'AggregateId={aggregateId}' could not be found.");
+  }
+  protected virtual async Task<UserEntity?> TryLoadAsync(AggregateId aggregateId, CancellationToken cancellationToken)
+  {
+    return await Context.Users
+      .Include(x => x.Identifiers)
+      .Include(x => x.Roles)
+      .SingleOrDefaultAsync(x => x.AggregateId == aggregateId.Value, cancellationToken);
+  }
+
+  protected virtual async Task DeleteActorAsync(UserEntity user, CancellationToken cancellationToken)
     => await SaveActorAsync(user, isDeleted: true, cancellationToken);
-  private async Task SaveActorAsync(UserEntity user, CancellationToken cancellationToken)
+  protected virtual async Task SaveActorAsync(UserEntity user, CancellationToken cancellationToken)
     => await SaveActorAsync(user, isDeleted: false, cancellationToken);
-  private async Task SaveActorAsync(UserEntity user, bool isDeleted, CancellationToken cancellationToken)
+  protected virtual async Task SaveActorAsync(UserEntity user, bool isDeleted, CancellationToken cancellationToken)
   {
     ActorEntity? actor = await Context.Actors
       .SingleOrDefaultAsync(x => x.Id == user.AggregateId, cancellationToken);

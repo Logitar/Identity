@@ -15,6 +15,8 @@ public interface IUserEventHandler
   Task HandleAsync(UserIdentifierRemovedEvent @event, CancellationToken cancellationToken = default);
   Task HandleAsync(UserPasswordEvent @event, CancellationToken cancellationToken = default);
   Task HandleAsync(UserPhoneChangedEvent @event, CancellationToken cancellationToken = default);
+  Task HandleAsync(UserRoleAddedEvent @event, CancellationToken cancellationToken = default);
+  Task HandleAsync(UserRoleRemovedEvent @event, CancellationToken cancellationToken = default);
   Task HandleAsync(UserSignedInEvent @event, CancellationToken cancellationToken = default);
   Task HandleAsync(UserUniqueNameChangedEvent @event, CancellationToken cancellationToken = default);
   Task HandleAsync(UserUpdatedEvent @event, CancellationToken cancellationToken = default);

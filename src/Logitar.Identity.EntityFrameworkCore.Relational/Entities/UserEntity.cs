@@ -115,6 +115,7 @@ public class UserEntity : AggregateEntity
   }
 
   public List<UserIdentifierEntity> Identifiers { get; private set; } = [];
+  public List<RoleEntity> Roles { get; private set; } = [];
   public List<SessionEntity> Sessions { get; private set; } = [];
 
   public UserEntity(UserCreatedEvent @event) : base(@event)
@@ -128,8 +129,8 @@ public class UserEntity : AggregateEntity
   {
   }
 
-  public override IEnumerable<ActorId> GetActorIds() => GetActorIds(skipSessions: false);
-  public IEnumerable<ActorId> GetActorIds(bool skipSessions)
+  public override IEnumerable<ActorId> GetActorIds() => GetActorIds(skipRoles: false, skipSessions: false);
+  public IEnumerable<ActorId> GetActorIds(bool skipRoles, bool skipSessions)
   {
     List<ActorId> actorIds = [];
     actorIds.AddRange(base.GetActorIds());
@@ -157,6 +158,14 @@ public class UserEntity : AggregateEntity
       actorIds.Add(new ActorId(PhoneVerifiedBy));
     }
 
+    if (!skipRoles)
+    {
+      foreach (RoleEntity role in Roles)
+      {
+        actorIds.AddRange(role.GetActorIds());
+      }
+    }
+
     if (!skipSessions)
     {
       foreach (SessionEntity session in Sessions)
@@ -166,6 +175,13 @@ public class UserEntity : AggregateEntity
     }
 
     return actorIds.AsReadOnly();
+  }
+
+  public void AddRole(RoleEntity role, UserRoleAddedEvent @event)
+  {
+    Update(@event);
+
+    Roles.Add(role);
   }
 
   public void Authenticate(UserAuthenticatedEvent @event)
@@ -197,6 +213,17 @@ public class UserEntity : AggregateEntity
     if (identifier != null)
     {
       Identifiers.Remove(identifier);
+    }
+  }
+
+  public void RemoveRole(UserRoleRemovedEvent @event)
+  {
+    Update(@event);
+
+    RoleEntity? role = Roles.SingleOrDefault(x => x.AggregateId == @event.RoleId.AggregateId.Value);
+    if (role != null)
+    {
+      Roles.Remove(role);
     }
   }
 

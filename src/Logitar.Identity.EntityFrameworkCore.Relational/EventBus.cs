@@ -100,6 +100,12 @@ public class EventBus : IEventBus
       case UserPhoneChangedEvent userPhoneChanged:
         await UserEventHandler.HandleAsync(userPhoneChanged, cancellationToken);
         break;
+      case UserRoleAddedEvent userRoleAdded:
+        await UserEventHandler.HandleAsync(userRoleAdded, cancellationToken);
+        break;
+      case UserRoleRemovedEvent userRoleRemoved:
+        await UserEventHandler.HandleAsync(userRoleRemoved, cancellationToken);
+        break;
       case UserSignedInEvent userSignedIn:
         await UserEventHandler.HandleAsync(userSignedIn, cancellationToken);
         break;

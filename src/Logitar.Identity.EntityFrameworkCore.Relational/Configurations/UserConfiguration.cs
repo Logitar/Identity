@@ -97,5 +97,11 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
     builder.Property(x => x.Profile).HasMaxLength(UrlUnit.MaximumLength);
     builder.Property(x => x.Website).HasMaxLength(UrlUnit.MaximumLength);
     builder.Property(x => x.CustomAttributesSerialized).HasColumnName(nameof(UserEntity.CustomAttributes));
+
+    builder.HasMany(x => x.Roles).WithMany(x => x.Users).UsingEntity<UserRoleEntity>(joinBuilder =>
+    {
+      joinBuilder.ToTable(nameof(IdentityContext.UserRoles));
+      joinBuilder.HasKey(x => new { x.UserId, x.RoleId });
+    });
   }
 }
