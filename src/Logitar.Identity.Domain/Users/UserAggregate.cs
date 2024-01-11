@@ -27,7 +27,7 @@ public class UserAggregate : AggregateRoot
   public AddressUnit? Address { get; private set; }
   public EmailUnit? Email { get; private set; }
   public PhoneUnit? Phone { get; private set; }
-  public bool IsConfirmed => Email?.IsVerified == true || Phone?.IsVerified == true;
+  public bool IsConfirmed => Address?.IsVerified == true || Email?.IsVerified == true || Phone?.IsVerified == true;
 
   private PersonNameUnit? _firstName = null;
   public PersonNameUnit? FirstName
