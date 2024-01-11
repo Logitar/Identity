@@ -11,14 +11,14 @@ namespace Logitar.Identity.EntityFrameworkCore.Relational.Repositories;
 
 public class SessionRepository : EventSourcing.EntityFrameworkCore.Relational.AggregateRepository, ISessionRepository
 {
+  protected string AggregateType { get; } = typeof(SessionAggregate).GetNamespaceQualifiedName();
+  protected ISqlHelper SqlHelper { get; }
+
   public SessionRepository(IEventBus eventBus, EventContext eventContext, IEventSerializer eventSerializer, ISqlHelper sqlHelper)
     : base(eventBus, eventContext, eventSerializer)
   {
     SqlHelper = sqlHelper;
   }
-
-  protected string AggregateType { get; } = typeof(SessionAggregate).GetNamespaceQualifiedName();
-  protected ISqlHelper SqlHelper { get; }
 
   public async Task<SessionAggregate?> LoadAsync(SessionId id, CancellationToken cancellationToken)
     => await LoadAsync(id, version: null, cancellationToken);

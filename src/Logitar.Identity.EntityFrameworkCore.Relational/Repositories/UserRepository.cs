@@ -10,14 +10,14 @@ namespace Logitar.Identity.EntityFrameworkCore.Relational.Repositories;
 
 public class UserRepository : EventSourcing.EntityFrameworkCore.Relational.AggregateRepository, IUserRepository
 {
+  protected string AggregateType { get; } = typeof(UserAggregate).GetNamespaceQualifiedName();
+  protected ISqlHelper SqlHelper { get; }
+
   public UserRepository(IEventBus eventBus, EventContext eventContext, IEventSerializer eventSerializer, ISqlHelper sqlHelper)
     : base(eventBus, eventContext, eventSerializer)
   {
     SqlHelper = sqlHelper;
   }
-
-  protected string AggregateType { get; } = typeof(UserAggregate).GetNamespaceQualifiedName();
-  protected ISqlHelper SqlHelper { get; }
 
   public async Task<UserAggregate?> LoadAsync(UserId id, CancellationToken cancellationToken)
     => await LoadAsync(id, version: null, cancellationToken);

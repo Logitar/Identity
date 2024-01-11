@@ -409,6 +409,18 @@ public class UserAggregate : AggregateRoot
     Phone = @event.Phone;
   }
 
+  public void SetUniqueName(UniqueNameUnit uniqueName, ActorId actorId = default)
+  {
+    if (uniqueName != _uniqueName)
+    {
+      Raise(new UserUniqueNameChangedEvent(actorId, uniqueName));
+    }
+  }
+  protected virtual void Apply(UserUniqueNameChangedEvent @event)
+  {
+    _uniqueName = @event.UniqueName;
+  }
+
   public SessionAggregate SignIn(Password? secret = null, ActorId actorId = default, SessionId? id = null)
   {
     return SignIn(password: null, secret, actorId, id);
