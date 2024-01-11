@@ -4,74 +4,73 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Sessions;
 
-public class SessionEventHandler : ISessionEventHandler
+public class SessionEventHandler : EventHandler, ISessionEventHandler
 {
-  private readonly IdentityContext _context;
+  protected const string EntityType = nameof(IdentityContext.Sessions);
 
-  public SessionEventHandler(IdentityContext context)
+  public SessionEventHandler(IdentityContext context) : base(context)
   {
-    _context = context;
   }
 
   public virtual async Task HandleAsync(SessionCreatedEvent @event, CancellationToken cancellationToken)
   {
-    SessionEntity? session = await _context.Sessions.AsNoTracking()
+    SessionEntity? session = await Context.Sessions.AsNoTracking()
       .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken);
     if (session == null)
     {
-      UserEntity user = await _context.Users
+      UserEntity user = await Context.Users
         .SingleOrDefaultAsync(x => x.AggregateId == @event.UserId.Value, cancellationToken)
         ?? throw new InvalidOperationException($"The user entity 'AggregateId={@event.AggregateId}' could not be found.");
 
       session = new(user, @event);
       user.Sessions.Add(session);
 
-      await _context.SaveChangesAsync(cancellationToken);
+      await Context.SaveChangesAsync(cancellationToken);
     }
   }
 
   public virtual async Task HandleAsync(SessionDeletedEvent @event, CancellationToken cancellationToken)
   {
-    SessionEntity? session = await _context.Sessions
+    SessionEntity? session = await Context.Sessions
      .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken);
     if (session != null)
     {
-      _context.Sessions.Remove(session);
-      await _context.SaveChangesAsync(cancellationToken);
+      Context.Sessions.Remove(session);
+      await Context.SaveChangesAsync(cancellationToken);
     }
   }
 
   public virtual async Task HandleAsync(SessionRenewedEvent @event, CancellationToken cancellationToken)
   {
-    SessionEntity session = await _context.Sessions
+    SessionEntity session = await Context.Sessions
      .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
      ?? throw new InvalidOperationException($"The session entity 'AggregateId={@event.AggregateId}' could not be found.");
 
     session.Renew(@event);
 
-    await _context.SaveChangesAsync(cancellationToken);
+    await Context.SaveChangesAsync(cancellationToken);
   }
 
   public virtual async Task HandleAsync(SessionSignedOutEvent @event, CancellationToken cancellationToken)
   {
-    SessionEntity session = await _context.Sessions
+    SessionEntity session = await Context.Sessions
      .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
      ?? throw new InvalidOperationException($"The session entity 'AggregateId={@event.AggregateId}' could not be found.");
 
     session.SignOut(@event);
 
-    await _context.SaveChangesAsync(cancellationToken);
+    await Context.SaveChangesAsync(cancellationToken);
   }
 
   public virtual async Task HandleAsync(SessionUpdatedEvent @event, CancellationToken cancellationToken)
   {
-    SessionEntity session = await _context.Sessions
+    SessionEntity session = await Context.Sessions
      .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
      ?? throw new InvalidOperationException($"The session entity 'AggregateId={@event.AggregateId}' could not be found.");
 
     session.Update(@event);
 
-    // TODO(fpion): materialize custom attributes
-    await _context.SaveChangesAsync(cancellationToken);
+    await SynchronizeCustomAttributesAsync(EntityType, session.SessionId, @event.CustomAttributes, cancellationToken);
+    await Context.SaveChangesAsync(cancellationToken);
   }
 }
