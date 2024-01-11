@@ -44,8 +44,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Logitar.Data" Version="2.2.0" />
-    <PackageReference Include="Logitar.EventSourcing.EntityFrameworkCore.Relational" Version="5.0.0" />
+    <PackageReference Include="Logitar.Data" Version="3.0.0" />
+    <PackageReference Include="Logitar.EventSourcing.EntityFrameworkCore.Relational" Version="5.0.1" />
     <PackageReference Include="MediatR" Version="12.2.0" />
   </ItemGroup>
 
