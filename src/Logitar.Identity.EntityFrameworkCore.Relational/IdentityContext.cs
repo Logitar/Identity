@@ -12,6 +12,7 @@ public class IdentityContext : DbContext
   public DbSet<ActorEntity> Actors { get; private set; }
   public DbSet<CustomAttributeEntity> CustomAttributes { get; private set; }
   public DbSet<SessionEntity> Sessions { get; private set; }
+  public DbSet<UserIdentifierEntity> UserIdentifiers { get; private set; }
   public DbSet<UserEntity> Users { get; private set; }
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)

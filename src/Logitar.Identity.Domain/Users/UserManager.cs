@@ -80,6 +80,18 @@ public class UserManager : IUserManager
       }
     }
 
+    foreach (DomainEvent change in user.Changes)
+    {
+      if (change is UserIdentifierChangedEvent identifier)
+      {
+        UserAggregate? other = await _userRepository.LoadAsync(user.TenantId, identifier.Key, identifier.Value, cancellationToken);
+        if (other?.Equals(user) == false)
+        {
+          throw new CustomIdentifierAlreadyUsedException<UserAggregate>(user.TenantId, identifier.Key, identifier.Value);
+        }
+      }
+    }
+
     if (hasBeenDeleted)
     {
       IEnumerable<SessionAggregate> sessions = await _sessionRepository.LoadAsync(user, cancellationToken);

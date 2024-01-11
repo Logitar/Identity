@@ -114,6 +114,7 @@ public class UserEntity : AggregateEntity
     }
   }
 
+  public List<UserIdentifierEntity> Identifiers { get; private set; } = [];
   public List<SessionEntity> Sessions { get; private set; } = [];
 
   public UserEntity(UserCreatedEvent @event) : base(@event)
@@ -190,6 +191,15 @@ public class UserEntity : AggregateEntity
     DisabledOn = null;
   }
 
+  public void RemoveCustomIdentifier(UserIdentifierRemovedEvent @event)
+  {
+    UserIdentifierEntity? identifier = Identifiers.SingleOrDefault(x => x.Key == @event.Key);
+    if (identifier != null)
+    {
+      Identifiers.Remove(identifier);
+    }
+  }
+
   public void SetAddress(UserAddressChangedEvent @event)
   {
     Update(@event);
@@ -210,6 +220,20 @@ public class UserEntity : AggregateEntity
     {
       AddressVerifiedBy = null;
       AddressVerifiedOn = null;
+    }
+  }
+
+  public void SetCustomIdentifier(UserIdentifierChangedEvent @event)
+  {
+    UserIdentifierEntity? identifier = Identifiers.SingleOrDefault(x => x.Key == @event.Key);
+    if (identifier == null)
+    {
+      identifier = new(this, @event);
+      Identifiers.Add(identifier);
+    }
+    else
+    {
+      identifier.Update(@event);
     }
   }
 
