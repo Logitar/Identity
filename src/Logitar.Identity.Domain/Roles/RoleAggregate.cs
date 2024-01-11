@@ -29,6 +29,7 @@ public class RoleAggregate : AggregateRoot
   /// <summary>
   /// Gets the unique name of the role.
   /// </summary>
+  /// <exception cref="InvalidOperationException">The unique name has not been initialized yet.</exception>
   public UniqueNameUnit UniqueName => _uniqueName ?? throw new InvalidOperationException($"The {nameof(UniqueName)} has not been initialized yet.");
 
   private DisplayNameUnit? _displayName = null;

@@ -57,7 +57,7 @@ public class ApiKeyAggregateTests
   {
     _apiKey.Authenticate(SecretString);
 
-    ApiKeyAuthenticatedEvent @event = (ApiKeyAuthenticatedEvent)_apiKey.Changes.Single(change => change is ApiKeyAuthenticatedEvent);
+    ApiKeyAuthenticatedEvent @event = (ApiKeyAuthenticatedEvent)Assert.Single(_apiKey.Changes, change => change is ApiKeyAuthenticatedEvent);
     Assert.Equal(_apiKey.Id.Value, @event.ActorId.Value);
     Assert.Equal(@event.OccurredOn, _apiKey.AuthenticatedOn);
   }
@@ -68,6 +68,17 @@ public class ApiKeyAggregateTests
     ActorId actorId = ActorId.NewId();
     _apiKey.Authenticate(SecretString, actorId);
     Assert.Contains(_apiKey.Changes, change => change is ApiKeyAuthenticatedEvent @event && @event.ActorId == actorId);
+  }
+
+  [Fact(DisplayName = "Authenticate: it should throw ApiKeyIsExpiredException when the API key is expired.")]
+  public void Authenticate_it_should_throw_ApiKeyIsExpiredException_when_the_Api_key_is_expired()
+  {
+    _apiKey.SetExpiration(DateTime.Now.AddMilliseconds(100));
+
+    Thread.Sleep(TimeSpan.FromMilliseconds(100));
+
+    var exception = Assert.Throws<ApiKeyIsExpiredException>(() => _apiKey.Authenticate(SecretString));
+    Assert.Equal(_apiKey.Id, exception.ApiKeyId);
   }
 
   [Fact(DisplayName = "Authenticate: it should throw IncorrectApiKeySecretException when the attempted secret is incorrect.")]
@@ -88,17 +99,6 @@ public class ApiKeyAggregateTests
     var exception = Assert.Throws<IncorrectApiKeySecretException>(() => apiKey.Authenticate(SecretString));
     Assert.Equal(SecretString, exception.AttemptedSecret);
     Assert.Equal(apiKey.Id, exception.ApiKeyId);
-  }
-
-  [Fact(DisplayName = "Authenticate: it should throw ApiKeyIsExpiredException when the API key is expired.")]
-  public void Authenticate_it_should_throw_ApiKeyIsExpiredException_when_the_Api_key_is_expired()
-  {
-    _apiKey.SetExpiration(DateTime.Now.AddMilliseconds(100));
-
-    Thread.Sleep(TimeSpan.FromMilliseconds(100));
-
-    var exception = Assert.Throws<ApiKeyIsExpiredException>(() => _apiKey.Authenticate(SecretString));
-    Assert.Equal(_apiKey.Id, exception.ApiKeyId);
   }
 
   [Fact(DisplayName = "ctor: it should create a new API key with id.")]

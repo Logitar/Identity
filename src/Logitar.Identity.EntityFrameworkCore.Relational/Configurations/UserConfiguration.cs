@@ -11,7 +11,7 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
 {
   public const int AddressFormattedMaximumLength = AddressUnit.MaximumLength * 5 + 4; // NOTE(fpion): enough space to contain the five address components, each separated by one character.
   public const int FullNameMaximumLength = PersonNameUnit.MaximumLength * 3 + 2; // NOTE(fpion): enough space to contain the first, middle and last names, separator by a space ' '.
-  public const int PhoneE164FormattedMaximumLength = PhoneUnit.CountryCodeLength + 1 + PhoneUnit.NumberMaximumLength + 7 + PhoneUnit.ExtensionMaximumLength; // NOTE(fpion): enough space to contain the following format '{CountryCode} {Number}, ext. {Extension}'.
+  public const int PhoneE164FormattedMaximumLength = PhoneUnit.CountryCodeMaximumLength + 1 + PhoneUnit.NumberMaximumLength + 7 + PhoneUnit.ExtensionMaximumLength; // NOTE(fpion): enough space to contain the following format '{CountryCode} {Number}, ext. {Extension}'.
 
   public override void Configure(EntityTypeBuilder<UserEntity> builder)
   {
@@ -80,7 +80,7 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
     builder.Property(x => x.EmailAddress).HasMaxLength(EmailUnit.MaximumLength);
     builder.Property(x => x.EmailAddressNormalized).HasMaxLength(EmailUnit.MaximumLength);
     builder.Property(x => x.EmailVerifiedBy).HasMaxLength(ActorId.MaximumLength);
-    builder.Property(x => x.PhoneCountryCode).HasMaxLength(PhoneUnit.CountryCodeLength);
+    builder.Property(x => x.PhoneCountryCode).HasMaxLength(PhoneUnit.CountryCodeMaximumLength);
     builder.Property(x => x.PhoneNumber).HasMaxLength(PhoneUnit.NumberMaximumLength);
     builder.Property(x => x.PhoneExtension).HasMaxLength(PhoneUnit.ExtensionMaximumLength);
     builder.Property(x => x.PhoneE164Formatted).HasMaxLength(PhoneE164FormattedMaximumLength);

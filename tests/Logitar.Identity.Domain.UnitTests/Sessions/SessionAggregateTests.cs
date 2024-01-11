@@ -131,16 +131,6 @@ public class SessionAggregateTests
     Assert.Equal(session.Id, exception.SessionId);
   }
 
-  [Fact(DisplayName = "Renew: it should throw SessionIsNotPersistentException when the session has no secret.")]
-  public void Renew_it_should_throw_SessionIsNotPersistentException_when_the_session_has_no_secret()
-  {
-    string secretString = RandomStringGenerator.GetString(32);
-    PasswordMock newSecret = new(secretString);
-
-    var exception = Assert.Throws<SessionIsNotPersistentException>(() => _session.Renew(secretString, newSecret));
-    Assert.Equal(_session.Id, exception.SessionId);
-  }
-
   [Fact(DisplayName = "Renew: it should throw SessionIsNotActiveException when the session is not active.")]
   public void Renew_it_should_throw_SessionIsNotActiveException_when_the_session_is_not_active()
   {
@@ -152,6 +142,16 @@ public class SessionAggregateTests
 
     var exception = Assert.Throws<SessionIsNotActiveException>(() => session.Renew(currentSecret, newSecret));
     Assert.Equal(session.Id, exception.SessionId);
+  }
+
+  [Fact(DisplayName = "Renew: it should throw SessionIsNotPersistentException when the session has no secret.")]
+  public void Renew_it_should_throw_SessionIsNotPersistentException_when_the_session_has_no_secret()
+  {
+    string secretString = RandomStringGenerator.GetString(32);
+    PasswordMock newSecret = new(secretString);
+
+    var exception = Assert.Throws<SessionIsNotPersistentException>(() => _session.Renew(secretString, newSecret));
+    Assert.Equal(_session.Id, exception.SessionId);
   }
 
   [Fact(DisplayName = "SetCustomAttribute: it should set a custom attribute when it is different.")]

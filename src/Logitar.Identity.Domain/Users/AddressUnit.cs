@@ -3,36 +3,63 @@ using Logitar.Identity.Domain.Users.Validators;
 
 namespace Logitar.Identity.Domain.Users;
 
+/// <summary>
+/// Represents a postal address.
+/// </summary>
 public record AddressUnit : ContactUnit, IAddress
 {
+  /// <summary>
+  /// The maximum length of address components.
+  /// </summary>
   public const int MaximumLength = byte.MaxValue;
 
+  /// <summary>
+  /// Gets the street address.
+  /// </summary>
   public string Street { get; }
+  /// <summary>
+  /// Gets the locality (city) of the address.
+  /// </summary>
   public string Locality { get; }
+  /// <summary>
+  /// Gets the postal code of the address.
+  /// </summary>
   public string? PostalCode { get; }
+  /// <summary>
+  /// Gets the region of the address.
+  /// </summary>
   public string? Region { get; }
+  /// <summary>
+  /// Gets the country of the address.
+  /// </summary>
   public string Country { get; }
 
-  public AddressUnit(string street, string locality, string country, string? postalCode = null, string? region = null, bool isVerified = false) : base(isVerified)
+  /// <summary>
+  /// Initializes a new instance of the <see cref="AddressUnit"/> class.
+  /// </summary>
+  /// <param name="street">The street address.</param>
+  /// <param name="locality">The locality (city) of the address.</param>
+  /// <param name="country">The country of the address.</param>
+  /// <param name="region">The region of the address.</param>
+  /// <param name="postalCode">The postal code of the address.</param>
+  /// <param name="isVerified">A value indicating whether or not the postal address is verified.</param>
+  /// <param name="propertyName">The name of the property, used for validation.</param>
+  public AddressUnit(string street, string locality, string country, string? region = null, string? postalCode = null,
+    bool isVerified = false, string? propertyName = null) : base(isVerified)
   {
     Street = street.Trim();
     Locality = locality.Trim();
     PostalCode = postalCode?.CleanTrim();
     Region = region?.CleanTrim();
     Country = country.Trim();
-    new AddressValidator().ValidateAndThrow(this);
+
+    new AddressValidator(propertyName).ValidateAndThrow(this);
   }
 
-  public static AddressUnit? TryCreate(string? street, string? locality, string? country, string? postalCode = null, string? region = null, bool isVerified = false)
-  {
-    if (string.IsNullOrWhiteSpace(street) || string.IsNullOrWhiteSpace(locality) || string.IsNullOrWhiteSpace(country))
-    {
-      return null;
-    }
-
-    return new(street, locality, country, postalCode, region, isVerified);
-  }
-
+  /// <summary>
+  /// Formats the postal address.
+  /// </summary>
+  /// <returns></returns>
   public string Format()
   {
     StringBuilder formatted = new();

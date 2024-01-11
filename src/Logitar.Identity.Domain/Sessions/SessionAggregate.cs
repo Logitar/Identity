@@ -23,6 +23,7 @@ public class SessionAggregate : AggregateRoot
   /// <summary>
   /// Gets the identifier of the user owning the session.
   /// </summary>
+  /// <exception cref="InvalidOperationException">The user identifier has not been initialized yet.</exception>
   public UserId UserId => _userId ?? throw new InvalidOperationException($"The {nameof(UserId)} has not been initialized yet.");
 
   private Password? _secret = null;
@@ -113,8 +114,9 @@ public class SessionAggregate : AggregateRoot
   /// <param name="currentSecret">The current secret of the session.</param>
   /// <param name="newSecret">The new secret of the session.</param>
   /// <param name="actorId">(Optional) The actor identifier. This parameter should be left null so that it defaults to the user's identifier.</param>
-  /// <exception cref="SessionIsNotActiveException">The session is not active.</exception>
   /// <exception cref="IncorrectSessionSecretException">The current secret is incorrect.</exception>
+  /// <exception cref="SessionIsNotActiveException">The session is not active.</exception>
+  /// <exception cref="SessionIsNotPersistentException">The session is not persistent.</exception>
   public void Renew(string currentSecret, Password newSecret, ActorId? actorId = default)
   {
     if (!IsActive)

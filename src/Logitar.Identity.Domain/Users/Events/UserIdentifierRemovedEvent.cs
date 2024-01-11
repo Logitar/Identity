@@ -1,8 +1,9 @@
 ﻿using Logitar.EventSourcing;
+using MediatR;
 
 namespace Logitar.Identity.Domain.Users.Events;
 
-public record UserIdentifierRemovedEvent : DomainEvent
+public record UserIdentifierRemovedEvent : DomainEvent, INotification
 {
   public string Key { get; }
 
