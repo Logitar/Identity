@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using Logitar.Identity.Domain.Users.Validators;
-using System.Text;
 
 namespace Logitar.Identity.Domain.Users;
 

@@ -4,24 +4,59 @@ using Logitar.Identity.Domain.Shared;
 
 namespace Logitar.Identity.Domain.ApiKeys;
 
+/// <summary>
+/// Represents the identifier of an API key.
+/// </summary>
 public record ApiKeyId
 {
+  /// <summary>
+  /// Gets the aggregate identifier.
+  /// </summary>
   public AggregateId AggregateId { get; }
+  /// <summary>
+  /// Gets the value of the identifier.
+  /// </summary>
   public string Value => AggregateId.Value;
 
-  public ApiKeyId(AggregateId aggregateId)
+  /// <summary>
+  /// Initializes a new instance of the <see cref="ApiKeyId"/> class.
+  /// </summary>
+  /// <param name="aggregateId">The aggregate identifier.</param>
+  /// <param name="propertyName">The name of the property, used for validation.</param>
+  public ApiKeyId(AggregateId aggregateId, string? propertyName = null)
   {
-    new IdValidator().ValidateAndThrow(aggregateId.Value);
+    new IdValidator(propertyName).ValidateAndThrow(aggregateId.Value);
 
     AggregateId = aggregateId;
   }
-  public ApiKeyId(string value)
+
+  /// <summary>
+  /// Initializes a new instance of the <see cref="ApiKeyId"/> class.
+  /// </summary>
+  /// <param name="value">The value of the identifier.</param>
+  /// <param name="propertyName">The name of the property, used for validation.</param>
+  public ApiKeyId(string value, string? propertyName = null)
   {
     value = value.Trim();
-    new IdValidator().ValidateAndThrow(value);
+    new IdValidator(propertyName).ValidateAndThrow(value);
 
     AggregateId = new(value);
   }
 
+  /// <summary>
+  /// Creates a new API key identifier.
+  /// </summary>
+  /// <returns>The created identifier.</returns>
   public static ApiKeyId NewId() => new(AggregateId.NewId());
+
+  /// <summary>
+  /// Returns null if the input is empty, or a new instance of the <see cref="ApiKeyId"/> class otherwise.
+  /// </summary>
+  /// <param name="value">The value of the identifier.</param>
+  /// <param name="propertyName">The name of the property, used for validation.</param>
+  /// <returns>The created instance or null.</returns>
+  public static ApiKeyId? TryCreate(string? value, string? propertyName = null)
+  {
+    return string.IsNullOrWhiteSpace(value) ? null : new(value, propertyName);
+  }
 }

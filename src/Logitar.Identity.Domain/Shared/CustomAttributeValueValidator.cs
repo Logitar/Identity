@@ -11,8 +11,9 @@ public class CustomAttributeValueValidator : AbstractValidator<string>
   /// <summary>
   /// Initializes a new instance of the <see cref="CustomAttributeValueValidator"/> class.
   /// </summary>
-  public CustomAttributeValueValidator()
+  /// <param name="propertyName">The name of the property, used for validation.</param>
+  public CustomAttributeValueValidator(string? propertyName = null)
   {
-    RuleFor(x => x).NotEmpty();
+    RuleFor(x => x).NotEmpty().WithPropertyName(propertyName);
   }
 }

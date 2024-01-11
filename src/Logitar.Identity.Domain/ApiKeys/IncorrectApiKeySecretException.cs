@@ -2,29 +2,47 @@
 
 namespace Logitar.Identity.Domain.ApiKeys;
 
+/// <summary>
+/// The exception raised when an API key secret check fails.
+/// </summary>
 public class IncorrectApiKeySecretException : InvalidCredentialsException
 {
-  public new const string ErrorMessage = "The specified secret did not match the specified API key.";
+  /// <summary>
+  /// A generic error message for this exception.
+  /// </summary>
+  public new const string ErrorMessage = "The specified secret did not match the API key.";
 
-  public string ApiKey
+  /// <summary>
+  /// Gets or sets the identifier of the API key.
+  /// </summary>
+  public ApiKeyId ApiKeyId
   {
-    get => (string)Data[nameof(ApiKey)]!;
-    private set => Data[nameof(ApiKey)] = value;
+    get => new((string)Data[nameof(ApiKeyId)]!);
+    private set => Data[nameof(ApiKeyId)] = value.Value;
   }
-  public string Secret
+  /// <summary>
+  /// Gets or sets the attempted secret.
+  /// </summary>
+  public string AttemptedSecret
   {
-    get => (string)Data[nameof(Secret)]!;
-    private set => Data[nameof(Secret)] = value;
+    get => (string)Data[nameof(AttemptedSecret)]!;
+    private set => Data[nameof(AttemptedSecret)] = value;
   }
 
-  public IncorrectApiKeySecretException(ApiKeyAggregate apiKey, byte[] secret) : base(BuildMessage(apiKey, secret))
+  /// <summary>
+  /// Initializes a new instance of the <see cref="IncorrectApiKeySecretException"/> class.
+  /// </summary>
+  /// <param name="apiKey">The API key.</param>
+  /// <param name="attemptedSecret">The attempted secret.</param>
+  public IncorrectApiKeySecretException(ApiKeyAggregate apiKey, string attemptedSecret)
+    : base(BuildMessage(apiKey, attemptedSecret))
   {
-    ApiKey = apiKey.ToString();
-    Secret = Convert.ToBase64String(secret);
+    ApiKeyId = apiKey.Id;
+    AttemptedSecret = attemptedSecret;
   }
 
-  private static string BuildMessage(ApiKeyAggregate apiKey, byte[] secret) => new ErrorMessageBuilder(ErrorMessage)
-    .AddData(nameof(ApiKey), apiKey.ToString())
-    .AddData(nameof(Secret), Convert.ToBase64String(secret))
+  private static string BuildMessage(ApiKeyAggregate apiKey, string attemptedSecret) => new ErrorMessageBuilder(ErrorMessage)
+    .AddData(nameof(ApiKeyId), apiKey.Id.Value)
+    .AddData(nameof(AttemptedSecret), attemptedSecret)
     .Build();
 }

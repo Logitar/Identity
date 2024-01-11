@@ -22,7 +22,7 @@
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <Version>0.11.0</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
-    <GenerateDocumentationFile>False</GenerateDocumentationFile>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <PackageReleaseNotes>TODO</PackageReleaseNotes>
     <PackageTags>TODO</PackageTags>
     <PackageProjectUrl>https://github.com/Logitar/Identity/tree/main/src/Logitar.Identity.Domain</PackageProjectUrl>
@@ -57,6 +57,7 @@
   <ItemGroup>
     <Using Include="System.Collections.Immutable" />
     <Using Include="System.Globalization" />
+    <Using Include="System.Text" />
   </ItemGroup>
 
 </Project>
