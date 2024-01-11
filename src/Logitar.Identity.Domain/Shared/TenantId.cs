@@ -2,15 +2,35 @@
 
 namespace Logitar.Identity.Domain.Shared;
 
+/// <summary>
+/// Represents a tenant identifier.
+/// </summary>
 public record TenantId
 {
+  /// <summary>
+  /// Gets the value of the tenant identifier.
+  /// </summary>
   public string Value { get; }
 
-  public TenantId(string value)
+  /// <summary>
+  /// Initializes a new instance of the <see cref="TenantId"/> class.
+  /// </summary>
+  /// <param name="value">The value of the tenant identifier.</param>
+  /// <param name="propertyName">The name of the property, used for validation.</param>
+  public TenantId(string value, string? propertyName = null)
   {
     Value = value.Trim();
-    new IdValidator().ValidateAndThrow(Value);
+    new IdValidator(propertyName).ValidateAndThrow(Value);
   }
 
-  public static TenantId? TryCreate(string? value) => string.IsNullOrWhiteSpace(value) ? null : new(value);
+  /// <summary>
+  /// Returns null if the input is empty, or a new instance of the <see cref="TenantId"/> class otherwise.
+  /// </summary>
+  /// <param name="value">The value of the tenant identifier.</param>
+  /// <param name="propertyName">The name of the property, used for validation.</param>
+  /// <returns>The created instance or null.</returns>
+  public static TenantId? TryCreate(string? value, string? propertyName = null)
+  {
+    return string.IsNullOrWhiteSpace(value) ? null : new(value, propertyName);
+  }
 }

@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Logitar.Identity.Domain.Shared;
 
 namespace Logitar.Identity.Domain.Users.Validators;
 
@@ -13,6 +14,6 @@ public class BirthdateValidator : AbstractValidator<DateTime>
   /// <param name="propertyName">The name of the property, used for validation.</param>
   public BirthdateValidator(string? propertyName = null)
   {
-    RuleFor(x => x).Past().WithPropertyName(propertyName);
+    RuleFor(x => x).SetValidator(new PastValidator()).WithPropertyName(propertyName);
   }
 }

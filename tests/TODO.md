@@ -3,7 +3,6 @@
 ## Logitar.Identity.Domain
 
 - RoleManager
-- Shared\
 - UserManager
 
 ## Logitar.Identity.EntityFrameworkCore.Relational

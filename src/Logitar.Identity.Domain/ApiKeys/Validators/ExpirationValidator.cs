@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Logitar.Identity.Domain.Shared;
 
 namespace Logitar.Identity.Domain.ApiKeys.Validators;
 
@@ -14,8 +15,7 @@ public class ExpirationValidator : AbstractValidator<DateTime>
   /// <param name="propertyName">The name of the property, used for validation.</param>
   public ExpirationValidator(DateTime? expiresOn, string? propertyName = null)
   {
-    IRuleBuilderOptions<DateTime, DateTime> options = RuleFor(x => x).NotNull()
-      .Future();
+    IRuleBuilderOptions<DateTime, DateTime> options = RuleFor(x => x).NotNull().SetValidator(new FutureValidator());
 
     if (expiresOn.HasValue)
     {
