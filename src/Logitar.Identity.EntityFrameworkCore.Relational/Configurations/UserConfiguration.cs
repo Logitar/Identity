@@ -9,7 +9,7 @@ namespace Logitar.Identity.EntityFrameworkCore.Relational.Configurations;
 
 public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityTypeConfiguration<UserEntity>
 {
-  public const int AddressFormattedMaximumLength = AddressUnit.MaximumLength * 5 + 4; // TODO(fpion): enough space to contain the five address components, each separated by one character.
+  public const int AddressFormattedMaximumLength = AddressUnit.MaximumLength * 5 + 4; // NOTE(fpion): enough space to contain the five address components, each separated by one character.
   public const int FullNameMaximumLength = PersonNameUnit.MaximumLength * 3 + 2; // NOTE(fpion): enough space to contain the first, middle and last names, separator by a space ' '.
   public const int PhoneE164FormattedMaximumLength = PhoneUnit.CountryCodeLength + 1 + PhoneUnit.NumberMaximumLength + 7 + PhoneUnit.ExtensionMaximumLength; // NOTE(fpion): enough space to contain the following format '{CountryCode} {Number}, ext. {Extension}'.
 
