@@ -4,6 +4,7 @@ namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Users;
 
 public interface IUserEventHandler
 {
+  Task HandleAsync(UserAddressChangedEvent @event, CancellationToken cancellationToken = default);
   Task HandleAsync(UserAuthenticatedEvent @event, CancellationToken cancellationToken = default);
   Task HandleAsync(UserCreatedEvent @event, CancellationToken cancellationToken = default);
   Task HandleAsync(UserDeletedEvent @event, CancellationToken cancellationToken = default);

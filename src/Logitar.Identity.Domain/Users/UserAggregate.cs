@@ -24,10 +24,10 @@ public class UserAggregate : AggregateRoot
 
   public bool IsDisabled { get; private set; }
 
-  // TODO(fpion): Address
+  public AddressUnit? Address { get; private set; }
   public EmailUnit? Email { get; private set; }
   public PhoneUnit? Phone { get; private set; }
-  public bool IsConfirmed => Email?.IsVerified == true || Phone?.IsVerified == true;
+  public bool IsConfirmed => Address?.IsVerified == true || Email?.IsVerified == true || Phone?.IsVerified == true;
 
   private PersonNameUnit? _firstName = null;
   public PersonNameUnit? FirstName
@@ -319,6 +319,18 @@ public class UserAggregate : AggregateRoot
   protected virtual void Apply(UserPasswordResetEvent @event)
   {
     _password = @event.Password;
+  }
+
+  public void SetAddress(AddressUnit? address, ActorId actorId = default)
+  {
+    if (address != Address)
+    {
+      Raise(new UserAddressChangedEvent(actorId, address));
+    }
+  }
+  protected virtual void Apply(UserAddressChangedEvent @event)
+  {
+    Address = @event.Address;
   }
 
   private readonly CustomAttributeValidator _customAttributeValidator = new();

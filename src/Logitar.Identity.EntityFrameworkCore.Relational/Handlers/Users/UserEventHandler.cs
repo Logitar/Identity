@@ -13,6 +13,17 @@ public class UserEventHandler : IUserEventHandler
     _context = context;
   }
 
+  public virtual async Task HandleAsync(UserAddressChangedEvent @event, CancellationToken cancellationToken)
+  {
+    UserEntity user = await _context.Users
+      .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
+      ?? throw new InvalidOperationException($"The user entity 'AggregateId={@event.AggregateId}' could not be found.");
+
+    user.SetAddress(@event);
+
+    await _context.SaveChangesAsync(cancellationToken);
+  }
+
   public virtual async Task HandleAsync(UserAuthenticatedEvent @event, CancellationToken cancellationToken)
   {
     UserEntity user = await _context.Users
@@ -63,17 +74,6 @@ public class UserEventHandler : IUserEventHandler
     await _context.SaveChangesAsync(cancellationToken);
   }
 
-  public virtual async Task HandleAsync(UserEnabledEvent @event, CancellationToken cancellationToken)
-  {
-    UserEntity user = await _context.Users
-      .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'AggregateId={@event.AggregateId}' could not be found.");
-
-    user.Enable(@event);
-
-    await _context.SaveChangesAsync(cancellationToken);
-  }
-
   public virtual async Task HandleAsync(UserEmailChangedEvent @event, CancellationToken cancellationToken)
   {
     UserEntity user = await _context.Users
@@ -83,6 +83,17 @@ public class UserEventHandler : IUserEventHandler
     user.SetEmail(@event);
 
     await SaveActorAsync(user, cancellationToken);
+    await _context.SaveChangesAsync(cancellationToken);
+  }
+
+  public virtual async Task HandleAsync(UserEnabledEvent @event, CancellationToken cancellationToken)
+  {
+    UserEntity user = await _context.Users
+      .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
+      ?? throw new InvalidOperationException($"The user entity 'AggregateId={@event.AggregateId}' could not be found.");
+
+    user.Enable(@event);
+
     await _context.SaveChangesAsync(cancellationToken);
   }
 
