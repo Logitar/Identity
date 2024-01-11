@@ -65,4 +65,12 @@ public class AddressUnitTests
     var exception = Assert.Throws<FluentValidation.ValidationException>(() => new AddressUnit("150 Saint-Catherine St W", "Montreal", "CA", "ZZ", "H2X 3Y2", propertyName: "Address"));
     Assert.Contains(exception.Errors, e => e.ErrorCode == "RegionValidator" && e.PropertyName == "Address.Region");
   }
+
+  [Fact(DisplayName = "Format: it should format a postal address.")]
+  public void Format_it_should_format_a_postal_address()
+  {
+    AddressUnit address = new(" Jean Du Pays\r\n \r\n150 Saint-Catherine St W ", " Montreal ", " CA ", " QC ", " H2X 3Y2 ");
+    string expected = string.Join(Environment.NewLine, ["Jean Du Pays", "150 Saint-Catherine St W", "Montreal QC H2X 3Y2", "CA"]);
+    Assert.Equal(expected, address.Format());
+  }
 }

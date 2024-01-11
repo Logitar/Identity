@@ -34,7 +34,7 @@ public class AddressValidator : AbstractValidator<IAddress>
         .MaximumLength(AddressUnit.MaximumLength)
         .Must((address, region) => PostalAddressHelper.GetCountry(address.Country)?.Regions?.Contains(region) == true)
           .WithErrorCode("RegionValidator")
-          .WithMessage($"'{{PropertyName}}'")
+          .WithMessage(address => $"'{{PropertyName}}' must be one of the following: {string.Join(", ", PostalAddressHelper.GetCountry(address.Country)?.Regions ?? [])}")
         .WithPropertyName(propertyName == null ? null : $"{propertyName}.{nameof(IAddress.Region)}")
     ).Otherwise(() =>
       When(x => x.Region != null, () => RuleFor(x => x.Region).NotEmpty()

@@ -13,6 +13,5 @@ internal record PasswordMock : Password
 
   public override string Encode() => Convert.ToBase64String(Encoding.UTF8.GetBytes(_password));
 
-  public override bool IsMatch(byte[] password) => IsMatch(Convert.ToBase64String(password));
   public override bool IsMatch(string password) => _password == password;
 }

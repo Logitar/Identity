@@ -3,6 +3,13 @@
 [Trait(Traits.Category, Categories.Unit)]
 public class PhoneExtensionsTests
 {
+  [Fact(DisplayName = "FormatToE164: it should format the phone to E.164.")]
+  public void FormatToE164_it_should_format_the_phone_to_E_164()
+  {
+    PhoneUnit phone = new("+1 (234) 567-8900", "CA", "1234567");
+    Assert.Equal("+12345678900", phone.FormatToE164());
+  }
+
   [Fact(DisplayName = "IsValid: it should return false when the phone is not valid.")]
   public void IsValid_it_should_return_false_when_the_phone_is_not_valid()
   {

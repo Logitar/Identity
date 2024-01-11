@@ -43,7 +43,6 @@ public record Pbkdf2 : Password
   public override string Encode() => string.Join(Separator, Key, _algorithm, _iterations,
     Convert.ToBase64String(_salt), Convert.ToBase64String(_hash));
 
-  public override bool IsMatch(byte[] password) => IsMatch(Convert.ToBase64String(password));
   public override bool IsMatch(string password) => _hash.SequenceEqual(ComputeHash(password));
 
   private byte[] ComputeHash(string password, int? length = null)
