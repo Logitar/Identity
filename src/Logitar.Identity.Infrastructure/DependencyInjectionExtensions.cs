@@ -35,9 +35,12 @@ public static class DependencyInjectionExtensions
   private static JsonConverter[] GetJsonConverters(IServiceProvider serviceProvider) => new JsonConverter[]
   {
     serviceProvider.GetRequiredService<PasswordConverter>(),
+    new DescriptionConverter(),
+    new DisplayNameConverter(),
     new GenderConverter(),
     new LocaleConverter(),
     new PersonNameConverter(),
+    new RoleIdConverter(),
     new SessionIdConverter(),
     new TenantIdConverter(),
     new TimeZoneConverter(),

@@ -1,7 +1,9 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.EventSourcing.Infrastructure;
+using Logitar.Identity.Domain.Roles.Events;
 using Logitar.Identity.Domain.Sessions.Events;
 using Logitar.Identity.Domain.Users.Events;
+using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Roles;
 using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Sessions;
 using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Users;
 using MediatR;
@@ -10,14 +12,16 @@ namespace Logitar.Identity.EntityFrameworkCore.Relational;
 
 public class EventBus : IEventBus
 {
-  public EventBus(IPublisher publisher, ISessionEventHandler sessionEventHandler, IUserEventHandler userEventHandler)
+  public EventBus(IPublisher publisher, IRoleEventHandler roleEventHandler, ISessionEventHandler sessionEventHandler, IUserEventHandler userEventHandler)
   {
     Publisher = publisher;
+    RoleEventHandler = roleEventHandler;
     SessionEventHandler = sessionEventHandler;
     UserEventHandler = userEventHandler;
   }
 
   protected IPublisher Publisher { get; }
+  protected IRoleEventHandler RoleEventHandler { get; }
   protected ISessionEventHandler SessionEventHandler { get; }
   protected IUserEventHandler UserEventHandler { get; }
 
@@ -25,6 +29,20 @@ public class EventBus : IEventBus
   {
     switch (@event)
     {
+      #region Roles
+      case RoleCreatedEvent roleCreated:
+        await RoleEventHandler.HandleAsync(roleCreated, cancellationToken);
+        break;
+      case RoleDeletedEvent roleDeleted:
+        await RoleEventHandler.HandleAsync(roleDeleted, cancellationToken);
+        break;
+      case RoleUniqueNameChangedEvent roleUniqueNameChanged:
+        await RoleEventHandler.HandleAsync(roleUniqueNameChanged, cancellationToken);
+        break;
+      case RoleUpdatedEvent roleUpdated:
+        await RoleEventHandler.HandleAsync(roleUpdated, cancellationToken);
+        break;
+      #endregion
       #region Sessions
       case SessionCreatedEvent sessionCreated:
         await SessionEventHandler.HandleAsync(sessionCreated, cancellationToken);

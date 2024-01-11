@@ -30,6 +30,25 @@ public static class IdentityDb
     public static readonly ColumnId ValueShortened = new(nameof(CustomAttributeEntity.ValueShortened), Table);
   }
 
+  public static class Roles
+  {
+    public static readonly TableId Table = new(nameof(IdentityContext.Roles));
+
+    public static readonly ColumnId AggregateId = new(nameof(RoleEntity.AggregateId), Table);
+    public static readonly ColumnId CreatedBy = new(nameof(RoleEntity.CreatedBy), Table);
+    public static readonly ColumnId CreatedOn = new(nameof(RoleEntity.CreatedOn), Table);
+    public static readonly ColumnId CustomAttributes = new(nameof(RoleEntity.CustomAttributes), Table);
+    public static readonly ColumnId Description = new(nameof(RoleEntity.Description), Table);
+    public static readonly ColumnId DisplayName = new(nameof(RoleEntity.DisplayName), Table);
+    public static readonly ColumnId TenantId = new(nameof(RoleEntity.TenantId), Table);
+    public static readonly ColumnId UniqueName = new(nameof(RoleEntity.UniqueName), Table);
+    public static readonly ColumnId UniqueNameNormalized = new(nameof(RoleEntity.UniqueNameNormalized), Table);
+    public static readonly ColumnId UpdatedBy = new(nameof(RoleEntity.UpdatedBy), Table);
+    public static readonly ColumnId UpdatedOn = new(nameof(RoleEntity.UpdatedOn), Table);
+    public static readonly ColumnId RoleId = new(nameof(RoleEntity.RoleId), Table);
+    public static readonly ColumnId Version = new(nameof(RoleEntity.Version), Table);
+  }
+
   public static class Sessions
   {
     public static readonly TableId Table = new(nameof(IdentityContext.Sessions));
