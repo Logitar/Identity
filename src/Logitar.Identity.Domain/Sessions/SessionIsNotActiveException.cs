@@ -1,16 +1,14 @@
-﻿using Logitar.Identity.Domain.Shared;
-
-namespace Logitar.Identity.Domain.Sessions;
+﻿namespace Logitar.Identity.Domain.Sessions;
 
 /// <summary>
 /// The exception raised when an inactive session is renewed.
 /// </summary>
-public class SessionIsNotActiveException : InvalidCredentialsException
+public class SessionIsNotActiveException : Exception
 {
   /// <summary>
   /// A generic error message for this exception.
   /// </summary>
-  public new const string ErrorMessage = "The specified session is not active.";
+  public const string ErrorMessage = "The specified session is not active.";
 
   /// <summary>
   /// Gets the identifier of the inactive session.
