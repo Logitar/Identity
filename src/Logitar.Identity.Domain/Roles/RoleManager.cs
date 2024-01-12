@@ -6,20 +6,45 @@ using Logitar.Identity.Domain.Users;
 
 namespace Logitar.Identity.Domain.Roles;
 
+/// <summary>
+/// Implements methods to manage roles.
+/// </summary>
 public class RoleManager : IRoleManager
 {
-  private readonly IApiKeyRepository _apiKeyRepository;
-  private readonly IRoleRepository _roleRepository;
-  private readonly IUserRepository _userRepository;
+  /// <summary>
+  /// Gets the API key repository.
+  /// </summary>
+  protected IApiKeyRepository ApiKeyRepository { get; }
+  /// <summary>
+  /// Gets the role repository.
+  /// </summary>
+  protected IRoleRepository RoleRepository { get; }
+  /// <summary>
+  /// Gets the user repository.
+  /// </summary>
+  protected IUserRepository UserRepository { get; }
 
+  /// <summary>
+  /// Initializes a new instance of the <see cref="RoleManager"/> class.
+  /// </summary>
+  /// <param name="apiKeyRepository">The API key repository.</param>
+  /// <param name="roleRepository">The role repository.</param>
+  /// <param name="userRepository">The user repository.</param>
   public RoleManager(IApiKeyRepository apiKeyRepository, IRoleRepository roleRepository, IUserRepository userRepository)
   {
-    _apiKeyRepository = apiKeyRepository;
-    _roleRepository = roleRepository;
-    _userRepository = userRepository;
+    ApiKeyRepository = apiKeyRepository;
+    RoleRepository = roleRepository;
+    UserRepository = userRepository;
   }
 
-  public async Task SaveAsync(RoleAggregate role, ActorId actorId, CancellationToken cancellationToken)
+  /// <summary>
+  /// Saves the specified user, performing model validation such as unique name unicity.
+  /// </summary>
+  /// <param name="role">The role to save.</param>
+  /// <param name="actorId">The actor identifier.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The asynchronous operation.</returns>
+  public virtual async Task SaveAsync(RoleAggregate role, ActorId actorId, CancellationToken cancellationToken)
   {
     bool hasBeenDeleted = false;
     bool hasUniqueNameChanged = false;
@@ -37,7 +62,7 @@ public class RoleManager : IRoleManager
 
     if (hasUniqueNameChanged)
     {
-      RoleAggregate? other = await _roleRepository.LoadAsync(role.TenantId, role.UniqueName, cancellationToken);
+      RoleAggregate? other = await RoleRepository.LoadAsync(role.TenantId, role.UniqueName, cancellationToken);
       if (other?.Equals(role) == false)
       {
         throw new UniqueNameAlreadyUsedException<RoleAggregate>(role.TenantId, role.UniqueName);
@@ -46,21 +71,21 @@ public class RoleManager : IRoleManager
 
     if (hasBeenDeleted)
     {
-      IEnumerable<ApiKeyAggregate> apiKeys = await _apiKeyRepository.LoadAsync(role, cancellationToken);
+      IEnumerable<ApiKeyAggregate> apiKeys = await ApiKeyRepository.LoadAsync(role, cancellationToken);
       foreach (ApiKeyAggregate apiKey in apiKeys)
       {
         apiKey.RemoveRole(role, actorId);
       }
-      await _apiKeyRepository.SaveAsync(apiKeys, cancellationToken);
+      await ApiKeyRepository.SaveAsync(apiKeys, cancellationToken);
 
-      IEnumerable<UserAggregate> users = await _userRepository.LoadAsync(role, cancellationToken);
+      IEnumerable<UserAggregate> users = await UserRepository.LoadAsync(role, cancellationToken);
       foreach (UserAggregate user in users)
       {
         user.RemoveRole(role, actorId);
       }
-      await _userRepository.SaveAsync(users, cancellationToken);
+      await UserRepository.SaveAsync(users, cancellationToken);
     }
 
-    await _roleRepository.SaveAsync(role, cancellationToken);
+    await RoleRepository.SaveAsync(role, cancellationToken);
   }
 }

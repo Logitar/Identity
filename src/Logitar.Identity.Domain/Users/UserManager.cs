@@ -6,41 +6,45 @@ using Logitar.Identity.Domain.Users.Events;
 
 namespace Logitar.Identity.Domain.Users;
 
+/// <summary>
+/// Implements methods to manage users.
+/// </summary>
 public class UserManager : IUserManager
 {
-  private readonly ISessionRepository _sessionRepository;
-  private readonly IUserRepository _userRepository;
-  private readonly IUserSettingsResolver _userSettingsResolver;
+  /// <summary>
+  /// Gets the session repository.
+  /// </summary>
+  protected ISessionRepository SessionRepository { get; }
+  /// <summary>
+  /// Gets the user repository.
+  /// </summary>
+  protected IUserRepository UserRepository { get; }
+  /// <summary>
+  /// Gets the user settings resolver.
+  /// </summary>
+  protected IUserSettingsResolver UserSettingsResolver { get; }
 
+  /// <summary>
+  /// Initializes a new instance of the <see cref="UserManager"/> class.
+  /// </summary>
+  /// <param name="sessionRepository">The session repository.</param>
+  /// <param name="userRepository">The user repository.</param>
+  /// <param name="userSettingsResolver">The user settings resolver.</param>
   public UserManager(ISessionRepository sessionRepository, IUserRepository userRepository, IUserSettingsResolver userSettingsResolver)
   {
-    _sessionRepository = sessionRepository;
-    _userRepository = userRepository;
-    _userSettingsResolver = userSettingsResolver;
+    SessionRepository = sessionRepository;
+    UserRepository = userRepository;
+    UserSettingsResolver = userSettingsResolver;
   }
 
-  public async Task<UserAggregate?> FindAsync(string? tenantIdValue, string uniqueNameOrEmailAddress, CancellationToken cancellationToken)
-  {
-    IUserSettings userSettings = _userSettingsResolver.Resolve();
-
-    TenantId? tenantId = TenantId.TryCreate(tenantIdValue); // TODO(fpion): shouldn't validate
-    UniqueNameUnit uniqueName = new(userSettings.UniqueName, uniqueNameOrEmailAddress); // TODO(fpion): shouldn't validate
-    UserAggregate? user = await _userRepository.LoadAsync(tenantId, uniqueName, cancellationToken);
-
-    if (user == null && userSettings.RequireUniqueEmail)
-    {
-      EmailUnit email = new(uniqueNameOrEmailAddress);
-      IEnumerable<UserAggregate> users = await _userRepository.LoadAsync(tenantId, email, cancellationToken);
-      if (users.Count() == 1)
-      {
-        user = users.Single();
-      }
-    }
-
-    return user;
-  }
-
-  public async Task SaveAsync(UserAggregate user, ActorId actorId, CancellationToken cancellationToken)
+  /// <summary>
+  /// Saves the specified user, performing model validation such as unique name and email address unicity.
+  /// </summary>
+  /// <param name="user">The user to save.</param>
+  /// <param name="actorId">The actor identifier.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The asynchronous operation.</returns>
+  public virtual async Task SaveAsync(UserAggregate user, ActorId actorId, CancellationToken cancellationToken)
   {
     bool hasBeenDeleted = false;
     bool hasEmailChanged = false;
@@ -63,17 +67,17 @@ public class UserManager : IUserManager
 
     if (hasUniqueNameChanged)
     {
-      UserAggregate? other = await _userRepository.LoadAsync(user.TenantId, user.UniqueName, cancellationToken);
+      UserAggregate? other = await UserRepository.LoadAsync(user.TenantId, user.UniqueName, cancellationToken);
       if (other?.Equals(user) == false)
       {
         throw new UniqueNameAlreadyUsedException<UserAggregate>(user.TenantId, user.UniqueName);
       }
     }
 
-    IUserSettings userSettings = _userSettingsResolver.Resolve();
+    IUserSettings userSettings = UserSettingsResolver.Resolve();
     if (hasEmailChanged && user.Email != null && userSettings.RequireUniqueEmail)
     {
-      IEnumerable<UserAggregate> users = await _userRepository.LoadAsync(user.TenantId, user.Email, cancellationToken);
+      IEnumerable<UserAggregate> users = await UserRepository.LoadAsync(user.TenantId, user.Email, cancellationToken);
       if (users.Any(other => !other.Equals(user)))
       {
         throw new EmailAddressAlreadyUsedException(user.TenantId, user.Email);
@@ -84,7 +88,7 @@ public class UserManager : IUserManager
     {
       if (change is UserIdentifierChangedEvent identifier)
       {
-        UserAggregate? other = await _userRepository.LoadAsync(user.TenantId, identifier.Key, identifier.Value, cancellationToken);
+        UserAggregate? other = await UserRepository.LoadAsync(user.TenantId, identifier.Key, identifier.Value, cancellationToken);
         if (other?.Equals(user) == false)
         {
           throw new CustomIdentifierAlreadyUsedException<UserAggregate>(user.TenantId, identifier.Key, identifier.Value);
@@ -94,14 +98,14 @@ public class UserManager : IUserManager
 
     if (hasBeenDeleted)
     {
-      IEnumerable<SessionAggregate> sessions = await _sessionRepository.LoadAsync(user, cancellationToken);
+      IEnumerable<SessionAggregate> sessions = await SessionRepository.LoadAsync(user, cancellationToken);
       foreach (SessionAggregate session in sessions)
       {
         session.Delete(actorId);
       }
-      await _sessionRepository.SaveAsync(sessions, cancellationToken);
+      await SessionRepository.SaveAsync(sessions, cancellationToken);
     }
 
-    await _userRepository.SaveAsync(user, cancellationToken);
+    await UserRepository.SaveAsync(user, cancellationToken);
   }
 }
