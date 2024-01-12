@@ -15,11 +15,13 @@ public class ApiKeyEventHandler : EventHandler, IApiKeyEventHandler
 
   public virtual async Task HandleAsync(ApiKeyAuthenticatedEvent @event, CancellationToken cancellationToken)
   {
-    ApiKeyEntity apiKey = await LoadAsync(@event.AggregateId, cancellationToken);
+    ApiKeyEntity? apiKey = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (apiKey != null)
+    {
+      apiKey.Authenticate(@event);
 
-    apiKey.Authenticate(@event);
-
-    await Context.SaveChangesAsync(cancellationToken);
+      await Context.SaveChangesAsync(cancellationToken);
+    }
   }
 
   public virtual async Task HandleAsync(ApiKeyCreatedEvent @event, CancellationToken cancellationToken)
@@ -50,35 +52,41 @@ public class ApiKeyEventHandler : EventHandler, IApiKeyEventHandler
 
   public virtual async Task HandleAsync(ApiKeyRoleAddedEvent @event, CancellationToken cancellationToken)
   {
-    ApiKeyEntity apiKey = await LoadAsync(@event.AggregateId, cancellationToken);
+    ApiKeyEntity? apiKey = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (apiKey != null)
+    {
+      RoleEntity role = await Context.Roles
+        .SingleOrDefaultAsync(x => x.AggregateId == @event.RoleId.AggregateId.Value, cancellationToken)
+        ?? throw new InvalidOperationException($"The role entity 'AggregateId={@event.AggregateId}' could not be found.");
 
-    RoleEntity role = await Context.Roles
-      .SingleOrDefaultAsync(x => x.AggregateId == @event.RoleId.AggregateId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The role entity 'AggregateId={@event.AggregateId}' could not be found.");
+      apiKey.AddRole(role, @event);
 
-    apiKey.AddRole(role, @event);
-
-    await Context.SaveChangesAsync(cancellationToken);
+      await Context.SaveChangesAsync(cancellationToken);
+    }
   }
 
   public virtual async Task HandleAsync(ApiKeyRoleRemovedEvent @event, CancellationToken cancellationToken)
   {
-    ApiKeyEntity apiKey = await LoadAsync(@event.AggregateId, cancellationToken);
+    ApiKeyEntity? apiKey = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (apiKey != null)
+    {
+      apiKey.RemoveRole(@event);
 
-    apiKey.RemoveRole(@event);
-
-    await Context.SaveChangesAsync(cancellationToken);
+      await Context.SaveChangesAsync(cancellationToken);
+    }
   }
 
   public virtual async Task HandleAsync(ApiKeyUpdatedEvent @event, CancellationToken cancellationToken)
   {
-    ApiKeyEntity apiKey = await LoadAsync(@event.AggregateId, cancellationToken);
+    ApiKeyEntity? apiKey = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (apiKey != null)
+    {
+      apiKey.Update(@event);
 
-    apiKey.Update(@event);
-
-    await SynchronizeCustomAttributesAsync(EntityType, apiKey.ApiKeyId, @event.CustomAttributes, cancellationToken);
-    await SaveActorAsync(apiKey, cancellationToken);
-    await Context.SaveChangesAsync(cancellationToken);
+      await SynchronizeCustomAttributesAsync(EntityType, apiKey.ApiKeyId, @event.CustomAttributes, cancellationToken);
+      await SaveActorAsync(apiKey, cancellationToken);
+      await Context.SaveChangesAsync(cancellationToken);
+    }
   }
 
   protected virtual async Task<ApiKeyEntity> LoadAsync(AggregateId aggregateId, CancellationToken cancellationToken)

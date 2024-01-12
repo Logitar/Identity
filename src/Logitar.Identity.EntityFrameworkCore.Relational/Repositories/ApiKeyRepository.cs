@@ -66,7 +66,7 @@ public class ApiKeyRepository : EventSourcing.EntityFrameworkCore.Relational.Agg
   {
     IQuery query = SqlHelper.QueryFrom(EventDb.Events.Table)
       .Join(IdentityDb.ApiKeys.AggregateId, EventDb.Events.AggregateId,
-        new OperatorCondition(EventDb.Events.AggregateId, Operators.IsEqualTo(AggregateType))
+        new OperatorCondition(EventDb.Events.AggregateType, Operators.IsEqualTo(AggregateType))
       )
       .Join(IdentityDb.ApiKeyRoles.ApiKeyId, IdentityDb.ApiKeys.ApiKeyId)
       .Join(IdentityDb.Roles.RoleId, IdentityDb.ApiKeyRoles.RoleId)

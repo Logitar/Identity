@@ -42,10 +42,37 @@ public record AddressUnit : ContactUnit, IAddress
   /// <param name="country">The country of the address.</param>
   /// <param name="region">The region of the address.</param>
   /// <param name="postalCode">The postal code of the address.</param>
+  /// <param name="propertyName">The name of the property, used for validation.</param>
+  public AddressUnit(string street, string locality, string country, string? region = null, string? postalCode = null, string? propertyName = null)
+    : this(street, locality, country, region, postalCode, isVerified: false, propertyName)
+  {
+  }
+  /// <summary>
+  /// Initializes a new instance of the <see cref="AddressUnit"/> class.
+  /// </summary>
+  /// <param name="street">The street address.</param>
+  /// <param name="locality">The locality (city) of the address.</param>
+  /// <param name="country">The country of the address.</param>
+  /// <param name="region">The region of the address.</param>
+  /// <param name="postalCode">The postal code of the address.</param>
+  /// <param name="isVerified">A value indicating whether or not the postal address is verified.</param>
+  [JsonConstructor]
+  public AddressUnit(string street, string locality, string country, string? region, string? postalCode, bool isVerified)
+    : this(street, locality, country, region, postalCode, isVerified, propertyName: null)
+  {
+  }
+  /// <summary>
+  /// Initializes a new instance of the <see cref="AddressUnit"/> class.
+  /// </summary>
+  /// <param name="street">The street address.</param>
+  /// <param name="locality">The locality (city) of the address.</param>
+  /// <param name="country">The country of the address.</param>
+  /// <param name="region">The region of the address.</param>
+  /// <param name="postalCode">The postal code of the address.</param>
   /// <param name="isVerified">A value indicating whether or not the postal address is verified.</param>
   /// <param name="propertyName">The name of the property, used for validation.</param>
-  public AddressUnit(string street, string locality, string country, string? region = null, string? postalCode = null,
-    bool isVerified = false, string? propertyName = null) : base(isVerified)
+  public AddressUnit(string street, string locality, string country, string? region, string? postalCode, bool isVerified, string? propertyName = null)
+    : base(isVerified)
   {
     Street = street.Trim();
     Locality = locality.Trim();

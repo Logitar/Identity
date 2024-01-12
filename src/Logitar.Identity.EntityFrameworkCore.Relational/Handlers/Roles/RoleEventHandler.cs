@@ -39,21 +39,25 @@ public class RoleEventHandler : EventHandler, IRoleEventHandler
 
   public virtual async Task HandleAsync(RoleUniqueNameChangedEvent @event, CancellationToken cancellationToken)
   {
-    RoleEntity role = await LoadAsync(@event.AggregateId, cancellationToken);
+    RoleEntity? role = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (role != null)
+    {
+      role.SetUniqueName(@event);
 
-    role.SetUniqueName(@event);
-
-    await Context.SaveChangesAsync(cancellationToken);
+      await Context.SaveChangesAsync(cancellationToken);
+    }
   }
 
   public virtual async Task HandleAsync(RoleUpdatedEvent @event, CancellationToken cancellationToken)
   {
-    RoleEntity role = await LoadAsync(@event.AggregateId, cancellationToken);
+    RoleEntity? role = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (role != null)
+    {
+      role.Update(@event);
 
-    role.Update(@event);
-
-    await SynchronizeCustomAttributesAsync(EntityType, role.RoleId, @event.CustomAttributes, cancellationToken);
-    await Context.SaveChangesAsync(cancellationToken);
+      await SynchronizeCustomAttributesAsync(EntityType, role.RoleId, @event.CustomAttributes, cancellationToken);
+      await Context.SaveChangesAsync(cancellationToken);
+    }
   }
 
   protected virtual async Task<RoleEntity> LoadAsync(AggregateId aggregateId, CancellationToken cancellationToken)

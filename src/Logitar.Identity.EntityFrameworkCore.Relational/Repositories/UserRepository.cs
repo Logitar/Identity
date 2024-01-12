@@ -60,7 +60,7 @@ public class UserRepository : EventSourcing.EntityFrameworkCore.Relational.Aggre
       .OrderBy(e => e.Version)
       .ToArrayAsync(cancellationToken);
 
-    return Load<UserAggregate>(events.Select(EventSerializer.Deserialize));
+    return Load<UserAggregate>(events.Select(EventSerializer.Deserialize), includeDeleted);
   }
 
   public virtual async Task<UserAggregate?> LoadAsync(TenantId? tenantId, UniqueNameUnit uniqueName, CancellationToken cancellationToken)
@@ -103,7 +103,7 @@ public class UserRepository : EventSourcing.EntityFrameworkCore.Relational.Aggre
   {
     IQuery query = SqlHelper.QueryFrom(EventDb.Events.Table)
       .Join(IdentityDb.Users.AggregateId, EventDb.Events.AggregateId,
-        new OperatorCondition(EventDb.Events.AggregateId, Operators.IsEqualTo(AggregateType))
+        new OperatorCondition(EventDb.Events.AggregateType, Operators.IsEqualTo(AggregateType))
       )
       .Join(IdentityDb.UserIdentifiers.UserId, IdentityDb.Users.UserId)
       .Where(IdentityDb.Users.TenantId, tenantId == null ? Operators.IsNull() : Operators.IsEqualTo(tenantId.Value))
@@ -124,7 +124,7 @@ public class UserRepository : EventSourcing.EntityFrameworkCore.Relational.Aggre
   {
     IQuery query = SqlHelper.QueryFrom(EventDb.Events.Table)
       .Join(IdentityDb.Users.AggregateId, EventDb.Events.AggregateId,
-        new OperatorCondition(EventDb.Events.AggregateId, Operators.IsEqualTo(AggregateType))
+        new OperatorCondition(EventDb.Events.AggregateType, Operators.IsEqualTo(AggregateType))
       )
       .Join(IdentityDb.UserRoles.UserId, IdentityDb.Users.UserId)
       .Join(IdentityDb.Roles.RoleId, IdentityDb.UserRoles.RoleId)

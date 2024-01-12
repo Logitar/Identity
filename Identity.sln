@@ -26,7 +26,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Identity.Demo", "sr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{BCB8A692-DF88-4E50-91A7-AD91E466559C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.Domain.UnitTests", "tests\Logitar.Identity.Domain.UnitTests\Logitar.Identity.Domain.UnitTests.csproj", "{9A27A378-14E7-4D3C-B847-27D0D4EFA8F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Identity.Domain.UnitTests", "tests\Logitar.Identity.Domain.UnitTests\Logitar.Identity.Domain.UnitTests.csproj", "{9A27A378-14E7-4D3C-B847-27D0D4EFA8F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.EFCore.SqlServer.IntegrationTests", "tests\Logitar.Identity.EFCore.SqlServer.IntegrationTests\Logitar.Identity.EFCore.SqlServer.IntegrationTests.csproj", "{FA9AB722-026B-4842-B888-E9824568CBC1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -58,12 +60,17 @@ Global
 		{9A27A378-14E7-4D3C-B847-27D0D4EFA8F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A27A378-14E7-4D3C-B847-27D0D4EFA8F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A27A378-14E7-4D3C-B847-27D0D4EFA8F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA9AB722-026B-4842-B888-E9824568CBC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA9AB722-026B-4842-B888-E9824568CBC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA9AB722-026B-4842-B888-E9824568CBC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA9AB722-026B-4842-B888-E9824568CBC1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9A27A378-14E7-4D3C-B847-27D0D4EFA8F9} = {BCB8A692-DF88-4E50-91A7-AD91E466559C}
+		{FA9AB722-026B-4842-B888-E9824568CBC1} = {BCB8A692-DF88-4E50-91A7-AD91E466559C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {45FD7647-C5AB-4CE1-A93C-59A73FDD2196}
