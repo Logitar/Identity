@@ -10,21 +10,21 @@
     <Authors>Francis Pion</Authors>
     <Company>Logitar</Company>
     <Product>Logitar.Identity</Product>
-    <Description>TODO</Description>
+    <Description>Exposes aggregates, events and services from the Identity management platform domain.</Description>
     <Copyright>© 2024 Logitar All Rights Reserved.</Copyright>
     <PackageIcon>logitar.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Logitar/Identity</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <AssemblyVersion>0.11.0.0</AssemblyVersion>
+    <AssemblyVersion>0.10.0.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>0.11.0</Version>
+    <Version>0.10.0</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <PackageReleaseNotes>TODO</PackageReleaseNotes>
-    <PackageTags>TODO</PackageTags>
+    <PackageReleaseNotes>Implemented Identity domain layer.</PackageReleaseNotes>
+    <PackageTags>logitar;net;framework;identity;domain</PackageTags>
     <PackageProjectUrl>https://github.com/Logitar/Identity/tree/main/src/Logitar.Identity.Domain</PackageProjectUrl>
   </PropertyGroup>
 

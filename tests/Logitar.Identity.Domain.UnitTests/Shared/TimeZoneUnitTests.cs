@@ -41,8 +41,7 @@ public class TimeZoneUnitTests
     string propertyName = nameof(TimeZoneUnit);
 
     var exception = Assert.Throws<FluentValidation.ValidationException>(() => new TimeZoneUnit(value, propertyName));
-    //Assert.Equal(value, exception.Id);
-    //Assert.Equal(propertyName, exception.PropertyName); // TODO(fpion): implement
+    Assert.Contains(exception.Errors, e => e.ErrorCode == "TimeZoneValidator");
   }
 
   [Theory(DisplayName = "TryCreate: it should return a time zone when the value is not empty.")]

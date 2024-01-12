@@ -1,3 +1,3 @@
 # Logitar.Identity.Domain
 
-TODO
+Exposes domain aggregates, events and services of an Identity system.
