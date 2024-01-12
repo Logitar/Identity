@@ -21,10 +21,10 @@ public class CustomIdentifierAlreadyUsedException : Exception
   /// <summary>
   /// Gets or sets the identifier of the tenant in which the conflict occurred.
   /// </summary>
-  public string? TenantId
+  public TenantId? TenantId
   {
-    get => (string?)Data[nameof(TenantId)];
-    private set => Data[nameof(TenantId)] = value;
+    get => TenantId.TryCreate((string?)Data[nameof(TenantId)]);
+    private set => Data[nameof(TenantId)] = value?.Value;
   }
   /// <summary>
   /// Gets or sets the conflicting identifier key.
@@ -54,7 +54,7 @@ public class CustomIdentifierAlreadyUsedException : Exception
     : base(BuildMessage(type, tenantId, key, value))
   {
     TypeName = type.GetNamespaceQualifiedName();
-    TenantId = tenantId?.Value;
+    TenantId = tenantId;
     Key = key;
     Value = value;
   }

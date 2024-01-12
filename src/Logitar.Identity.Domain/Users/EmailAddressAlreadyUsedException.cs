@@ -15,18 +15,18 @@ public class EmailAddressAlreadyUsedException : Exception
   /// <summary>
   /// Gets or sets the identifier of the tenant in which the conflict occurred.
   /// </summary>
-  public string? TenantId
+  public TenantId? TenantId
   {
-    get => (string?)Data[nameof(TenantId)];
-    private set => Data[nameof(TenantId)] = value;
+    get => TenantId.TryCreate((string?)Data[nameof(TenantId)]);
+    private set => Data[nameof(TenantId)] = value?.Value;
   }
   /// <summary>
   /// Gets or sets the conflicting email address.
   /// </summary>
-  public string EmailAddress
+  public EmailUnit Email
   {
-    get => (string)Data[nameof(EmailAddress)]!;
-    private set => Data[nameof(EmailAddress)] = value;
+    get => new((string)Data[nameof(Email)]!);
+    private set => Data[nameof(Email)] = value.Address;
   }
 
   /// <summary>
@@ -37,12 +37,12 @@ public class EmailAddressAlreadyUsedException : Exception
   public EmailAddressAlreadyUsedException(TenantId? tenantId, EmailUnit email)
     : base(BuildMessage(tenantId, email))
   {
-    TenantId = tenantId?.Value;
-    EmailAddress = email.Address;
+    TenantId = tenantId;
+    Email = email;
   }
 
   private static string BuildMessage(TenantId? tenantId, EmailUnit email) => new ErrorMessageBuilder(ErrorMessage)
     .AddData(nameof(TenantId), tenantId?.Value, "<null>")
-    .AddData(nameof(EmailAddress), email.Address)
+    .AddData(nameof(Email), email.Address)
     .Build();
 }
