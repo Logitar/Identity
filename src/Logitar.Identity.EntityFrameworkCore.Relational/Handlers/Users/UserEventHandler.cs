@@ -15,20 +15,24 @@ public class UserEventHandler : EventHandler, IUserEventHandler
 
   public virtual async Task HandleAsync(UserAddressChangedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
+    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (user != null)
+    {
+      user.SetAddress(@event);
 
-    user.SetAddress(@event);
-
-    await Context.SaveChangesAsync(cancellationToken);
+      await Context.SaveChangesAsync(cancellationToken);
+    }
   }
 
   public virtual async Task HandleAsync(UserAuthenticatedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
+    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (user != null)
+    {
+      user.Authenticate(@event);
 
-    user.Authenticate(@event);
-
-    await Context.SaveChangesAsync(cancellationToken);
+      await Context.SaveChangesAsync(cancellationToken);
+    }
   }
 
   public virtual async Task HandleAsync(UserCreatedEvent @event, CancellationToken cancellationToken)
@@ -59,117 +63,141 @@ public class UserEventHandler : EventHandler, IUserEventHandler
 
   public virtual async Task HandleAsync(UserDisabledEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
+    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (user != null)
+    {
+      user.Disable(@event);
 
-    user.Disable(@event);
-
-    await Context.SaveChangesAsync(cancellationToken);
+      await Context.SaveChangesAsync(cancellationToken);
+    }
   }
 
   public virtual async Task HandleAsync(UserEmailChangedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
+    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (user != null)
+    {
+      user.SetEmail(@event);
 
-    user.SetEmail(@event);
-
-    await SaveActorAsync(user, cancellationToken);
-    await Context.SaveChangesAsync(cancellationToken);
+      await SaveActorAsync(user, cancellationToken);
+      await Context.SaveChangesAsync(cancellationToken);
+    }
   }
 
   public virtual async Task HandleAsync(UserIdentifierChangedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
+    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (user != null)
+    {
+      user.SetCustomIdentifier(@event);
 
-    user.SetCustomIdentifier(@event);
-
-    await Context.SaveChangesAsync(cancellationToken);
+      await Context.SaveChangesAsync(cancellationToken);
+    }
   }
   public virtual async Task HandleAsync(UserIdentifierRemovedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
+    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (user != null)
+    {
+      user.RemoveCustomIdentifier(@event);
 
-    user.RemoveCustomIdentifier(@event);
-
-    await Context.SaveChangesAsync(cancellationToken);
+      await Context.SaveChangesAsync(cancellationToken);
+    }
   }
 
   public virtual async Task HandleAsync(UserEnabledEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
+    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (user != null)
+    {
+      user.Enable(@event);
 
-    user.Enable(@event);
-
-    await Context.SaveChangesAsync(cancellationToken);
+      await Context.SaveChangesAsync(cancellationToken);
+    }
   }
 
   public virtual async Task HandleAsync(UserPasswordEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
+    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (user != null)
+    {
+      user.SetPassword(@event);
 
-    user.SetPassword(@event);
-
-    await Context.SaveChangesAsync(cancellationToken);
+      await Context.SaveChangesAsync(cancellationToken);
+    }
   }
 
   public virtual async Task HandleAsync(UserPhoneChangedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
+    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (user != null)
+    {
+      user.SetPhone(@event);
 
-    user.SetPhone(@event);
-
-    await Context.SaveChangesAsync(cancellationToken);
+      await Context.SaveChangesAsync(cancellationToken);
+    }
   }
 
   public virtual async Task HandleAsync(UserRoleAddedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
-
-    RoleEntity role = await Context.Roles
+    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (user != null)
+    {
+      RoleEntity role = await Context.Roles
       .SingleOrDefaultAsync(x => x.AggregateId == @event.RoleId.AggregateId.Value, cancellationToken)
       ?? throw new InvalidOperationException($"The role entity 'AggregateId={@event.AggregateId}' could not be found.");
 
-    user.AddRole(role, @event);
+      user.AddRole(role, @event);
 
-    await Context.SaveChangesAsync(cancellationToken);
+      await Context.SaveChangesAsync(cancellationToken);
+    }
   }
 
   public virtual async Task HandleAsync(UserRoleRemovedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
+    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (user != null)
+    {
+      user.RemoveRole(@event);
 
-    user.RemoveRole(@event);
-
-    await Context.SaveChangesAsync(cancellationToken);
+      await Context.SaveChangesAsync(cancellationToken);
+    }
   }
 
   public virtual async Task HandleAsync(UserSignedInEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
+    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (user != null)
+    {
+      user.SignIn(@event);
 
-    user.SignIn(@event);
-
-    await Context.SaveChangesAsync(cancellationToken);
+      await Context.SaveChangesAsync(cancellationToken);
+    }
   }
 
   public virtual async Task HandleAsync(UserUniqueNameChangedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
+    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (user != null)
+    {
+      user.SetUniqueName(@event);
 
-    user.SetUniqueName(@event);
-
-    await SaveActorAsync(user, cancellationToken);
-    await Context.SaveChangesAsync(cancellationToken);
+      await SaveActorAsync(user, cancellationToken);
+      await Context.SaveChangesAsync(cancellationToken);
+    }
   }
 
   public virtual async Task HandleAsync(UserUpdatedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await LoadAsync(@event.AggregateId, cancellationToken);
+    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (user != null)
+    {
+      user.Update(@event);
 
-    user.Update(@event);
-
-    await SynchronizeCustomAttributesAsync(EntityType, user.UserId, @event.CustomAttributes, cancellationToken);
-    await SaveActorAsync(user, cancellationToken);
-    await Context.SaveChangesAsync(cancellationToken);
+      await SynchronizeCustomAttributesAsync(EntityType, user.UserId, @event.CustomAttributes, cancellationToken);
+      await SaveActorAsync(user, cancellationToken);
+      await Context.SaveChangesAsync(cancellationToken);
+    }
   }
 
   protected virtual async Task<UserEntity> LoadAsync(AggregateId aggregateId, CancellationToken cancellationToken)

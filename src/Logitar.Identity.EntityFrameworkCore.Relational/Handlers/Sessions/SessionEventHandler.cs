@@ -41,30 +41,36 @@ public class SessionEventHandler : EventHandler, ISessionEventHandler
 
   public virtual async Task HandleAsync(SessionRenewedEvent @event, CancellationToken cancellationToken)
   {
-    SessionEntity session = await LoadAsync(@event.AggregateId, cancellationToken);
+    SessionEntity? session = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (session != null)
+    {
+      session.Renew(@event);
 
-    session.Renew(@event);
-
-    await Context.SaveChangesAsync(cancellationToken);
+      await Context.SaveChangesAsync(cancellationToken);
+    }
   }
 
   public virtual async Task HandleAsync(SessionSignedOutEvent @event, CancellationToken cancellationToken)
   {
-    SessionEntity session = await LoadAsync(@event.AggregateId, cancellationToken);
+    SessionEntity? session = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (session != null)
+    {
+      session.SignOut(@event);
 
-    session.SignOut(@event);
-
-    await Context.SaveChangesAsync(cancellationToken);
+      await Context.SaveChangesAsync(cancellationToken);
+    }
   }
 
   public virtual async Task HandleAsync(SessionUpdatedEvent @event, CancellationToken cancellationToken)
   {
-    SessionEntity session = await LoadAsync(@event.AggregateId, cancellationToken);
+    SessionEntity? session = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (session != null)
+    {
+      session.Update(@event);
 
-    session.Update(@event);
-
-    await SynchronizeCustomAttributesAsync(EntityType, session.SessionId, @event.CustomAttributes, cancellationToken);
-    await Context.SaveChangesAsync(cancellationToken);
+      await SynchronizeCustomAttributesAsync(EntityType, session.SessionId, @event.CustomAttributes, cancellationToken);
+      await Context.SaveChangesAsync(cancellationToken);
+    }
   }
 
   protected virtual async Task<SessionEntity> LoadAsync(AggregateId aggregateId, CancellationToken cancellationToken)
