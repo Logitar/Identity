@@ -74,13 +74,16 @@ public class UserManager : IUserManager
       }
     }
 
-    IUserSettings userSettings = UserSettingsResolver.Resolve();
-    if (hasEmailChanged && user.Email != null && userSettings.RequireUniqueEmail)
+    if (hasEmailChanged && user.Email != null)
     {
-      IEnumerable<UserAggregate> users = await UserRepository.LoadAsync(user.TenantId, user.Email, cancellationToken);
-      if (users.Any(other => !other.Equals(user)))
+      IUserSettings userSettings = UserSettingsResolver.Resolve();
+      if (userSettings.RequireUniqueEmail)
       {
-        throw new EmailAddressAlreadyUsedException(user.TenantId, user.Email);
+        IEnumerable<UserAggregate> users = await UserRepository.LoadAsync(user.TenantId, user.Email, cancellationToken);
+        if (users.Any(other => !other.Equals(user)))
+        {
+          throw new EmailAddressAlreadyUsedException(user.TenantId, user.Email);
+        }
       }
     }
 

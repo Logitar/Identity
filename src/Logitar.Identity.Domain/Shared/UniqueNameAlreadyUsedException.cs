@@ -1,4 +1,6 @@
-﻿namespace Logitar.Identity.Domain.Shared;
+﻿using Logitar.Identity.Domain.Settings;
+
+namespace Logitar.Identity.Domain.Shared;
 
 /// <summary>
 /// The exception raised when an unique name conflict occurs.
@@ -9,6 +11,11 @@ public class UniqueNameAlreadyUsedException : Exception
   /// A generic error message for this exception.
   /// </summary>
   public const string ErrorMessage = "The specified unique name is already used.";
+
+  private static readonly UniqueNameSettings _uniqueNameSettings = new()
+  {
+    AllowedCharacters = null // NOTE(fpion): strict validation is not required when deserializing an unique name.
+  };
 
   /// <summary>
   /// Gets or sets the name of the type of the object that caused the conflict.
@@ -21,18 +28,18 @@ public class UniqueNameAlreadyUsedException : Exception
   /// <summary>
   /// Gets or sets the identifier of the tenant in which the conflict occurred.
   /// </summary>
-  public string? TenantId
+  public TenantId? TenantId
   {
-    get => (string?)Data[nameof(TenantId)];
-    private set => Data[nameof(TenantId)] = value;
+    get => TenantId.TryCreate((string?)Data[nameof(TenantId)]);
+    private set => Data[nameof(TenantId)] = value?.Value;
   }
   /// <summary>
   /// Gets or sets the conflicting unique name.
   /// </summary>
-  public string UniqueName
+  public UniqueNameUnit UniqueName
   {
-    get => (string)Data[nameof(UniqueName)]!;
-    private set => Data[nameof(UniqueName)] = value;
+    get => new(_uniqueNameSettings, (string)Data[nameof(UniqueName)]!);
+    private set => Data[nameof(UniqueName)] = value.Value;
   }
 
   /// <summary>
@@ -45,8 +52,8 @@ public class UniqueNameAlreadyUsedException : Exception
     : base(BuildMessage(type, tenantId, uniqueName))
   {
     TypeName = type.GetNamespaceQualifiedName();
-    TenantId = tenantId?.Value;
-    UniqueName = uniqueName.Value;
+    TenantId = tenantId;
+    UniqueName = uniqueName;
   }
 
   private static string BuildMessage(Type type, TenantId? tenantId, UniqueNameUnit uniqueName) => new ErrorMessageBuilder(ErrorMessage)

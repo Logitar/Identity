@@ -15,7 +15,7 @@ public class TenantMismatchException : Exception
   /// </summary>
   public TenantId? ExpectedTenantId
   {
-    get => Data[nameof(ExpectedTenantId)] is not string value ? null : new TenantId(value);
+    get => TenantId.TryCreate((string?)Data[nameof(ExpectedTenantId)]);
     private set => Data[nameof(ExpectedTenantId)] = value?.Value;
   }
   /// <summary>
@@ -23,7 +23,7 @@ public class TenantMismatchException : Exception
   /// </summary>
   public TenantId? ActualTenantId
   {
-    get => Data[nameof(ActualTenantId)] is not string value ? null : new TenantId(value);
+    get => TenantId.TryCreate((string?)Data[nameof(ActualTenantId)]);
     private set => Data[nameof(ActualTenantId)] = value?.Value;
   }
 
