@@ -6,8 +6,7 @@ public class LocaleConverter : JsonConverter<LocaleUnit>
 {
   public override LocaleUnit? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
   {
-    string? code = reader.GetString();
-    return code == null ? null : new(code); // TODO(fpion): shouldn't validate
+    return LocaleUnit.TryCreate(reader.GetString());
   }
 
   public override void Write(Utf8JsonWriter writer, LocaleUnit locale, JsonSerializerOptions options)

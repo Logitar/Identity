@@ -23,8 +23,8 @@ public class CustomAttributeValidator : ICustomAttributeValidator
   /// <param name="valueValidator">The custom attribute value validator.</param>
   public CustomAttributeValidator(IValidator<string>? keyValidator = null, IValidator<string>? valueValidator = null)
   {
-    KeyValidator = keyValidator ?? new CustomAttributeKeyValidator();
-    ValueValidator = valueValidator ?? new CustomAttributeValueValidator();
+    KeyValidator = keyValidator ?? new CustomAttributeKeyValidator("Key");
+    ValueValidator = valueValidator ?? new CustomAttributeValueValidator("Value");
   }
 
   /// <summary>

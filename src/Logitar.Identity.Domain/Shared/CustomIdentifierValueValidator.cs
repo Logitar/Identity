@@ -16,8 +16,9 @@ public class CustomIdentifierValueValidator : AbstractValidator<string>
   /// <summary>
   /// Initializes a new instance of the <see cref="CustomIdentifierValueValidator"/> class.
   /// </summary>
-  public CustomIdentifierValueValidator()
+  /// <param name="propertyName">The name of the property, used for validation.</param>
+  public CustomIdentifierValueValidator(string? propertyName = null)
   {
-    RuleFor(x => x).NotEmpty().MaximumLength(MaximumLength);
+    RuleFor(x => x).NotEmpty().MaximumLength(MaximumLength).WithPropertyName(propertyName);
   }
 }

@@ -10,7 +10,7 @@
     <Authors>Francis Pion</Authors>
     <Company>Logitar</Company>
     <Product>Logitar.Identity</Product>
-    <Description>TODO</Description>
+    <Description>Provides an abstraction of a data store to be used with the Identity management platform.</Description>
     <Copyright>© 2024 Logitar All Rights Reserved.</Copyright>
     <PackageIcon>logitar.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -23,8 +23,8 @@
     <Version>0.11.0</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
-    <PackageReleaseNotes>TODO</PackageReleaseNotes>
-    <PackageTags>TODO</PackageTags>
+    <PackageReleaseNotes>Implemented Identity infrastructure layer.</PackageReleaseNotes>
+    <PackageTags>logitar;net;framework;identity;infrastructure</PackageTags>
     <PackageProjectUrl>https://github.com/Logitar/Identity/tree/main/src/Logitar.Identity.Infrastructure</PackageProjectUrl>
   </PropertyGroup>
 

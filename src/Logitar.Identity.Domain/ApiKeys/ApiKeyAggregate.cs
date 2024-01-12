@@ -8,17 +8,31 @@ using Logitar.Identity.Domain.Shared;
 
 namespace Logitar.Identity.Domain.ApiKeys;
 
+/// <summary>
+/// Represents an API key in the identity system. Similarly to an user, it can have access to processes and resources using roles.
+/// It should be used instead of users for backend-to-backend authentication where personal and authentication information are not required.
+/// </summary>
 public class ApiKeyAggregate : AggregateRoot
 {
   private ApiKeyUpdatedEvent _updatedEvent = new();
 
   private Password? _secret = null;
 
+  /// <summary>
+  /// Gets the identifier of the API key.
+  /// </summary>
   public new ApiKeyId Id => new(base.Id);
 
+  /// <summary>
+  /// Gets the tenant identifier of the API key.
+  /// </summary>
   public TenantId? TenantId { get; private set; }
 
   private DisplayNameUnit? _displayName = null;
+  /// <summary>
+  /// Gets or sets the display name of the API key.
+  /// </summary>
+  /// <exception cref="InvalidOperationException">The display name has not been initialized yet.</exception>
   public DisplayNameUnit DisplayName
   {
     get => _displayName ?? throw new InvalidOperationException($"The {nameof(DisplayName)} has not been initialized yet.");
@@ -32,6 +46,9 @@ public class ApiKeyAggregate : AggregateRoot
     }
   }
   private DescriptionUnit? _description = null;
+  /// <summary>
+  /// Gets or sets the description of the API key.
+  /// </summary>
   public DescriptionUnit? Description
   {
     get => _description;
@@ -44,36 +61,38 @@ public class ApiKeyAggregate : AggregateRoot
       }
     }
   }
-  private readonly ExpirationValidator _expirationValidator = new();
-  private DateTime? _expiresOn = null;
-  public DateTime? ExpiresOn
-  {
-    get => _expiresOn;
-    set
-    {
-      if (value != _expiresOn)
-      {
-        if (!value.HasValue || value.Value > _expiresOn)
-        {
-          throw new CannotPostponeApiKeyExpirationException(this, value);
-        }
-        _expirationValidator.ValidateAndThrow(value.Value);
+  /// <summary>
+  /// Gets or sets the expiration date and time of the API key.
+  /// </summary>
+  public DateTime? ExpiresOn { get; private set; }
 
-        _expiresOn = value;
-        _updatedEvent.ExpiresOn = value;
-      }
-    }
-  }
-
+  /// <summary>
+  /// Initializes a new instance of the <see cref="ApiKeyAggregate"/> class.
+  /// DO NOT use this constructor to create a new API key. It is only intended to be used by the event sourcing.
+  /// </summary>
+  /// <param name="id">The identifier of the API key.</param>
   public ApiKeyAggregate(AggregateId id) : base(id)
   {
   }
 
-  public ApiKeyAggregate(Password secret, DisplayNameUnit displayName, TenantId? tenantId = null, ActorId actorId = default, ApiKeyId? id = null)
+  /// <summary>
+  /// Initializes a new instance of the <see cref="ApiKeyAggregate"/> class.
+  /// DO use this constructor to create a new API key.
+  /// </summary>
+  /// <param name="displayName">The unique name of the API key.</param>
+  /// <param name="secret">The secret of the API key.</param>
+  /// <param name="tenantId">The tenant identifier of the API key.</param>
+  /// <param name="actorId">The actor identifier.</param>
+  /// <param name="id">The identifier of the API key.</param>
+  public ApiKeyAggregate(DisplayNameUnit displayName, Password secret, TenantId? tenantId = null, ActorId actorId = default, ApiKeyId? id = null)
     : base((id ?? ApiKeyId.NewId()).AggregateId)
   {
     Raise(new ApiKeyCreatedEvent(actorId, displayName, secret, tenantId));
   }
+  /// <summary>
+  /// Applies the specified event.
+  /// </summary>
+  /// <param name="event">The event to apply.</param>
   protected virtual void Apply(ApiKeyCreatedEvent @event)
   {
     _secret = @event.Secret;
@@ -83,44 +102,84 @@ public class ApiKeyAggregate : AggregateRoot
     _displayName = @event.DisplayName;
   }
 
+  /// <summary>
+  /// Gets of sets the date and time of the latest authentication of this API key.
+  /// </summary>
   public DateTime? AuthenticatedOn { get; private set; }
 
   private readonly Dictionary<string, string> _customAttributes = [];
+  /// <summary>
+  /// Gets the custom attributes of the API key.
+  /// </summary>
   public IReadOnlyDictionary<string, string> CustomAttributes => _customAttributes.AsReadOnly();
 
   private readonly HashSet<RoleId> _roles = [];
+  /// <summary>
+  /// Gets the roles of the API key.
+  /// </summary>
   public IReadOnlyCollection<RoleId> Roles => _roles.ToList().AsReadOnly();
 
+  /// <summary>
+  /// Adds the specified role to the API key, if the API key does not already have the specified role.
+  /// </summary>
+  /// <param name="role">The role to be added.</param>
+  /// <param name="actorId">The actor identifier.</param>
+  /// <exception cref="TenantMismatchException">The role and API key tenant identifiers do not match.</exception>
   public void AddRole(RoleAggregate role, ActorId actorId = default)
   {
+    if (role.TenantId != TenantId)
+    {
+      throw new TenantMismatchException(TenantId, role.TenantId);
+    }
+
     if (!HasRole(role))
     {
       Raise(new ApiKeyRoleAddedEvent(actorId, role.Id));
     }
   }
+  /// <summary>
+  /// Applies the specified event.
+  /// </summary>
+  /// <param name="event">The event to apply.</param>
   protected virtual void Apply(ApiKeyRoleAddedEvent @event)
   {
     _roles.Add(@event.RoleId);
   }
 
-  public void Authenticate(byte[] secret, ActorId actorId = default)
+  /// <summary>
+  /// Authenticates the API key.
+  /// </summary>
+  /// <param name="secret">The current secret of the API key.</param>
+  /// <param name="actorId">(Optional) The actor identifier. This parameter should be left null so that it defaults to the API key's identifier.</param>
+  /// <exception cref="ApiKeyIsExpiredException">The API key is expired.</exception>
+  /// <exception cref="IncorrectApiKeySecretException">The secret is incorrect.</exception>
+  public void Authenticate(string secret, ActorId? actorId = null)
   {
-    if (_secret == null || !_secret.IsMatch(secret))
-    {
-      throw new IncorrectApiKeySecretException(this, secret);
-    }
-    else if (IsExpired())
+    if (IsExpired())
     {
       throw new ApiKeyIsExpiredException(this);
     }
+    else if (_secret == null || !_secret.IsMatch(secret))
+    {
+      throw new IncorrectApiKeySecretException(this, secret);
+    }
 
-    Raise(new ApiKeyAuthenticatedEvent(actorId));
+    actorId ??= new(Id.Value);
+    Raise(new ApiKeyAuthenticatedEvent(actorId.Value));
   }
+  /// <summary>
+  /// Applies the specified event.
+  /// </summary>
+  /// <param name="event">The event to apply.</param>
   protected virtual void Apply(ApiKeyAuthenticatedEvent @event)
   {
     AuthenticatedOn = @event.OccurredOn;
   }
 
+  /// <summary>
+  /// Deletes the API key, if it is not already deleted.
+  /// </summary>
+  /// <param name="actorId">The actor identifier.</param>
   public void Delete(ActorId actorId = default)
   {
     if (!IsDeleted)
@@ -129,12 +188,24 @@ public class ApiKeyAggregate : AggregateRoot
     }
   }
 
-  public bool HasRole(RoleAggregate role) => HasRole(role.Id);
-  public bool HasRole(RoleId id) => _roles.Contains(id);
+  /// <summary>
+  /// Returns a value indicating whether or not the user has the specified role.
+  /// </summary>
+  /// <param name="role">The role to match.</param>
+  /// <returns>True if the user has the specified role, or false otherwise.</returns>
+  public bool HasRole(RoleAggregate role) => _roles.Contains(role.Id);
 
-  public bool IsExpired() => IsExpired(moment: null);
-  public bool IsExpired(DateTime? moment) => _expiresOn.HasValue && ((moment ?? DateTime.Now) >= _expiresOn.Value);
+  /// <summary>
+  /// Returns a value indicating whether or not the API key is expired.
+  /// </summary>
+  /// <param name="moment">(Optional) The date and time to verify the expiration. Defaults to now.</param>
+  /// <returns>True if the API key is expired, or false otherwise.</returns>
+  public bool IsExpired(DateTime? moment = null) => ExpiresOn.HasValue && ExpiresOn.Value <= (moment ?? DateTime.Now);
 
+  /// <summary>
+  /// Removes the specified custom attribute on the API key.
+  /// </summary>
+  /// <param name="key">The key of the custom attribute.</param>
   public void RemoveCustomAttribute(string key)
   {
     key = key.Trim();
@@ -146,6 +217,11 @@ public class ApiKeyAggregate : AggregateRoot
     }
   }
 
+  /// <summary>
+  /// Removes the specified role from the API key, if the API key has the specified role.
+  /// </summary>
+  /// <param name="role">The role to be removed.</param>
+  /// <param name="actorId">The actor identifier.</param>
   public void RemoveRole(RoleAggregate role, ActorId actorId = default)
   {
     if (HasRole(role))
@@ -153,12 +229,21 @@ public class ApiKeyAggregate : AggregateRoot
       Raise(new ApiKeyRoleRemovedEvent(actorId, role.Id));
     }
   }
+  /// <summary>
+  /// Applies the specified event.
+  /// </summary>
+  /// <param name="event">The event to apply.</param>
   protected virtual void Apply(ApiKeyRoleRemovedEvent @event)
   {
     _roles.Remove(@event.RoleId);
   }
 
   private readonly CustomAttributeValidator _customAttributeValidator = new();
+  /// <summary>
+  /// Sets the specified custom attribute on the API key.
+  /// </summary>
+  /// <param name="key">The key of the custom attribute.</param>
+  /// <param name="value">The value of the custom attribute.</param>
   public void SetCustomAttribute(string key, string value)
   {
     key = key.Trim();
@@ -172,6 +257,26 @@ public class ApiKeyAggregate : AggregateRoot
     }
   }
 
+  /// <summary>
+  /// Sets the expiration of the API key.
+  /// </summary>
+  /// <param name="expiresOn">The expiration date and time.</param>
+  /// <param name="propertyName">The name of the property, used for validation.</param>
+  public void SetExpiration(DateTime expiresOn, string? propertyName = null)
+  {
+    if (expiresOn != ExpiresOn)
+    {
+      new ExpirationValidator(ExpiresOn, propertyName).ValidateAndThrow(expiresOn);
+
+      ExpiresOn = expiresOn;
+      _updatedEvent.ExpiresOn = expiresOn;
+    }
+  }
+
+  /// <summary>
+  /// Applies updates on the API key.
+  /// </summary>
+  /// <param name="actorId">The actor identifier.</param>
   public void Update(ActorId actorId = default)
   {
     if (_updatedEvent.HasChanges)
@@ -181,6 +286,10 @@ public class ApiKeyAggregate : AggregateRoot
       _updatedEvent = new();
     }
   }
+  /// <summary>
+  /// Applies the specified event.
+  /// </summary>
+  /// <param name="event">The event to apply.</param>
   protected virtual void Apply(ApiKeyUpdatedEvent @event)
   {
     if (@event.DisplayName != null)
@@ -193,21 +302,25 @@ public class ApiKeyAggregate : AggregateRoot
     }
     if (@event.ExpiresOn.HasValue)
     {
-      _expiresOn = @event.ExpiresOn.Value;
+      ExpiresOn = @event.ExpiresOn.Value;
     }
 
-    foreach (KeyValuePair<string, string?> custonAttribute in @event.CustomAttributes)
+    foreach (KeyValuePair<string, string?> customAttribute in @event.CustomAttributes)
     {
-      if (custonAttribute.Value == null)
+      if (customAttribute.Value == null)
       {
-        _customAttributes.Remove(custonAttribute.Key);
+        _customAttributes.Remove(customAttribute.Key);
       }
       else
       {
-        _customAttributes[custonAttribute.Key] = custonAttribute.Value;
+        _customAttributes[customAttribute.Key] = customAttribute.Value;
       }
     }
   }
 
+  /// <summary>
+  /// Returns a string representation of the API key.
+  /// </summary>
+  /// <returns>The string representation.</returns>
   public override string ToString() => $"{DisplayName.Value} | {base.ToString()}";
 }

@@ -1,3 +1,3 @@
 # Logitar.Identity.EntityFrameworkCore.Relational
 
-TODO
+Provides an abstraction of a relational data store to be used with the Identity API and Entity Framework Core.

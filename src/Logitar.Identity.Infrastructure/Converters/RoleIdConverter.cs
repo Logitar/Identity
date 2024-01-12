@@ -6,8 +6,7 @@ public class RoleIdConverter : JsonConverter<RoleId>
 {
   public override RoleId? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
   {
-    string? value = reader.GetString();
-    return value == null ? null : new(value);
+    return RoleId.TryCreate(reader.GetString());
   }
 
   public override void Write(Utf8JsonWriter writer, RoleId roleId, JsonSerializerOptions options)

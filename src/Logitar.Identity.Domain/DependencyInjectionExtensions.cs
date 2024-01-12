@@ -5,8 +5,16 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Logitar.Identity.Domain;
 
+/// <summary>
+/// Defines extension methods for dependency injection.
+/// </summary>
 public static class DependencyInjectionExtensions
 {
+  /// <summary>
+  /// Registers Identity domain services to the specified service collection.
+  /// </summary>
+  /// <param name="services">The service collection.</param>
+  /// <returns>The service collection.</returns>
   public static IServiceCollection AddLogitarIdentityDomain(this IServiceCollection services)
   {
     return services

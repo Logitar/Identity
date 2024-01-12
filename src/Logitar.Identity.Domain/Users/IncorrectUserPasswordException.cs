@@ -2,29 +2,47 @@
 
 namespace Logitar.Identity.Domain.Users;
 
+/// <summary>
+/// The exception raised when an user password check fails.
+/// </summary>
 public class IncorrectUserPasswordException : InvalidCredentialsException
 {
-  public new const string ErrorMessage = "The specified password did not match the specified user.";
+  /// <summary>
+  /// A generic error message for this exception.
+  /// </summary>
+  public new const string ErrorMessage = "The specified password did not match the user.";
 
-  public string User
+  /// <summary>
+  /// Gets or sets the identifier of the user.
+  /// </summary>
+  public UserId UserId
   {
-    get => (string)Data[nameof(User)]!;
-    private set => Data[nameof(User)] = value;
+    get => new((string)Data[nameof(UserId)]!);
+    private set => Data[nameof(UserId)] = value.Value;
   }
-  public string Password
+  /// <summary>
+  /// Gets or sets the attempted password.
+  /// </summary>
+  public string AttemptedPassword
   {
-    get => (string)Data[nameof(Password)]!;
-    private set => Data[nameof(Password)] = value;
+    get => (string)Data[nameof(AttemptedPassword)]!;
+    private set => Data[nameof(AttemptedPassword)] = value;
   }
 
-  public IncorrectUserPasswordException(UserAggregate user, string password) : base(BuildMessage(user, password))
+  /// <summary>
+  /// Initializes a new instance of the <see cref="IncorrectUserPasswordException"/> class.
+  /// </summary>
+  /// <param name="user">The user.</param>
+  /// <param name="attemptedPassword">The attempted password.</param>
+  public IncorrectUserPasswordException(UserAggregate user, string attemptedPassword)
+    : base(BuildMessage(user, attemptedPassword))
   {
-    User = user.ToString();
-    Password = password;
+    AttemptedPassword = attemptedPassword;
+    UserId = user.Id;
   }
 
-  private static string BuildMessage(UserAggregate user, string password) => new ErrorMessageBuilder(ErrorMessage)
-    .AddData(nameof(User), user.ToString())
-    .AddData(nameof(Password), password)
+  private static string BuildMessage(UserAggregate user, string attemptedPassword) => new ErrorMessageBuilder(ErrorMessage)
+    .AddData(nameof(UserId), user.Id.Value)
+    .AddData(nameof(AttemptedPassword), attemptedPassword)
     .Build();
 }

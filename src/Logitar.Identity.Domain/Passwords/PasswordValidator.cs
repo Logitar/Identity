@@ -3,8 +3,15 @@ using Logitar.Identity.Domain.Settings;
 
 namespace Logitar.Identity.Domain.Passwords;
 
+/// <summary>
+/// The validator used to validate user passwords.
+/// </summary>
 public class PasswordValidator : AbstractValidator<string>
 {
+  /// <summary>
+  /// Initializes a new instance of the <see cref="PasswordValidator"/> class.
+  /// </summary>
+  /// <param name="passwordSettings">The password validation settings.</param>
   public PasswordValidator(IPasswordSettings passwordSettings)
   {
     RuleFor(x => x).NotEmpty();

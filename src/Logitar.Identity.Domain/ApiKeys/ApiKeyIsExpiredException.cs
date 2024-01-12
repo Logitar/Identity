@@ -2,22 +2,35 @@
 
 namespace Logitar.Identity.Domain.ApiKeys;
 
+/// <summary>
+/// The exception raised when an expired API key is authenticated.
+/// </summary>
 public class ApiKeyIsExpiredException : InvalidCredentialsException
 {
+  /// <summary>
+  /// A generic error message for this exception.
+  /// </summary>
   public new const string ErrorMessage = "The specified API key is expired.";
 
-  public string ApiKey
+  /// <summary>
+  /// Gets the identifier of the expired API key.
+  /// </summary>
+  public ApiKeyId ApiKeyId
   {
-    get => (string)Data[nameof(ApiKey)]!;
-    private set => Data[nameof(ApiKey)] = value;
+    get => new((string)Data[nameof(ApiKeyId)]!);
+    private set => Data[nameof(ApiKeyId)] = value.Value;
   }
 
+  /// <summary>
+  /// Initializes a new instance of the <see cref="ApiKeyIsExpiredException"/> class.
+  /// </summary>
+  /// <param name="apiKey">The API key that is expired.</param>
   public ApiKeyIsExpiredException(ApiKeyAggregate apiKey) : base(BuildMessage(apiKey))
   {
-    ApiKey = apiKey.ToString();
+    ApiKeyId = apiKey.Id;
   }
 
   private static string BuildMessage(ApiKeyAggregate apiKey) => new ErrorMessageBuilder(ErrorMessage)
-    .AddData(nameof(ApiKey), apiKey.ToString())
+    .AddData(nameof(ApiKeyId), apiKey.Id.Value)
     .Build();
 }

@@ -23,8 +23,8 @@ public class CustomIdentifierValidator : ICustomIdentifierValidator
   /// <param name="valueValidator">The custom identifier value validator.</param>
   public CustomIdentifierValidator(IValidator<string>? keyValidator = null, IValidator<string>? valueValidator = null)
   {
-    KeyValidator = keyValidator ?? new CustomIdentifierKeyValidator();
-    ValueValidator = valueValidator ?? new CustomIdentifierValueValidator();
+    KeyValidator = keyValidator ?? new CustomIdentifierKeyValidator("Key");
+    ValueValidator = valueValidator ?? new CustomIdentifierValueValidator("Value");
   }
 
   /// <summary>
