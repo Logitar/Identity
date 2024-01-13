@@ -1,4 +1,5 @@
-﻿using Logitar.EventSourcing;
+﻿using FluentValidation;
+using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Shared;
@@ -35,6 +36,75 @@ public class UserManager : IUserManager
     SessionRepository = sessionRepository;
     UserRepository = userRepository;
     UserSettingsResolver = userSettingsResolver;
+  }
+
+  /// <summary>
+  /// Tries finding an user by its unique identifier, unique name, or email address if they are unique.
+  /// </summary>
+  /// <param name="tenantIdValue">The identifier of the tenant in which to search.</param>
+  /// <param name="id">The identifier of the user to find.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The found users.</returns>
+  public virtual async Task<FoundUsers> FindAsync(string? tenantIdValue, string id, CancellationToken cancellationToken)
+  {
+    IUserSettings userSettings = UserSettingsResolver.Resolve();
+
+    TenantId? tenantId = null;
+    try
+    {
+      tenantId = TenantId.TryCreate(tenantIdValue);
+    }
+    catch (ValidationException)
+    {
+    }
+
+    UserId? userId = null;
+    try
+    {
+      userId = UserId.TryCreate(id);
+    }
+    catch (ValidationException)
+    {
+    }
+
+    UniqueNameUnit? uniqueName = null;
+    try
+    {
+      uniqueName = new(userSettings.UniqueName, id);
+    }
+    catch (ValidationException)
+    {
+    }
+
+    EmailUnit? email = null;
+    try
+    {
+      email = new(id);
+    }
+    catch (ValidationException)
+    {
+    }
+
+    FoundUsers found = new();
+
+    if (userId != null)
+    {
+      found.ById = await UserRepository.LoadAsync(userId, cancellationToken);
+    }
+    if (uniqueName != null)
+    {
+      found.ByUniqueName = await UserRepository.LoadAsync(tenantId, uniqueName, cancellationToken);
+    }
+    if (email != null && userSettings.RequireUniqueEmail)
+    {
+      IEnumerable<UserAggregate> users = await UserRepository.LoadAsync(tenantId, email, cancellationToken);
+      if (users.Count() == 1)
+      {
+        found.ByEmail = users.Single();
+      }
+    }
+
+    return found;
   }
 
   /// <summary>

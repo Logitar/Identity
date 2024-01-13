@@ -32,6 +32,104 @@ public class UserManagerTests
     _userManager = new(_sessionRepository.Object, _userRepository.Object, _userSettingsResolver.Object);
   }
 
+  [Fact(DisplayName = "FindAsync: it should find an user by email address.")]
+  public async Task FindAsync_it_should_find_an_user_by_email_address()
+  {
+    _userSettings.RequireUniqueEmail = true;
+
+    TenantId tenantId = new("tests");
+    UserAggregate user = new(new UniqueNameUnit(_userSettings.UniqueName, _faker.Person.UserName));
+    user.SetEmail(new EmailUnit(_faker.Person.Email));
+    Assert.NotNull(user.Email);
+    _userRepository.Setup(x => x.LoadAsync(tenantId, user.Email, _cancellationToken)).ReturnsAsync([user]);
+
+    FoundUsers users = await _userManager.FindAsync(tenantId.Value, user.Email.Address, _cancellationToken);
+    Assert.NotNull(users.ByEmail);
+    Assert.Equal(user, users.ByEmail);
+    Assert.Single(users.All);
+
+    _userRepository.Verify(x => x.LoadAsync(It.IsAny<UserId>(), _cancellationToken), Times.Never);
+    _userRepository.Verify(x => x.LoadAsync(tenantId, It.Is<UniqueNameUnit>(y => y.Value == user.Email.Address), _cancellationToken), Times.Once);
+    _userRepository.Verify(x => x.LoadAsync(tenantId, user.Email, _cancellationToken), Times.Once);
+  }
+
+  [Fact(DisplayName = "FindAsync: it should find an user by ID.")]
+  public async Task FindAsync_it_should_find_an_user_by_Id()
+  {
+    UserAggregate user = new(new UniqueNameUnit(_userSettings.UniqueName, _faker.Person.UserName));
+    _userRepository.Setup(x => x.LoadAsync(user.Id, _cancellationToken)).ReturnsAsync(user);
+
+    FoundUsers users = await _userManager.FindAsync(tenantIdValue: null, user.Id.Value, _cancellationToken);
+    Assert.NotNull(users.ById);
+    Assert.Equal(user, users.ById);
+    Assert.Single(users.All);
+
+    _userRepository.Verify(x => x.LoadAsync(user.Id, _cancellationToken), Times.Once);
+    _userRepository.Verify(x => x.LoadAsync(null, It.Is<UniqueNameUnit>(y => y.Value == user.Id.Value), _cancellationToken), Times.Once);
+    _userRepository.Verify(x => x.LoadAsync(It.IsAny<TenantId>(), It.IsAny<EmailUnit>(), _cancellationToken), Times.Never);
+  }
+
+  [Fact(DisplayName = "FindAsync: it should find an user by unique name.")]
+  public async Task FindAsync_it_should_find_an_user_by_unique_name()
+  {
+    TenantId tenantId = new("tests");
+    UserAggregate user = new(new UniqueNameUnit(_userSettings.UniqueName, _faker.Person.UserName), tenantId);
+    _userRepository.Setup(x => x.LoadAsync(tenantId, user.UniqueName, _cancellationToken)).ReturnsAsync(user);
+
+    FoundUsers users = await _userManager.FindAsync(tenantId.Value, user.UniqueName.Value, _cancellationToken);
+    Assert.NotNull(users.ByUniqueName);
+    Assert.Equal(user, users.ByUniqueName);
+    Assert.Single(users.All);
+
+    _userRepository.Verify(x => x.LoadAsync(It.Is<UserId>(y => y.Value == user.UniqueName.Value), _cancellationToken), Times.Once);
+    _userRepository.Verify(x => x.LoadAsync(tenantId, user.UniqueName, _cancellationToken), Times.Once);
+    _userRepository.Verify(x => x.LoadAsync(It.IsAny<TenantId>(), It.IsAny<EmailUnit>(), _cancellationToken), Times.Never);
+  }
+
+  [Fact(DisplayName = "FindAsync: it should not find an user by email address when many are found.")]
+  public async Task FindAsync_it_should_not_find_an_user_by_email_address_when_many_are_found()
+  {
+    _userSettings.RequireUniqueEmail = true;
+
+    EmailUnit email = new(_faker.Internet.Email());
+    UserAggregate user1 = new(new UniqueNameUnit(_userSettings.UniqueName, _faker.Internet.UserName()));
+    user1.SetEmail(email);
+    UserAggregate user2 = new(new UniqueNameUnit(_userSettings.UniqueName, _faker.Internet.UserName()));
+    user2.SetEmail(email);
+    _userRepository.Setup(x => x.LoadAsync(null, email, _cancellationToken)).ReturnsAsync([user1, user2]);
+
+    FoundUsers users = await _userManager.FindAsync(tenantIdValue: null, email.Address, _cancellationToken);
+    Assert.Empty(users.All);
+
+    _userRepository.Verify(x => x.LoadAsync(It.IsAny<UserId>(), _cancellationToken), Times.Never);
+    _userRepository.Verify(x => x.LoadAsync(null, It.Is<UniqueNameUnit>(y => y.Value == email.Address), _cancellationToken), Times.Once);
+    _userRepository.Verify(x => x.LoadAsync(null, email, _cancellationToken), Times.Once);
+  }
+
+  [Fact(DisplayName = "FindAsync: it should not search by email address when email addresses are not unique.")]
+  public async Task FindAsync_it_should_not_search_by_email_address_when_email_addresses_are_not_unique()
+  {
+    string emailAddress = _faker.Person.Email;
+    FoundUsers users = await _userManager.FindAsync(tenantIdValue: null, emailAddress, _cancellationToken);
+    Assert.Empty(users.All);
+
+    _userRepository.Verify(x => x.LoadAsync(It.IsAny<UserId>(), _cancellationToken), Times.Never);
+    _userRepository.Verify(x => x.LoadAsync(null, It.Is<UniqueNameUnit>(y => y.Value == emailAddress), _cancellationToken), Times.Once);
+    _userRepository.Verify(x => x.LoadAsync(null, It.IsAny<EmailUnit>(), _cancellationToken), Times.Never);
+  }
+
+  [Fact(DisplayName = "FindAsync: it should not search by tenant id when it is not valid.")]
+  public async Task FindAsync_it_should_not_search_by_tenant_id_when_it_is_not_valid()
+  {
+    string emailAddress = _faker.Person.Email;
+    FoundUsers users = await _userManager.FindAsync(emailAddress, emailAddress, _cancellationToken);
+    Assert.Empty(users.All);
+
+    _userRepository.Verify(x => x.LoadAsync(It.IsAny<UserId>(), _cancellationToken), Times.Never);
+    _userRepository.Verify(x => x.LoadAsync(null, It.Is<UniqueNameUnit>(y => y.Value == emailAddress), _cancellationToken), Times.Once);
+    _userRepository.Verify(x => x.LoadAsync(null, It.IsAny<EmailUnit>(), _cancellationToken), Times.Never);
+  }
+
   [Fact(DisplayName = "SaveAsync: it should allow multiple email address when not unique.")]
   public async Task SaveAsync_it_should_allow_multiple_email_address_when_not_unique()
   {
