@@ -46,6 +46,7 @@
   <ItemGroup>
     <PackageReference Include="Logitar.EventSourcing.Infrastructure" Version="5.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="8.0.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.2.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -53,7 +54,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="System.IdentityModel.Tokens.Jwt" />
+    <Using Include="System.Security.Claims" />
     <Using Include="System.Security.Cryptography" />
+    <Using Include="System.Text" />
     <Using Include="System.Text.Json" />
     <Using Include="System.Text.Json.Serialization" />
   </ItemGroup>
