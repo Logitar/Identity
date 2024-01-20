@@ -141,19 +141,19 @@ public class JsonWebTokenManagerTests
 
       if (options.Expires.HasValue)
       {
-        Claim claim = ClaimHelper.Create(Rfc7519ClaimNames.ExpirationTime, options.Expires.Value);
+        Claim claim = ClaimHelper.Create(Rfc7519ClaimNames.ExpirationTime, options.Expires.Value, DateTimeKind.Utc);
         Assert.True(claims.ContainsKey(claim.Type));
         Assert.Equal(claim.Value, claims[claim.Type]);
       }
       if (options.IssuedAt.HasValue)
       {
-        Claim claim = ClaimHelper.Create(Rfc7519ClaimNames.IssuedAt, options.IssuedAt.Value);
+        Claim claim = ClaimHelper.Create(Rfc7519ClaimNames.IssuedAt, options.IssuedAt.Value, DateTimeKind.Utc);
         Assert.True(claims.ContainsKey(claim.Type));
         Assert.Equal(claim.Value, claims[claim.Type]);
       }
       if (options.NotBefore.HasValue)
       {
-        Claim claim = ClaimHelper.Create(Rfc7519ClaimNames.NotBefore, DateTime.SpecifyKind(options.NotBefore.Value, DateTimeKind.Utc)); // TODO(fpion): should be in ClaimHelper.Create method
+        Claim claim = ClaimHelper.Create(Rfc7519ClaimNames.NotBefore, options.NotBefore.Value, DateTimeKind.Utc);
         Assert.True(claims.ContainsKey(claim.Type));
         Assert.Equal(claim.Value, claims[claim.Type]);
       }

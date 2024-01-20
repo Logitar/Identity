@@ -26,15 +26,15 @@ public record CreateTokenOptions
   public string? Issuer { get; set; }
 
   /// <summary>
-  /// Gets or sets the token expiration date and time.
+  /// Gets or sets the token expiration date and time. Unspecified date time kinds will be treated as UTC.
   /// </summary>
   public DateTime? Expires { get; set; }
   /// <summary>
-  /// Gets or sets the date and time when the token was issued.
+  /// Gets or sets the date and time when the token was issued. Unspecified date time kinds will be treated as UTC.
   /// </summary>
   public DateTime? IssuedAt { get; set; }
   /// <summary>
-  /// Gets or sets the date and time from when the token is valid.
+  /// Gets or sets the date and time from when the token is valid. Unspecified date time kinds will be treated as UTC.
   /// </summary>
   public DateTime? NotBefore { get; set; }
 }
