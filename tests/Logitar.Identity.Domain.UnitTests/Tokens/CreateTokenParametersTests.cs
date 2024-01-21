@@ -3,11 +3,12 @@
 [Trait(Traits.Category, Categories.Unit)]
 public class CreateTokenParametersTests
 {
+  private const string Secret = "S3cR3+!*";
+
   [Fact(DisplayName = "ctor: it should construct the correct parameters with options.")]
   public void ctor_it_should_construct_the_correct_parameters_with_options()
   {
     ClaimsIdentity subject = new();
-    string secret = "S3cR3+!*";
 
     DateTime now = DateTime.UtcNow;
     CreateTokenOptions options = new()
@@ -19,9 +20,9 @@ public class CreateTokenParametersTests
       Expires = now.AddHours(1)
     };
 
-    CreateTokenParameters parameters = new(subject, secret, options);
+    CreateTokenParameters parameters = new(subject, Secret, options);
     Assert.Same(subject, parameters.Subject);
-    Assert.Equal(secret, parameters.Secret);
+    Assert.Equal(Secret, parameters.Secret);
     Assert.Equal(options.Type, parameters.Type);
     Assert.Equal(options.SigningAlgorithm, parameters.SigningAlgorithm);
     Assert.Equal(options.Audience, parameters.Audience);
@@ -35,9 +36,8 @@ public class CreateTokenParametersTests
   public void ctor_it_should_construct_the_correct_parameters()
   {
     ClaimsIdentity subject = new();
-    string secret = "S3cR3+!*";
-    CreateTokenParameters parameters = new(subject, secret);
+    CreateTokenParameters parameters = new(subject, Secret);
     Assert.Same(subject, parameters.Subject);
-    Assert.Equal(secret, parameters.Secret);
+    Assert.Equal(Secret, parameters.Secret);
   }
 }

@@ -27,5 +27,3 @@ public record ValidatedToken
     SecurityToken = securityToken;
   }
 }
-
-// TODO(fpion): unit tests

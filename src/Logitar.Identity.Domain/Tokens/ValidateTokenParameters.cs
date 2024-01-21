@@ -49,5 +49,3 @@ public record ValidateTokenParameters : ValidateTokenOptions
     }
   }
 }
-
-// TODO(fpion): unit tests
