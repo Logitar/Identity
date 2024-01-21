@@ -69,6 +69,47 @@ public class JsonWebTokenManager : ITokenManager
   }
 
   /// <summary>
+  /// Validates a token using the specified signing secret and validation options.
+  /// </summary>
+  /// <param name="token">The token to validate.</param>
+  /// <param name="secret">The signing secret.</param>
+  /// <param name="options">The validation options.</param>
+  /// <returns>The validated token.</returns>
+  public virtual ValidatedToken Validate(string token, string secret, ValidateTokenOptions? options)
+  {
+    return Validate(new ValidateTokenParameters(token, secret, options));
+  }
+  /// <summary>
+  /// Validates a token with the specified parameters.
+  /// </summary>
+  /// <param name="parameters">The validation parameters.</param>
+  /// <returns>The validated token.</returns>
+  public virtual ValidatedToken Validate(ValidateTokenParameters parameters)
+  {
+    TokenValidationParameters validationParameters = new()
+    {
+      IssuerSigningKey = GetSecurityKey(parameters.Secret),
+      ValidAudiences = parameters.ValidAudiences,
+      ValidIssuers = parameters.ValidIssuers,
+      ValidateAudience = parameters.ValidAudiences.Count > 0,
+      ValidateIssuer = parameters.ValidIssuers.Count > 0,
+      ValidateIssuerSigningKey = true
+    };
+    if (parameters.ValidTypes.Count > 0)
+    {
+      validationParameters.ValidTypes = parameters.ValidTypes;
+    }
+
+    // TODO(fpion): if consumable, validate token is not blacklisted
+
+    ClaimsPrincipal claimsPrincipal = TokenHandler.ValidateToken(parameters.Token, validationParameters, out SecurityToken securityToken);
+
+    // TODO(fpion): if consumable, blacklist token
+
+    return new ValidatedToken(claimsPrincipal, securityToken);
+  }
+
+  /// <summary>
   /// Ensures the specified date time is using the UTC time zone.
   /// </summary>
   /// <param name="value">The date time.</param>
@@ -93,3 +134,5 @@ public class JsonWebTokenManager : ITokenManager
   /// <returns>The symmetric security key.</returns>
   protected virtual SymmetricSecurityKey GetSecurityKey(string secret) => new(Encoding.ASCII.GetBytes(secret));
 }
+
+// TODO(fpion): unit tests
