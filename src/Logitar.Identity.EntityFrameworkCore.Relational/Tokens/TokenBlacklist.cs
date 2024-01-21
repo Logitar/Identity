@@ -42,7 +42,7 @@ public class TokenBlacklist : ITokenBlacklist
   /// <returns>The asynchronous operation.</returns>
   public virtual async Task BlacklistAsync(IEnumerable<string> tokenIds, DateTime? expiresOn, CancellationToken cancellationToken)
   {
-    expiresOn = AsUniversalTime(expiresOn);
+    expiresOn = expiresOn?.ToUniversalTime();
 
     Dictionary<string, BlacklistedTokenEntity> entities = await Context.TokenBlacklist
       .Where(x => tokenIds.Contains(x.TokenId))
@@ -98,24 +98,6 @@ public class TokenBlacklist : ITokenBlacklist
     Context.TokenBlacklist.RemoveRange(expiredEntities);
     await Context.SaveChangesAsync(cancellationToken);
   }
-
-  /// <summary>
-  /// Ensures the specified date time is using the UTC time zone.
-  /// </summary>
-  /// <param name="value">The date time.</param>
-  /// <returns>The universal date time, or null if value was null.</returns>
-  protected virtual DateTime? AsUniversalTime(DateTime? value) => value.HasValue ? AsUniversalTime(value.Value) : null; // TODO(fpion): refactor
-  /// <summary>
-  /// Ensures the specified date time is using the UTC time zone.
-  /// </summary>
-  /// <param name="value">The date time.</param>
-  /// <returns>The universal date time.</returns>
-  protected virtual DateTime AsUniversalTime(DateTime value) => value.Kind switch
-  {
-    DateTimeKind.Local => value.ToUniversalTime(),
-    DateTimeKind.Unspecified => DateTime.SpecifyKind(value, DateTimeKind.Utc),
-    _ => value,
-  }; // TODO(fpion): refactor
 }
 
 // TODO(fpion): unit/integration tests

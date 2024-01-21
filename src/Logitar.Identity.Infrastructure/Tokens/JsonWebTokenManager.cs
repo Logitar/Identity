@@ -74,10 +74,10 @@ public class JsonWebTokenManager : ITokenManager
     SecurityTokenDescriptor tokenDescriptor = new()
     {
       Audience = parameters.Audience,
-      Expires = AsUniversalTime(parameters.Expires),
-      IssuedAt = AsUniversalTime(parameters.IssuedAt),
+      Expires = parameters.Expires?.ToUniversalTime(),
+      IssuedAt = parameters.IssuedAt?.ToUniversalTime(),
       Issuer = parameters.Issuer,
-      NotBefore = AsUniversalTime(parameters.NotBefore),
+      NotBefore = parameters.NotBefore?.ToUniversalTime(),
       SigningCredentials = signingCredentials,
       Subject = parameters.Subject,
       TokenType = parameters.Type
@@ -159,29 +159,9 @@ public class JsonWebTokenManager : ITokenManager
   }
 
   /// <summary>
-  /// Ensures the specified date time is using the UTC time zone.
-  /// </summary>
-  /// <param name="value">The date time.</param>
-  /// <returns>The universal date time, or null if value was null.</returns>
-  protected virtual DateTime? AsUniversalTime(DateTime? value) => value.HasValue ? AsUniversalTime(value.Value) : null; // TODO(fpion): refactor
-  /// <summary>
-  /// Ensures the specified date time is using the UTC time zone.
-  /// </summary>
-  /// <param name="value">The date time.</param>
-  /// <returns>The universal date time.</returns>
-  protected virtual DateTime AsUniversalTime(DateTime value) => value.Kind switch
-  {
-    DateTimeKind.Local => value.ToUniversalTime(),
-    DateTimeKind.Unspecified => DateTime.SpecifyKind(value, DateTimeKind.Utc),
-    _ => value,
-  }; // TODO(fpion): refactor
-
-  /// <summary>
   /// Creates a symmetric security key from the specified secret string.
   /// </summary>
   /// <param name="secret">The secret string.</param>
   /// <returns>The symmetric security key.</returns>
   protected virtual SymmetricSecurityKey GetSecurityKey(string secret) => new(Encoding.ASCII.GetBytes(secret));
 }
-
-// TODO(fpion): unit tests
