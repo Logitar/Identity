@@ -1,4 +1,4 @@
-﻿namespace Logitar.Identity.Domain;
+﻿namespace Logitar.Identity;
 
 public static class Categories
 {

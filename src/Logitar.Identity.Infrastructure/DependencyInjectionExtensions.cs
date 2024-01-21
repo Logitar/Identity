@@ -1,9 +1,11 @@
 ﻿using Logitar.EventSourcing.Infrastructure;
 using Logitar.Identity.Domain;
 using Logitar.Identity.Domain.Passwords;
+using Logitar.Identity.Domain.Tokens;
 using Logitar.Identity.Infrastructure.Converters;
 using Logitar.Identity.Infrastructure.Passwords;
 using Logitar.Identity.Infrastructure.Passwords.Pbkdf2;
+using Logitar.Identity.Infrastructure.Tokens;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -24,7 +26,8 @@ public static class DependencyInjectionExtensions
       {
         IConfiguration configuration = serviceProvider.GetRequiredService<IConfiguration>();
         return configuration.GetSection("Pbkdf2").Get<Pbkdf2Settings>() ?? new();
-      });
+      })
+      .AddTransient<ITokenManager, JsonWebTokenManager>();
   }
 
   private static IServiceCollection AddPasswordStrategies(this IServiceCollection services)

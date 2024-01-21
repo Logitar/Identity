@@ -28,7 +28,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{BCB8A692
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Identity.Domain.UnitTests", "tests\Logitar.Identity.Domain.UnitTests\Logitar.Identity.Domain.UnitTests.csproj", "{9A27A378-14E7-4D3C-B847-27D0D4EFA8F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.EFCore.SqlServer.IntegrationTests", "tests\Logitar.Identity.EFCore.SqlServer.IntegrationTests\Logitar.Identity.EFCore.SqlServer.IntegrationTests.csproj", "{FA9AB722-026B-4842-B888-E9824568CBC1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Identity.EFCore.SqlServer.IntegrationTests", "tests\Logitar.Identity.EFCore.SqlServer.IntegrationTests\Logitar.Identity.EFCore.SqlServer.IntegrationTests.csproj", "{FA9AB722-026B-4842-B888-E9824568CBC1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.Infrastructure.UnitTests", "tests\Logitar.Identity.Infrastructure.UnitTests\Logitar.Identity.Infrastructure.UnitTests.csproj", "{04C669C6-0B63-45A1-8F0F-16A7E7FC023E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.Tests", "tests\Logitar.Identity.Tests\Logitar.Identity.Tests.csproj", "{D0781AC3-5827-4DAE-BBAD-481634FF3C0F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,6 +68,14 @@ Global
 		{FA9AB722-026B-4842-B888-E9824568CBC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA9AB722-026B-4842-B888-E9824568CBC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA9AB722-026B-4842-B888-E9824568CBC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04C669C6-0B63-45A1-8F0F-16A7E7FC023E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04C669C6-0B63-45A1-8F0F-16A7E7FC023E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04C669C6-0B63-45A1-8F0F-16A7E7FC023E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04C669C6-0B63-45A1-8F0F-16A7E7FC023E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0781AC3-5827-4DAE-BBAD-481634FF3C0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0781AC3-5827-4DAE-BBAD-481634FF3C0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0781AC3-5827-4DAE-BBAD-481634FF3C0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0781AC3-5827-4DAE-BBAD-481634FF3C0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -71,6 +83,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{9A27A378-14E7-4D3C-B847-27D0D4EFA8F9} = {BCB8A692-DF88-4E50-91A7-AD91E466559C}
 		{FA9AB722-026B-4842-B888-E9824568CBC1} = {BCB8A692-DF88-4E50-91A7-AD91E466559C}
+		{04C669C6-0B63-45A1-8F0F-16A7E7FC023E} = {BCB8A692-DF88-4E50-91A7-AD91E466559C}
+		{D0781AC3-5827-4DAE-BBAD-481634FF3C0F} = {BCB8A692-DF88-4E50-91A7-AD91E466559C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {45FD7647-C5AB-4CE1-A93C-59A73FDD2196}

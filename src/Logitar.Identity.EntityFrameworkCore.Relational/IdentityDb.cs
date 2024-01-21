@@ -97,6 +97,15 @@ public static class IdentityDb
     public static readonly ColumnId Version = new(nameof(SessionEntity.Version), Table);
   }
 
+  public static class TokenBlacklist
+  {
+    public static readonly TableId Table = new(nameof(IdentityContext.TokenBlacklist));
+
+    public static readonly ColumnId BlacklistedTokenId = new(nameof(BlacklistedTokenEntity.BlacklistedTokenId), Table);
+    public static readonly ColumnId Expires = new(nameof(BlacklistedTokenEntity.ExpiresOn), Table);
+    public static readonly ColumnId TokenId = new(nameof(BlacklistedTokenEntity.TokenId), Table);
+  }
+
   public static class UserIdentifiers
   {
     public static readonly TableId Table = new(nameof(IdentityContext.UserIdentifiers));
