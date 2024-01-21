@@ -45,6 +45,7 @@ public record ValidateTokenParameters : ValidateTokenOptions
       ValidTypes.AddRange(options.ValidTypes);
       ValidAudiences.AddRange(options.ValidAudiences);
       ValidIssuers.AddRange(options.ValidIssuers);
+      Consume = options.Consume;
     }
   }
 }

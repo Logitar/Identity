@@ -3,12 +3,14 @@ using Logitar.EventSourcing.Infrastructure;
 using Logitar.Identity.Domain.ApiKeys;
 using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Sessions;
+using Logitar.Identity.Domain.Tokens;
 using Logitar.Identity.Domain.Users;
 using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.ApiKeys;
 using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Roles;
 using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Sessions;
 using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Users;
 using Logitar.Identity.EntityFrameworkCore.Relational.Repositories;
+using Logitar.Identity.EntityFrameworkCore.Relational.Tokens;
 using Logitar.Identity.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -24,7 +26,8 @@ public static class DependencyInjectionExtensions
       .AddLogitarIdentityInfrastructure()
       .AddMediatR(config => config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()))
       .AddRepositories()
-      .AddTransient<IEventBus, EventBus>();
+      .AddTransient<IEventBus, EventBus>()
+      .AddTransient<ITokenBlacklist, TokenBlacklist>();
   }
 
   private static IServiceCollection AddEventHandlers(this IServiceCollection services)

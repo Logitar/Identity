@@ -4,16 +4,19 @@ using Logitar.Identity.Domain.Tokens;
 using Logitar.Security.Claims;
 using Logitar.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
+using Moq;
 
 namespace Logitar.Identity.Infrastructure.Tokens;
 
 [Trait(Traits.Category, Categories.Unit)]
 public class JsonWebTokenManagerTests
 {
+  private readonly CancellationToken _cancellationToken = default;
   private readonly Faker _faker = new();
   private readonly ClaimsIdentity _subject = new();
   private readonly string _secret = RandomStringGenerator.GetString(256 / 8);
 
+  private readonly Mock<ITokenBlacklist> _tokenBlacklist = new();
   private readonly JwtSecurityTokenHandler _tokenHandler = new();
   private readonly JsonWebTokenManager _tokenManager;
 
@@ -39,11 +42,11 @@ public class JsonWebTokenManagerTests
     _subject.AddClaim(new(Rfc7519ClaimNames.SessionId, $"SessionId:{Guid.NewGuid()}"));
     _subject.AddClaim(new(Rfc7519ClaimNames.Roles, "manage_users manage_sessions"));
 
-    _tokenManager = new(_tokenHandler);
+    _tokenManager = new(_tokenBlacklist.Object, _tokenHandler);
   }
 
-  [Fact(DisplayName = "Create: it should create the correct token from parameters.")]
-  public void Create_it_should_create_the_correct_token_from_parameters()
+  [Fact(DisplayName = "CreateAsync: it should create the correct token from parameters.")]
+  public async Task CreateAsync_it_should_create_the_correct_token_from_parameters()
   {
     DateTime now = DateTime.Now;
     CreateTokenParameters parameters = new(_subject, _secret)
@@ -55,12 +58,12 @@ public class JsonWebTokenManagerTests
       IssuedAt = now.AddSeconds(-15).ToUniversalTime(),
       NotBefore = new(now.ToUniversalTime().Ticks, DateTimeKind.Unspecified)
     };
-    CreatedToken createdToken = _tokenManager.Create(parameters);
+    CreatedToken createdToken = await _tokenManager.CreateAsync(parameters, _cancellationToken);
     AssertIsValid(createdToken, parameters);
   }
 
-  [Fact(DisplayName = "Create: it should create the correct token with options.")]
-  public void Create_it_should_create_the_correct_token_with_options()
+  [Fact(DisplayName = "CreateAsync: it should create the correct token with options.")]
+  public async Task CreateAsync_it_should_create_the_correct_token_with_options()
   {
     DateTime now = DateTime.Now;
     CreateTokenOptions options = new()
@@ -72,14 +75,14 @@ public class JsonWebTokenManagerTests
       IssuedAt = now.AddSeconds(-15).ToUniversalTime(),
       NotBefore = new(now.ToUniversalTime().Ticks, DateTimeKind.Unspecified)
     };
-    CreatedToken createdToken = _tokenManager.Create(_subject, _secret, options);
+    CreatedToken createdToken = await _tokenManager.CreateAsync(_subject, _secret, options, _cancellationToken);
     AssertIsValid(createdToken, options);
   }
 
-  [Fact(DisplayName = "Create: it should create the correct token without options.")]
-  public void Create_it_should_create_the_correct_token_without_options()
+  [Fact(DisplayName = "CreateAsync: it should create the correct token without options.")]
+  public async Task CreateAsync_it_should_create_the_correct_token_without_options()
   {
-    CreatedToken createdToken = _tokenManager.Create(_subject, _secret, options: null);
+    CreatedToken createdToken = await _tokenManager.CreateAsync(_subject, _secret, _cancellationToken);
     AssertIsValid(createdToken);
   }
 

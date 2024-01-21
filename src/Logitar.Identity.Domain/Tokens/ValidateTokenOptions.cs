@@ -18,4 +18,9 @@ public record ValidateTokenOptions
   /// Gets or sets the list of valid audiences.
   /// </summary>
   public List<string> ValidIssuers { get; set; } = [];
+
+  /// <summary>
+  /// Gets or sets a value indicating whether or not to blacklist the token identifiers if the token is valid. This should be set to true for one-time use tokens.
+  /// </summary>
+  public bool Consume { get; set; }
 }
