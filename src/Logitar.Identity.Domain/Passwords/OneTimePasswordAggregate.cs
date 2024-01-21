@@ -10,6 +10,7 @@ namespace Logitar.Identity.Domain.Passwords;
 /// </summary>
 public class OneTimePasswordAggregate : AggregateRoot
 {
+  private Password? _password = null;
   private OneTimePasswordUpdatedEvent _updatedEvent = new();
 
   /// <summary>
@@ -17,7 +18,10 @@ public class OneTimePasswordAggregate : AggregateRoot
   /// </summary>
   public new OneTimePasswordId Id => new(base.Id);
 
-  private Password? _password = null;
+  /// <summary>
+  /// Gets the tenant identifier of the One-Time Password (OTP).
+  /// </summary>
+  public TenantId? TenantId { get; private set; }
 
   /// <summary>
   /// Gets or sets the expiration date and time of the One-Time Password (OTP).
@@ -56,14 +60,15 @@ public class OneTimePasswordAggregate : AggregateRoot
   /// Initializes a new instance of the <see cref="OneTimePasswordAggregate"/> class.
   /// </summary>
   /// <param name="password">The encoded value of the One-Time Password (OTP).</param>
+  /// <param name="tenantId">The tenant identifier of the One-Time Password (OTP).</param>
   /// <param name="expiresOn">The expiration date and time of the One-Time Password (OTP).</param>
   /// <param name="maximumAttempts">The maximum number of attempts of the One-Time Password (OTP).</param>
   /// <param name="actorId">The actor identifier.</param>
   /// <param name="id">The identifier of the One-Time Password (OTP).</param>
-  public OneTimePasswordAggregate(Password password, DateTime? expiresOn = null, int? maximumAttempts = null, ActorId actorId = default, OneTimePasswordId? id = null)
+  public OneTimePasswordAggregate(Password password, TenantId? tenantId = null, DateTime? expiresOn = null, int? maximumAttempts = null, ActorId actorId = default, OneTimePasswordId? id = null)
     : base((id ?? OneTimePasswordId.NewId()).AggregateId)
   {
-    Raise(new OneTimePasswordCreatedEvent(actorId, expiresOn, maximumAttempts, password));
+    Raise(new OneTimePasswordCreatedEvent(actorId, expiresOn, maximumAttempts, password, tenantId));
   }
   /// <summary>
   /// Applies the specified event.
@@ -72,6 +77,8 @@ public class OneTimePasswordAggregate : AggregateRoot
   protected virtual void Apply(OneTimePasswordCreatedEvent @event)
   {
     _password = @event.Password;
+
+    TenantId = @event.TenantId;
 
     ExpiresOn = @event.ExpiresOn;
     MaximumAttempts = @event.MaximumAttempts;

@@ -1,4 +1,5 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Shared;
 using MediatR;
 
 namespace Logitar.Identity.Domain.Passwords.Events;
@@ -8,6 +9,11 @@ namespace Logitar.Identity.Domain.Passwords.Events;
 /// </summary>
 public record OneTimePasswordCreatedEvent : DomainEvent, INotification
 {
+  /// <summary>
+  /// Gets the tenant identifier of the One-Time Password (OTP).
+  /// </summary>
+  public TenantId? TenantId { get; }
+
   /// <summary>
   /// Gets the encoded value of the One-Time Password (OTP).
   /// </summary>
@@ -29,11 +35,13 @@ public record OneTimePasswordCreatedEvent : DomainEvent, INotification
   /// <param name="expiresOn">The expiration date and time of the One-Time Password (OTP).</param>
   /// <param name="maximumAttempts">The maximum number of attempts of the One-Time Password (OTP).</param>
   /// <param name="password">The encoded value of the One-Time Password (OTP).</param>
-  public OneTimePasswordCreatedEvent(ActorId actorId, DateTime? expiresOn, int? maximumAttempts, Password password)
+  /// <param name="tenantId">The tenant identifier of the One-Time Password (OTP).</param>
+  public OneTimePasswordCreatedEvent(ActorId actorId, DateTime? expiresOn, int? maximumAttempts, Password password, TenantId? tenantId)
   {
     ActorId = actorId;
     ExpiresOn = expiresOn;
     MaximumAttempts = maximumAttempts;
     Password = password;
+    TenantId = tenantId;
   }
 }
