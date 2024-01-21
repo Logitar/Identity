@@ -99,5 +99,3 @@ public class TokenBlacklist : ITokenBlacklist
     await Context.SaveChangesAsync(cancellationToken);
   }
 }
-
-// TODO(fpion): unit/integration tests
