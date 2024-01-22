@@ -34,29 +34,13 @@ public class PasswordManager : IPasswordManager
   }
 
   /// <summary>
-  /// Creates a password from the specified string.
+  /// Creates a password from the specified string. This method should not be used to create strong user passwords.
   /// </summary>
   /// <param name="password">The password string.</param>
   /// <returns>The password instance.</returns>
   public virtual Password Create(string password)
   {
-    return Create(password, validate: true);
-  }
-  /// <summary>
-  /// Creates a password from the specified string, validating it against password rules if specified.
-  /// </summary>
-  /// <param name="password">The password string.</param>
-  /// <param name="validate">A value indicating whether or not to validate the password against password rules. Validation should not be deactivated when creating user passwords.</param>
-  /// <returns>The password instance.</returns>
-  public virtual Password Create(string password, bool validate)
-  {
     IPasswordSettings passwordSettings = SettingsResolver.Resolve().Password;
-
-    if (validate)
-    {
-      new PasswordValidator(passwordSettings).ValidateAndThrow(password);
-    }
-
     return GetStrategy(passwordSettings.HashingStrategy).Create(password);
   }
 
@@ -81,7 +65,17 @@ public class PasswordManager : IPasswordManager
   {
     password = RandomNumberGenerator.GetBytes(length);
     string passwordString = Convert.ToBase64String(password);
-    return Create(passwordString, validate: false);
+    return Create(passwordString);
+  }
+
+  /// <summary>
+  /// Validates the specified password string.
+  /// </summary>
+  /// <param name="password">The password string.</param>
+  public void Validate(string password)
+  {
+    IPasswordSettings passwordSettings = SettingsResolver.Resolve().Password;
+    new PasswordValidator(passwordSettings).ValidateAndThrow(password);
   }
 
   /// <summary>

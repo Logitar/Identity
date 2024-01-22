@@ -6,18 +6,11 @@
 public interface IPasswordManager
 {
   /// <summary>
-  /// Creates a password from the specified string, validating it against password rules.
+  /// Creates a password from the specified string. This method should not be used to create strong user passwords.
   /// </summary>
   /// <param name="password">The password string.</param>
   /// <returns>The password instance.</returns>
   Password Create(string password);
-  /// <summary>
-  /// Creates a password from the specified string, validating it against password rules if specified.
-  /// </summary>
-  /// <param name="password">The password string.</param>
-  /// <param name="validate">A value indicating whether or not to validate the password against password rules. Validation should not be deactivated when creating user passwords.</param>
-  /// <returns>The password instance.</returns>
-  Password Create(string password, bool validate);
   /// <summary>
   /// Decodes a password from the encoded string.
   /// </summary>
@@ -31,4 +24,9 @@ public interface IPasswordManager
   /// <param name="password">The password bytes.</param>
   /// <returns>The password instance.</returns>
   Password Generate(int length, out byte[] password);
+  /// <summary>
+  /// Validates the specified password string.
+  /// </summary>
+  /// <param name="password">The password string.</param>
+  void Validate(string password);
 }

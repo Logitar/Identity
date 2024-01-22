@@ -8,7 +8,7 @@ namespace Logitar.Identity.Infrastructure.Passwords;
 [Trait(Traits.Category, Categories.Unit)]
 public class PasswordManagerTests
 {
-  private const string PasswordString = "P@s$W0rD";
+  private const string PasswordString = "AAaa!!11";
 
   private readonly Pbkdf2Settings _pbkdf2Settings = new();
   private readonly UserSettings _userSettings = new();
@@ -34,15 +34,6 @@ public class PasswordManagerTests
     Assert.True(password.IsMatch(PasswordString));
   }
 
-  [Fact(DisplayName = "Create: it should create the correct weak password without validation.")]
-  public void Create_it_should_create_the_correct_weak_password_without_validation()
-  {
-    string passwordString = "AAaa!!11";
-    Password password = _passwordManager.Create(passwordString, validate: false);
-    Assert.True(password is Pbkdf2Password);
-    Assert.True(password.IsMatch(passwordString));
-  }
-
   [Fact(DisplayName = "Create: it should throw PasswordStrategyNotSupportedException when the strategy could not be found.")]
   public void Create_it_should_throw_PasswordStrategyNotSupportedException_when_the_strategy_could_not_be_found()
   {
@@ -51,18 +42,6 @@ public class PasswordManagerTests
       HashingStrategy = "PLAIN_TEXT"
     };
     Assert.Throws<PasswordStrategyNotSupportedException>(() => _passwordManager.Create(PasswordString));
-  }
-
-  [Fact(DisplayName = "Create: it should throw ValidationException when the password is too weak.")]
-  public void Create_it_should_throw_ValidationException_when_the_password_is_too_weak()
-  {
-    FluentValidation.ValidationException exception;
-
-    exception = Assert.Throws<FluentValidation.ValidationException>(() => _passwordManager.Create(password: "AAaa!!11"));
-    Assert.Contains(exception.Errors, e => e.ErrorCode == "PasswordRequiresUniqueChars");
-
-    exception = Assert.Throws<FluentValidation.ValidationException>(() => _passwordManager.Create(password: "AAaa!!11", validate: true));
-    Assert.Contains(exception.Errors, e => e.ErrorCode == "PasswordRequiresUniqueChars");
   }
 
   [Fact(DisplayName = "ctor: it should construct the correct password manager.")]
@@ -129,5 +108,18 @@ public class PasswordManagerTests
     string key = "PLAIN_TEXT";
     var exception = Assert.Throws<PasswordStrategyNotSupportedException>(() => _passwordManager.GetStrategy(key));
     Assert.Equal(key, exception.Strategy);
+  }
+
+  [Fact(DisplayName = "Validate: it should succeed when the password is strong.")]
+  public void Validate_it_should_succeed_when_the_password_is_strong()
+  {
+    _passwordManager.Validate("P@s$W0rD");
+  }
+
+  [Fact(DisplayName = "Validate: it should throw ValidationException when the password is too weak.")]
+  public void Validate_it_should_throw_ValidationException_when_the_password_is_too_weak()
+  {
+    var exception = Assert.Throws<FluentValidation.ValidationException>(() => _passwordManager.Validate(PasswordString));
+    Assert.Contains(exception.Errors, e => e.ErrorCode == "PasswordRequiresUniqueChars");
   }
 }
