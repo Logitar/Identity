@@ -22,7 +22,7 @@ public class ApiKeyAggregateTests
   public ApiKeyAggregateTests()
   {
     _role = new(new UniqueNameUnit(_uniqueNameSettings, "admin"));
-    _apiKey = new(new DisplayNameUnit("Default"), new PasswordMock(SecretString));
+    _apiKey = new(new DisplayNameUnit("Default"), new Base64Password(SecretString));
   }
 
   [Fact(DisplayName = "AddRole: it should add the role to the API key when it does not have the role.")]
@@ -119,7 +119,7 @@ public class ApiKeyAggregateTests
     TenantId tenantId = new(Guid.NewGuid().ToString());
     ActorId actorId = ActorId.NewId();
     ApiKeyId id = new(Guid.NewGuid().ToString());
-    PasswordMock secret = new(SecretString);
+    Base64Password secret = new(SecretString);
 
     ApiKeyAggregate apiKey = new(_apiKey.DisplayName, secret, tenantId, actorId, id);
 

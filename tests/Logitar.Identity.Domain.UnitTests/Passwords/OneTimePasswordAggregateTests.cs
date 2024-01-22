@@ -13,7 +13,7 @@ public class OneTimePasswordAggregateTests
 
   private readonly Faker _faker = new();
 
-  private readonly PasswordMock _password = new(PasswordString);
+  private readonly Base64Password _password = new(PasswordString);
   private readonly OneTimePasswordAggregate _oneTimePassword;
 
   public OneTimePasswordAggregateTests()

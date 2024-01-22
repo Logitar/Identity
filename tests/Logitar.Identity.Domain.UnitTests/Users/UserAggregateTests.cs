@@ -58,7 +58,7 @@ public class UserAggregateTests
   [Fact(DisplayName = "Authenticate: it should authenticate the user.")]
   public void Authenticate_it_should_authenticate_the_user()
   {
-    PasswordMock password = new(PasswordString);
+    Base64Password password = new(PasswordString);
     _user.SetPassword(password);
 
     _user.Authenticate(PasswordString);
@@ -71,7 +71,7 @@ public class UserAggregateTests
   [Fact(DisplayName = "Authenticate: it should authenticate the user using the specified actor identifier.")]
   public void Authenticate_it_should_authenticate_the_user_using_the_specified_actor_identifier()
   {
-    PasswordMock password = new(PasswordString);
+    Base64Password password = new(PasswordString);
     _user.SetPassword(password);
 
     ActorId actorId = ActorId.NewId();
@@ -82,7 +82,7 @@ public class UserAggregateTests
   [Fact(DisplayName = "Authenticate: it should throw IncorrectUserPasswordException when the attempted password is incorrect.")]
   public void Authenticate_it_should_throw_IncorrectUserPasswordException_when_the_attempted_password_is_incorrect()
   {
-    PasswordMock password = new(PasswordString[1..]);
+    Base64Password password = new(PasswordString[1..]);
     _user.SetPassword(password);
 
     var exception = Assert.Throws<IncorrectUserPasswordException>(() => _user.Authenticate(PasswordString));
@@ -100,7 +100,7 @@ public class UserAggregateTests
   [Fact(DisplayName = "Authenticate: it should throw UserIsDisabledException when the user is disabled.")]
   public void Authenticate_it_should_throw_UserIsDisabledException_when_the_user_is_disabled()
   {
-    PasswordMock password = new(PasswordString);
+    Base64Password password = new(PasswordString);
     _user.SetPassword(password);
     _user.Disable();
 
@@ -138,11 +138,11 @@ public class UserAggregateTests
   public void ChangePassword_it_should_change_the_users_password()
   {
     string oldPassword = PasswordString[1..];
-    _user.SetPassword(new PasswordMock(oldPassword));
+    _user.SetPassword(new Base64Password(oldPassword));
     _user.ClearChanges();
     AssertPassword(_user, oldPassword);
 
-    PasswordMock newPassword = new(PasswordString);
+    Base64Password newPassword = new(PasswordString);
     _user.ChangePassword(oldPassword, newPassword);
     AssertPassword(_user, PasswordString);
     Assert.Contains(_user.Changes, change => change is UserPasswordChangedEvent @event
@@ -154,11 +154,11 @@ public class UserAggregateTests
   public void ChangePassword_it_should_change_the_users_password_using_the_specified_actor_identifier()
   {
     string oldPassword = PasswordString[1..];
-    _user.SetPassword(new PasswordMock(oldPassword));
+    _user.SetPassword(new Base64Password(oldPassword));
     _user.ClearChanges();
     AssertPassword(_user, oldPassword);
 
-    PasswordMock newPassword = new(PasswordString);
+    Base64Password newPassword = new(PasswordString);
     ActorId actorId = ActorId.NewId();
     _user.ChangePassword(oldPassword, newPassword, actorId);
     AssertPassword(_user, PasswordString);
@@ -168,10 +168,10 @@ public class UserAggregateTests
   [Fact(DisplayName = "ChangePassword: it should throw IncorrectUserPasswordException when the attempted password is incorrect.")]
   public void ChangePassword_it_should_throw_IncorrectUserPasswordException_when_the_attempted_password_is_incorrect()
   {
-    _user.SetPassword(new PasswordMock(PasswordString));
+    _user.SetPassword(new Base64Password(PasswordString));
     AssertPassword(_user, PasswordString);
 
-    PasswordMock password = new(PasswordString);
+    Base64Password password = new(PasswordString);
     string attemptedPassword = PasswordString[1..];
     var exception = Assert.Throws<IncorrectUserPasswordException>(() => _user.ChangePassword(attemptedPassword, password));
     Assert.Equal(attemptedPassword, exception.AttemptedPassword);
@@ -183,7 +183,7 @@ public class UserAggregateTests
   {
     AssertPassword(_user, password: null);
 
-    PasswordMock password = new(PasswordString);
+    Base64Password password = new(PasswordString);
     var exception = Assert.Throws<UserHasNoPasswordException>(() => _user.ChangePassword(PasswordString, password));
     Assert.Equal(_user.Id, exception.UserId);
   }
@@ -191,7 +191,7 @@ public class UserAggregateTests
   [Fact(DisplayName = "ChangePassword: it should throw UserIsDisabledException when the user is disabled.")]
   public void ChangePassword_it_should_throw_UserIsDisabledException_when_the_user_is_disabled()
   {
-    PasswordMock password = new(PasswordString);
+    Base64Password password = new(PasswordString);
     _user.SetPassword(password);
 
     _user.Disable();
@@ -309,7 +309,7 @@ public class UserAggregateTests
   [Fact(DisplayName = "HasPassword: it should return true when the user has a password.")]
   public void HasPassword_it_should_return_true_when_the_user_has_a_password()
   {
-    PasswordMock password = new(PasswordString);
+    Base64Password password = new(PasswordString);
     _user.SetPassword(password);
     Assert.True(_user.HasPassword);
   }
@@ -477,7 +477,7 @@ public class UserAggregateTests
   [Fact(DisplayName = "ResetPassword: it should reset the user's password.")]
   public void ResetPassword_it_should_reset_the_users_password()
   {
-    PasswordMock password = new(PasswordString);
+    Base64Password password = new(PasswordString);
     _user.ResetPassword(password);
     AssertPassword(_user, PasswordString);
     Assert.Contains(_user.Changes, change => change is UserPasswordResetEvent @event
@@ -488,7 +488,7 @@ public class UserAggregateTests
   [Fact(DisplayName = "ResetPassword: it should reset the user's password using the specified actor identifier.")]
   public void ResetPassword_it_should_reset_the_users_password_using_the_specified_actor_identifier()
   {
-    PasswordMock password = new(PasswordString);
+    Base64Password password = new(PasswordString);
     ActorId actorId = ActorId.NewId();
     _user.ResetPassword(password, actorId);
     Assert.Contains(_user.Changes, change => change is UserPasswordResetEvent @event && @event.ActorId == actorId);
@@ -499,7 +499,7 @@ public class UserAggregateTests
   {
     _user.Disable();
 
-    PasswordMock password = new(PasswordString);
+    Base64Password password = new(PasswordString);
     var exception = Assert.Throws<UserIsDisabledException>(() => _user.ResetPassword(password));
     Assert.Equal(_user.Id, exception.UserId);
   }
@@ -598,7 +598,7 @@ public class UserAggregateTests
     AssertPassword(_user, password: null);
 
     ActorId actorId = ActorId.NewId();
-    PasswordMock password = new(PasswordString);
+    Base64Password password = new(PasswordString);
     _user.SetPassword(password, actorId);
 
     AssertPassword(_user, PasswordString);
@@ -636,11 +636,11 @@ public class UserAggregateTests
   [Fact(DisplayName = "SignIn: it should open a new session with a password check.")]
   public void SignIn_it_should_open_a_new_session_with_a_password_check()
   {
-    PasswordMock password = new(PasswordString);
+    Base64Password password = new(PasswordString);
     _user.SetPassword(password);
 
     string secretString = RandomStringGenerator.GetString(32);
-    PasswordMock secret = new(secretString);
+    Base64Password secret = new(secretString);
     ActorId actorId = ActorId.NewId();
     SessionId sessionId = new(Guid.NewGuid().ToString());
     SessionAggregate session = _user.SignIn(PasswordString, secret, actorId, sessionId);
@@ -674,7 +674,7 @@ public class UserAggregateTests
   [Fact(DisplayName = "SignIn: it should throw IncorrectUserPasswordException when the password is incorrect.")]
   public void SignIn_it_should_throw_IncorrectUserPasswordException_when_the_password_is_incorrect()
   {
-    PasswordMock password = new(PasswordString[1..]);
+    Base64Password password = new(PasswordString[1..]);
     _user.SetPassword(password);
 
     var exception = Assert.Throws<IncorrectUserPasswordException>(() => _user.SignIn(PasswordString));

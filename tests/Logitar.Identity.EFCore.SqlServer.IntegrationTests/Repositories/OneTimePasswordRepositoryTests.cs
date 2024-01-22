@@ -55,7 +55,7 @@ public class OneTimePasswordRepositoryTests : IAsyncLifetime
     ActorId actorId = ActorId.NewId();
     OneTimePasswordId id = OneTimePasswordId.NewId();
 
-    _password = _passwordManager.Create(PasswordString); // TODO(fpion): refactor
+    _password = _passwordManager.Create(PasswordString);
     _oneTimePassword = new(_password, tenantId, expiresOn, maximumAttempts, actorId, id);
   }
 
