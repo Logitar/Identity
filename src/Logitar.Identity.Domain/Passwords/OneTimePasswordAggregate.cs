@@ -1,6 +1,9 @@
-﻿using Logitar.EventSourcing;
+﻿using FluentValidation;
+using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Passwords.Events;
+using Logitar.Identity.Domain.Passwords.Validators;
 using Logitar.Identity.Domain.Shared;
+using Logitar.Identity.Domain.Shared.Validators;
 
 namespace Logitar.Identity.Domain.Passwords;
 
@@ -68,6 +71,15 @@ public class OneTimePasswordAggregate : AggregateRoot
   public OneTimePasswordAggregate(Password password, TenantId? tenantId = null, DateTime? expiresOn = null, int? maximumAttempts = null, ActorId actorId = default, OneTimePasswordId? id = null)
     : base((id ?? OneTimePasswordId.NewId()).AggregateId)
   {
+    if (expiresOn.HasValue)
+    {
+      new ExpirationValidator().ValidateAndThrow(expiresOn.Value);
+    }
+    if (maximumAttempts.HasValue)
+    {
+      new MaximumAttemptsValidator().ValidateAndThrow(maximumAttempts.Value);
+    }
+
     Raise(new OneTimePasswordCreatedEvent(actorId, expiresOn, maximumAttempts, password, tenantId));
   }
   /// <summary>
@@ -214,8 +226,7 @@ public class OneTimePasswordAggregate : AggregateRoot
   /// <param name="_">The event to apply.</param>
   protected virtual void Apply(OneTimePasswordValidationSucceededEvent _)
   {
+    AttemptCount++;
     HasValidationSucceeded = true;
   }
 }
-
-// TODO(fpion): Unit Tests

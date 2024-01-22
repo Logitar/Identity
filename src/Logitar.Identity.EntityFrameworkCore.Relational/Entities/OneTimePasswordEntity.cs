@@ -58,6 +58,7 @@ public class OneTimePasswordEntity : AggregateEntity
   {
     Update(@event);
 
+    AttemptCount++;
     HasValidationSucceeded = true;
   }
 
