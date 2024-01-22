@@ -9,13 +9,13 @@ public class ApiKeyIdTests
 {
   private readonly Faker _faker = new();
 
-  [Theory(DisplayName = "ctor: it should create a new role identifier.")]
+  [Theory(DisplayName = "ctor: it should create a new API key identifier.")]
   [InlineData("64192609-6ad1-4f54-a8f0-a44372f229c8")]
   [InlineData("  bbea05b5-75c0-4ab5-8572-6d0dee8aa046  ")]
-  public void ctor_it_should_create_a_new_display_name(string value)
+  public void ctor_it_should_create_a_new_Api_key_identifier(string value)
   {
-    ApiKeyId roleId = new(value);
-    Assert.Equal(value.Trim(), roleId.Value);
+    ApiKeyId apiKeyId = new(value);
+    Assert.Equal(value.Trim(), apiKeyId.Value);
   }
 
   [Theory(DisplayName = "ctor: it should throw ValidationException when the value is empty.")]
@@ -54,14 +54,14 @@ public class ApiKeyIdTests
     Assert.Equal(id.AggregateId.Value, id.Value);
   }
 
-  [Theory(DisplayName = "TryCreate: it should return a role identifier when the value is not empty.")]
+  [Theory(DisplayName = "TryCreate: it should return an API key identifier when the value is not empty.")]
   [InlineData("268f59a5-eaa4-4b04-9d96-d1bbaa453a19")]
   [InlineData("  0aee1e54-3f7d-4b87-a82e-d2e7924c46bc  ")]
-  public void TryCreate_it_should_return_a_display_name_when_the_value_is_not_empty(string value)
+  public void TryCreate_it_should_return_an_Api_key_identifier_when_the_value_is_not_empty(string value)
   {
-    ApiKeyId? roleId = ApiKeyId.TryCreate(value);
-    Assert.NotNull(roleId);
-    Assert.Equal(value.Trim(), roleId.Value);
+    ApiKeyId? apiKeyId = ApiKeyId.TryCreate(value);
+    Assert.NotNull(apiKeyId);
+    Assert.Equal(value.Trim(), apiKeyId.Value);
   }
 
   [Theory(DisplayName = "TryCreate: it should return null when the value is null or whitespace.")]

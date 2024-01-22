@@ -219,4 +219,3 @@ public class OneTimePasswordAggregate : AggregateRoot
 }
 
 // TODO(fpion): Unit Tests
-// TODO(fpion): Event Handling

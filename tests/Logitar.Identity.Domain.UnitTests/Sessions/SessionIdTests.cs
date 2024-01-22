@@ -11,7 +11,7 @@ public class SessionIdTests
   [Theory(DisplayName = "ctor: it should create a new session identifier.")]
   [InlineData("8b0a5032-f81f-4cef-99a6-de119025e379")]
   [InlineData("  702f0d94-a99c-4279-bc18-1ecc5762cf1d  ")]
-  public void ctor_it_should_create_a_new_display_name(string value)
+  public void ctor_it_should_create_a_new_session_identifier(string value)
   {
     SessionId sessionId = new(value);
     Assert.Equal(value.Trim(), sessionId.Value);
@@ -56,7 +56,7 @@ public class SessionIdTests
   [Theory(DisplayName = "TryCreate: it should return a session identifier when the value is not empty.")]
   [InlineData("795d605e-258b-432a-bd83-be470d5d240d")]
   [InlineData("  2e7c19db-cda2-46df-a62f-81c8aeee83c6  ")]
-  public void TryCreate_it_should_return_a_display_name_when_the_value_is_not_empty(string value)
+  public void TryCreate_it_should_return_a_session_identifier_when_the_value_is_not_empty(string value)
   {
     SessionId? sessionId = SessionId.TryCreate(value);
     Assert.NotNull(sessionId);

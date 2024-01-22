@@ -60,5 +60,3 @@ public record OneTimePasswordId
     return string.IsNullOrWhiteSpace(value) ? null : new(value, propertyName);
   }
 }
-
-// TODO(fpion): Unit Tests
