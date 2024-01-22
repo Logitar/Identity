@@ -64,7 +64,7 @@ public class RoleManagerTests
     RoleAggregate guest = new(new UniqueNameUnit(_uniqueNameSettings, "guest"));
 
     DisplayNameUnit displayName = new("Test");
-    PasswordMock secret = new("S3cr3+!*");
+    Base64Password secret = new("S3cr3+!*");
     ApiKeyAggregate apiKey = new(displayName, secret);
     apiKey.AddRole(_role);
     apiKey.AddRole(guest);

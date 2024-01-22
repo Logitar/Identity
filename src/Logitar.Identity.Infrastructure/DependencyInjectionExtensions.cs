@@ -43,6 +43,7 @@ public static class DependencyInjectionExtensions
     new DisplayNameConverter(),
     new GenderConverter(),
     new LocaleConverter(),
+    new OneTimePasswordIdConverter(),
     new PersonNameConverter(),
     new RoleIdConverter(),
     new SessionIdConverter(),

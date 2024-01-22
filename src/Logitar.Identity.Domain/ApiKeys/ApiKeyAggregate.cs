@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 using Logitar.EventSourcing;
 using Logitar.Identity.Domain.ApiKeys.Events;
-using Logitar.Identity.Domain.ApiKeys.Validators;
 using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Shared;
+using Logitar.Identity.Domain.Shared.Validators;
 
 namespace Logitar.Identity.Domain.ApiKeys;
 

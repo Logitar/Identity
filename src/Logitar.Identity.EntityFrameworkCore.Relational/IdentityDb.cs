@@ -58,6 +58,26 @@ public static class IdentityDb
     public static readonly ColumnId ValueShortened = new(nameof(CustomAttributeEntity.ValueShortened), Table);
   }
 
+  public static class OneTimePasswords
+  {
+    public static readonly TableId Table = new(nameof(IdentityContext.OneTimePasswords));
+
+    public static readonly ColumnId AggregateId = new(nameof(OneTimePasswordEntity.AggregateId), Table);
+    public static readonly ColumnId AttemptCount = new(nameof(OneTimePasswordEntity.AttemptCount), Table);
+    public static readonly ColumnId CreatedBy = new(nameof(OneTimePasswordEntity.CreatedBy), Table);
+    public static readonly ColumnId CreatedOn = new(nameof(OneTimePasswordEntity.CreatedOn), Table);
+    public static readonly ColumnId CustomAttributes = new(nameof(OneTimePasswordEntity.CustomAttributes), Table);
+    public static readonly ColumnId ExpiresOn = new(nameof(OneTimePasswordEntity.ExpiresOn), Table);
+    public static readonly ColumnId HasValidationSucceeded = new(nameof(OneTimePasswordEntity.HasValidationSucceeded), Table);
+    public static readonly ColumnId MaximumAttempts = new(nameof(OneTimePasswordEntity.MaximumAttempts), Table);
+    public static readonly ColumnId OneTimePasswordId = new(nameof(OneTimePasswordEntity.OneTimePasswordId), Table);
+    public static readonly ColumnId PasswordHash = new(nameof(OneTimePasswordEntity.PasswordHash), Table);
+    public static readonly ColumnId TenantId = new(nameof(OneTimePasswordEntity.TenantId), Table);
+    public static readonly ColumnId UpdatedBy = new(nameof(OneTimePasswordEntity.UpdatedBy), Table);
+    public static readonly ColumnId UpdatedOn = new(nameof(OneTimePasswordEntity.UpdatedOn), Table);
+    public static readonly ColumnId Version = new(nameof(OneTimePasswordEntity.Version), Table);
+  }
+
   public static class Roles
   {
     public static readonly TableId Table = new(nameof(IdentityContext.Roles));

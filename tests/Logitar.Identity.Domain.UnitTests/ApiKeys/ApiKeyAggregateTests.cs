@@ -22,7 +22,7 @@ public class ApiKeyAggregateTests
   public ApiKeyAggregateTests()
   {
     _role = new(new UniqueNameUnit(_uniqueNameSettings, "admin"));
-    _apiKey = new(new DisplayNameUnit("Default"), new PasswordMock(SecretString));
+    _apiKey = new(new DisplayNameUnit("Default"), new Base64Password(SecretString));
   }
 
   [Fact(DisplayName = "AddRole: it should add the role to the API key when it does not have the role.")]
@@ -119,7 +119,7 @@ public class ApiKeyAggregateTests
     TenantId tenantId = new(Guid.NewGuid().ToString());
     ActorId actorId = ActorId.NewId();
     ApiKeyId id = new(Guid.NewGuid().ToString());
-    PasswordMock secret = new(SecretString);
+    Base64Password secret = new(SecretString);
 
     ApiKeyAggregate apiKey = new(_apiKey.DisplayName, secret, tenantId, actorId, id);
 
@@ -170,27 +170,27 @@ public class ApiKeyAggregateTests
     AssertHasNoUpdate(_apiKey);
   }
 
-  [Fact(DisplayName = "HasRole: it should return false when the Api key does not have the specified role.")]
+  [Fact(DisplayName = "HasRole: it should return false when the API key does not have the specified role.")]
   public void HasRole_it_should_return_false_when_the_Api_key_does_not_have_the_specified_role()
   {
     Assert.False(_apiKey.HasRole(_role));
   }
 
-  [Fact(DisplayName = "HasRole: it should return true when the Api key does have the specified role.")]
+  [Fact(DisplayName = "HasRole: it should return true when the API key does have the specified role.")]
   public void HasRole_it_should_return_true_when_the_Api_key_does_have_the_specified_role()
   {
     _apiKey.AddRole(_role);
     Assert.True(_apiKey.HasRole(_role));
   }
 
-  [Fact(DisplayName = "IsExpired: it should return false when the Api key has no expiration.")]
+  [Fact(DisplayName = "IsExpired: it should return false when the API key has no expiration.")]
   public void IsExpired_it_should_return_false_when_the_Api_key_has_no_expiration()
   {
     Assert.Null(_apiKey.ExpiresOn);
     Assert.False(_apiKey.IsExpired());
   }
 
-  [Fact(DisplayName = "IsExpired: it should return false when the Api key is not expired.")]
+  [Fact(DisplayName = "IsExpired: it should return false when the API key is not expired.")]
   public void IsExpired_it_should_return_false_when_the_Api_key_is_not_expired()
   {
     _apiKey.SetExpiration(DateTime.Now.AddYears(1));
@@ -198,7 +198,7 @@ public class ApiKeyAggregateTests
     Assert.False(_apiKey.IsExpired());
   }
 
-  [Fact(DisplayName = "IsExpired: it should return true when the Api key is expired.")]
+  [Fact(DisplayName = "IsExpired: it should return true when the API key is expired.")]
   public void IsExpired_it_should_return_true_when_the_Api_key_is_expired()
   {
     _apiKey.SetExpiration(DateTime.Now.AddMilliseconds(100));

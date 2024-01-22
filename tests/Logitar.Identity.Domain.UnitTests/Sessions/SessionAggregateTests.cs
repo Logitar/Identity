@@ -47,7 +47,7 @@ public class SessionAggregateTests
   public void ctor_it_should_create_a_new_session_with_parameters()
   {
     string secretString = RandomStringGenerator.GetString(32);
-    PasswordMock secret = new(secretString);
+    Base64Password secret = new(secretString);
     SessionId id = new(Guid.NewGuid().ToString());
 
     SessionAggregate session = new(_user, secret, actorId: null, id);
@@ -94,11 +94,11 @@ public class SessionAggregateTests
   public void Renew_it_should_renew_the_session()
   {
     string oldSecretString = RandomStringGenerator.GetString(32);
-    PasswordMock oldSecret = new(oldSecretString);
+    Base64Password oldSecret = new(oldSecretString);
     SessionAggregate session = new(_user, oldSecret);
 
     string newSecretString = RandomStringGenerator.GetString(32);
-    PasswordMock newSecret = new(newSecretString);
+    Base64Password newSecret = new(newSecretString);
 
     session.Renew(oldSecretString, newSecret);
     Assert.Contains(session.Changes, change => change is SessionRenewedEvent @event
@@ -110,7 +110,7 @@ public class SessionAggregateTests
   public void Renew_it_should_renew_the_session_using_the_specified_actor_identifier()
   {
     string secretString = RandomStringGenerator.GetString(32);
-    PasswordMock secret = new(secretString);
+    Base64Password secret = new(secretString);
     SessionAggregate session = new(_user, secret);
 
     ActorId actorId = ActorId.NewId();
@@ -122,7 +122,7 @@ public class SessionAggregateTests
   public void Renew_it_should_throw_IncorrectSessionSecretException_when_the_current_secret_is_incorrect()
   {
     string secretString = RandomStringGenerator.GetString(32);
-    PasswordMock secret = new(secretString);
+    Base64Password secret = new(secretString);
     SessionAggregate session = new(_user, secret);
 
     string attemptedSecret = secretString[1..];
@@ -135,7 +135,7 @@ public class SessionAggregateTests
   public void Renew_it_should_throw_SessionIsNotActiveException_when_the_session_is_not_active()
   {
     string currentSecret = RandomStringGenerator.GetString(32);
-    PasswordMock newSecret = new(currentSecret);
+    Base64Password newSecret = new(currentSecret);
     SessionAggregate session = new(_user, newSecret);
 
     session.SignOut();
@@ -148,7 +148,7 @@ public class SessionAggregateTests
   public void Renew_it_should_throw_SessionIsNotPersistentException_when_the_session_has_no_secret()
   {
     string secretString = RandomStringGenerator.GetString(32);
-    PasswordMock newSecret = new(secretString);
+    Base64Password newSecret = new(secretString);
 
     var exception = Assert.Throws<SessionIsNotPersistentException>(() => _session.Renew(secretString, newSecret));
     Assert.Equal(_session.Id, exception.SessionId);

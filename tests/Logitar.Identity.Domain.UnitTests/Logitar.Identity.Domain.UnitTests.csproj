@@ -27,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Logitar.Identity.Domain\Logitar.Identity.Domain.csproj" />
     <ProjectReference Include="..\Logitar.Identity.Tests\Logitar.Identity.Tests.csproj" />
   </ItemGroup>
 
@@ -36,7 +35,6 @@
     <Using Include="System.IdentityModel.Tokens.Jwt" />
     <Using Include="System.Reflection" />
     <Using Include="System.Security.Claims" />
-    <Using Include="System.Text" />
     <Using Include="Xunit" />
   </ItemGroup>
 

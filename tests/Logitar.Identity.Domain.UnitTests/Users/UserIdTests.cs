@@ -11,7 +11,7 @@ public class UserIdTests
   [Theory(DisplayName = "ctor: it should create a new user identifier.")]
   [InlineData("86f2b595-a803-40c5-b270-f33ea53620b0")]
   [InlineData("  admin  ")]
-  public void ctor_it_should_create_a_new_display_name(string value)
+  public void ctor_it_should_create_a_new_user_identifier(string value)
   {
     UserId userId = new(value);
     Assert.Equal(value.Trim(), userId.Value);
@@ -53,10 +53,10 @@ public class UserIdTests
     Assert.Equal(id.AggregateId.Value, id.Value);
   }
 
-  [Theory(DisplayName = "TryCreate: it should return a user identifier when the value is not empty.")]
+  [Theory(DisplayName = "TryCreate: it should return an user identifier when the value is not empty.")]
   [InlineData("85107c8e-0730-4dc1-99f4-4008d0ea7688")]
   [InlineData("  admin  ")]
-  public void TryCreate_it_should_return_a_display_name_when_the_value_is_not_empty(string value)
+  public void TryCreate_it_should_return_an_user_identifier_when_the_value_is_not_empty(string value)
   {
     UserId? userId = UserId.TryCreate(value);
     Assert.NotNull(userId);

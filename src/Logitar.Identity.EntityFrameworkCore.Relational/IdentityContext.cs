@@ -13,6 +13,7 @@ public class IdentityContext : DbContext
   public DbSet<ApiKeyRoleEntity> ApiKeyRoles { get; private set; }
   public DbSet<ApiKeyEntity> ApiKeys { get; private set; }
   public DbSet<CustomAttributeEntity> CustomAttributes { get; private set; }
+  public DbSet<OneTimePasswordEntity> OneTimePasswords { get; private set; }
   public DbSet<RoleEntity> Roles { get; private set; }
   public DbSet<SessionEntity> Sessions { get; private set; }
   public DbSet<BlacklistedTokenEntity> TokenBlacklist { get; private set; }

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
 namespace Logitar.Identity.Infrastructure.Passwords.Pbkdf2;
 
-public record Pbkdf2 : Password
+public record Pbkdf2Password : Password
 {
   public const string Key = "PBKDF2";
 
@@ -12,7 +12,7 @@ public record Pbkdf2 : Password
   private readonly byte[] _salt;
   private readonly byte[] _hash;
 
-  public Pbkdf2(string password, KeyDerivationPrf algorithm, int iterations, int saltLength, int? hashLength = null)
+  public Pbkdf2Password(string password, KeyDerivationPrf algorithm, int iterations, int saltLength, int? hashLength = null)
   {
     _algorithm = algorithm;
     _iterations = iterations;
@@ -20,7 +20,7 @@ public record Pbkdf2 : Password
     _hash = ComputeHash(password, hashLength ?? saltLength);
   }
 
-  private Pbkdf2(KeyDerivationPrf algorithm, int iterations, byte[] salt, byte[] hash)
+  private Pbkdf2Password(KeyDerivationPrf algorithm, int iterations, byte[] salt, byte[] hash)
   {
     _algorithm = algorithm;
     _iterations = iterations;
@@ -28,7 +28,7 @@ public record Pbkdf2 : Password
     _hash = hash;
   }
 
-  public static Pbkdf2 Decode(string password)
+  public static Pbkdf2Password Decode(string password)
   {
     string[] values = password.Split(Separator);
     if (values.Length != 5 || values.First() != Key)
@@ -36,7 +36,7 @@ public record Pbkdf2 : Password
       throw new ArgumentException($"The value '{password}' is not a valid PBKDF2 password.", nameof(password));
     }
 
-    return new Pbkdf2(Enum.Parse<KeyDerivationPrf>(values[1]), int.Parse(values[2]),
+    return new Pbkdf2Password(Enum.Parse<KeyDerivationPrf>(values[1]), int.Parse(values[2]),
       Convert.FromBase64String(values[3]), Convert.FromBase64String(values[4]));
   }
 

@@ -185,8 +185,8 @@ public class UserRepositoryTests : IAsyncLifetime
     Assert.Equal(_user, user);
   }
 
-  [Fact(DisplayName = "LoadAsync: it should load the user by tenant identifier.")]
-  public async Task LoadAsync_it_should_load_the_user_by_tenant_identifier()
+  [Fact(DisplayName = "LoadAsync: it should load the users by tenant identifier.")]
+  public async Task LoadAsync_it_should_load_the_users_by_tenant_identifier()
   {
     UserAggregate user = new(_user.UniqueName, tenantId: null);
     UserAggregate deleted = new(new UniqueNameUnit(_userSettings.UniqueName, "deleted"), _user.TenantId);

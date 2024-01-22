@@ -11,7 +11,7 @@ public class TenantIdTests
   [Theory(DisplayName = "ctor: it should create a new tenant identifier.")]
   [InlineData("59e2fc4b-f4e4-4052-a3b0-2f4375964149")]
   [InlineData("  59e2fc4b-f4e4-4052-a3b0-2f4375964149  ")]
-  public void ctor_it_should_create_a_new_display_name(string value)
+  public void ctor_it_should_create_a_new_tenant_identifier(string value)
   {
     TenantId tenantId = new(value);
     Assert.Equal(value.Trim(), tenantId.Value);
@@ -49,7 +49,7 @@ public class TenantIdTests
   [Theory(DisplayName = "TryCreate: it should return a tenant identifier when the value is not empty.")]
   [InlineData("ede716c6-820a-4276-a3f9-d65645db7538")]
   [InlineData("  test  ")]
-  public void TryCreate_it_should_return_a_display_name_when_the_value_is_not_empty(string value)
+  public void TryCreate_it_should_return_a_tenant_identifier_when_the_value_is_not_empty(string value)
   {
     TenantId? tenantId = TenantId.TryCreate(value);
     Assert.NotNull(tenantId);

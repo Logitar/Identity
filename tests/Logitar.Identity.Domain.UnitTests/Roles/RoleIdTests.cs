@@ -11,7 +11,7 @@ public class RoleIdTests
   [Theory(DisplayName = "ctor: it should create a new role identifier.")]
   [InlineData("930a9c48-c168-47c8-9797-7106969dd7f7")]
   [InlineData("  admin  ")]
-  public void ctor_it_should_create_a_new_display_name(string value)
+  public void ctor_it_should_create_a_new_role_identifier(string value)
   {
     RoleId roleId = new(value);
     Assert.Equal(value.Trim(), roleId.Value);
@@ -56,7 +56,7 @@ public class RoleIdTests
   [Theory(DisplayName = "TryCreate: it should return a role identifier when the value is not empty.")]
   [InlineData("ede716c6-820a-4276-a3f9-d65645db7538")]
   [InlineData("  admin  ")]
-  public void TryCreate_it_should_return_a_display_name_when_the_value_is_not_empty(string value)
+  public void TryCreate_it_should_return_a_role_identifier_when_the_value_is_not_empty(string value)
   {
     RoleId? roleId = RoleId.TryCreate(value);
     Assert.NotNull(roleId);

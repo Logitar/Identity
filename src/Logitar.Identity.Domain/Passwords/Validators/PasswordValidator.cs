@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using Logitar.Identity.Domain.Settings;
 
-namespace Logitar.Identity.Domain.Passwords;
+namespace Logitar.Identity.Domain.Passwords.Validators;
 
 /// <summary>
 /// The validator used to validate user passwords.

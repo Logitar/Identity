@@ -242,6 +242,91 @@ namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Migrations
                     b.ToTable("CustomAttributes", (string)null);
                 });
 
+            modelBuilder.Entity("Logitar.Identity.EntityFrameworkCore.Relational.Entities.OneTimePasswordEntity", b =>
+                {
+                    b.Property<int>("OneTimePasswordId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OneTimePasswordId"));
+
+                    b.Property<string>("AggregateId")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("AttemptCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CustomAttributesSerialized")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("CustomAttributes");
+
+                    b.Property<DateTime?>("ExpiresOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("HasValidationSucceeded")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("MaximumAttempts")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("TenantId")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("OneTimePasswordId");
+
+                    b.HasIndex("AggregateId")
+                        .IsUnique();
+
+                    b.HasIndex("AttemptCount");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("CreatedOn");
+
+                    b.HasIndex("ExpiresOn");
+
+                    b.HasIndex("HasValidationSucceeded");
+
+                    b.HasIndex("MaximumAttempts");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("UpdatedBy");
+
+                    b.HasIndex("UpdatedOn");
+
+                    b.HasIndex("Version");
+
+                    b.ToTable("OneTimePasswords", (string)null);
+                });
+
             modelBuilder.Entity("Logitar.Identity.EntityFrameworkCore.Relational.Entities.RoleEntity", b =>
                 {
                     b.Property<int>("RoleId")

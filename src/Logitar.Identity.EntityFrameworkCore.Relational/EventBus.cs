@@ -1,10 +1,12 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.EventSourcing.Infrastructure;
 using Logitar.Identity.Domain.ApiKeys.Events;
+using Logitar.Identity.Domain.Passwords.Events;
 using Logitar.Identity.Domain.Roles.Events;
 using Logitar.Identity.Domain.Sessions.Events;
 using Logitar.Identity.Domain.Users.Events;
 using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.ApiKeys;
+using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Passwords;
 using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Roles;
 using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Sessions;
 using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Users;
@@ -14,10 +16,12 @@ namespace Logitar.Identity.EntityFrameworkCore.Relational;
 
 public class EventBus : IEventBus
 {
-  public EventBus(IPublisher publisher, IApiKeyEventHandler apiKeyEventHandler, IRoleEventHandler roleEventHandler, ISessionEventHandler sessionEventHandler, IUserEventHandler userEventHandler)
+  public EventBus(IPublisher publisher, IApiKeyEventHandler apiKeyEventHandler, IOneTimePasswordEventHandler oneTimePasswordEventHandler,
+    IRoleEventHandler roleEventHandler, ISessionEventHandler sessionEventHandler, IUserEventHandler userEventHandler)
   {
     Publisher = publisher;
     ApiKeyEventHandler = apiKeyEventHandler;
+    OneTimePasswordEventHandler = oneTimePasswordEventHandler;
     RoleEventHandler = roleEventHandler;
     SessionEventHandler = sessionEventHandler;
     UserEventHandler = userEventHandler;
@@ -25,6 +29,7 @@ public class EventBus : IEventBus
 
   protected IPublisher Publisher { get; }
   protected IApiKeyEventHandler ApiKeyEventHandler { get; }
+  protected IOneTimePasswordEventHandler OneTimePasswordEventHandler { get; }
   protected IRoleEventHandler RoleEventHandler { get; }
   protected ISessionEventHandler SessionEventHandler { get; }
   protected IUserEventHandler UserEventHandler { get; }
@@ -51,6 +56,23 @@ public class EventBus : IEventBus
         break;
       case ApiKeyUpdatedEvent apiKeyUpdated:
         await ApiKeyEventHandler.HandleAsync(apiKeyUpdated, cancellationToken);
+        break;
+      #endregion
+      #region OneTimePasswords
+      case OneTimePasswordCreatedEvent oneTimePasswordCreated:
+        await OneTimePasswordEventHandler.HandleAsync(oneTimePasswordCreated, cancellationToken);
+        break;
+      case OneTimePasswordDeletedEvent oneTimePasswordDeleted:
+        await OneTimePasswordEventHandler.HandleAsync(oneTimePasswordDeleted, cancellationToken);
+        break;
+      case OneTimePasswordUpdatedEvent oneTimePasswordUpdated:
+        await OneTimePasswordEventHandler.HandleAsync(oneTimePasswordUpdated, cancellationToken);
+        break;
+      case OneTimePasswordValidationFailedEvent oneTimePasswordValidationFailed:
+        await OneTimePasswordEventHandler.HandleAsync(oneTimePasswordValidationFailed, cancellationToken);
+        break;
+      case OneTimePasswordValidationSucceededEvent oneTimePasswordValidationSucceeded:
+        await OneTimePasswordEventHandler.HandleAsync(oneTimePasswordValidationSucceeded, cancellationToken);
         break;
       #endregion
       #region Roles
