@@ -6,7 +6,7 @@ internal static class Assertions
   {
     if (expected.HasValue && actual.HasValue)
     {
-      AssertEqual(expected.Value, actual.Value, precision);
+      Equal(expected.Value, actual.Value, precision);
     }
     else
     {
@@ -14,7 +14,7 @@ internal static class Assertions
       Assert.Null(actual);
     }
   }
-  public static void AssertEqual(DateTime expected, DateTime actual, TimeSpan? precision = null)
+  public static void Equal(DateTime expected, DateTime actual, TimeSpan? precision = null)
   {
     if (expected.Kind == DateTimeKind.Unspecified)
     {

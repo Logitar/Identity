@@ -39,7 +39,7 @@ public class OneTimePasswordEntity : AggregateEntity
 
     PasswordHash = @event.Password.Encode();
 
-    ExpiresOn = @event.ExpiresOn;
+    ExpiresOn = @event.ExpiresOn?.ToUniversalTime();
     MaximumAttempts = @event.MaximumAttempts;
   }
 
