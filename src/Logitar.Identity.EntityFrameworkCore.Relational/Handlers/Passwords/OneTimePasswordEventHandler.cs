@@ -39,22 +39,22 @@ public class OneTimePasswordEventHandler : EventHandler, IOneTimePasswordEventHa
 
   public virtual async Task HandleAsync(OneTimePasswordUpdatedEvent @event, CancellationToken cancellationToken)
   {
-    OneTimePasswordEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
-    if (user != null)
+    OneTimePasswordEntity? oneTimePassword = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (oneTimePassword != null)
     {
-      user.Update(@event);
+      oneTimePassword.Update(@event);
 
-      await SynchronizeCustomAttributesAsync(EntityType, user.OneTimePasswordId, @event.CustomAttributes, cancellationToken);
+      await SynchronizeCustomAttributesAsync(EntityType, oneTimePassword.OneTimePasswordId, @event.CustomAttributes, cancellationToken);
       await Context.SaveChangesAsync(cancellationToken);
     }
   }
 
   public virtual async Task HandleAsync(OneTimePasswordValidationFailedEvent @event, CancellationToken cancellationToken)
   {
-    OneTimePasswordEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
-    if (user != null)
+    OneTimePasswordEntity? oneTimePassword = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (oneTimePassword != null)
     {
-      user.Fail(@event);
+      oneTimePassword.Fail(@event);
 
       await Context.SaveChangesAsync(cancellationToken);
     }
@@ -62,10 +62,10 @@ public class OneTimePasswordEventHandler : EventHandler, IOneTimePasswordEventHa
 
   public virtual async Task HandleAsync(OneTimePasswordValidationSucceededEvent @event, CancellationToken cancellationToken)
   {
-    OneTimePasswordEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
-    if (user != null)
+    OneTimePasswordEntity? oneTimePassword = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (oneTimePassword != null)
     {
-      user.Succeed(@event);
+      oneTimePassword.Succeed(@event);
 
       await Context.SaveChangesAsync(cancellationToken);
     }
@@ -74,7 +74,7 @@ public class OneTimePasswordEventHandler : EventHandler, IOneTimePasswordEventHa
   protected virtual async Task<OneTimePasswordEntity> LoadAsync(AggregateId aggregateId, CancellationToken cancellationToken)
   {
     return await TryLoadAsync(aggregateId, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'AggregateId={aggregateId}' could not be found.");
+      ?? throw new InvalidOperationException($"The One-Time Password (OTP) entity 'AggregateId={aggregateId}' could not be found.");
   }
   protected virtual async Task<OneTimePasswordEntity?> TryLoadAsync(AggregateId aggregateId, CancellationToken cancellationToken)
   {
