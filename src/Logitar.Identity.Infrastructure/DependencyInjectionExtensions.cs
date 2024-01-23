@@ -19,7 +19,7 @@ public static class DependencyInjectionExtensions
       .AddLogitarEventSourcingInfrastructure()
       .AddLogitarIdentityDomain()
       .AddPasswordStrategies()
-      .AddSingleton<IEventSerializer>(serviceProvider => new EventSerializer(GetJsonConverters(serviceProvider)))
+      .AddSingleton<IEventSerializer>(serviceProvider => new EventSerializer(serviceProvider.GetLogitarIdentityJsonConverters()))
       .AddSingleton<IPasswordManager, PasswordManager>()
       .AddSingleton<PasswordConverter>()
       .AddSingleton(serviceProvider =>
@@ -30,12 +30,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ITokenManager, JsonWebTokenManager>();
   }
 
-  private static IServiceCollection AddPasswordStrategies(this IServiceCollection services)
-  {
-    return services.AddSingleton<IPasswordStrategy, Pbkdf2Strategy>();
-  }
-
-  private static JsonConverter[] GetJsonConverters(IServiceProvider serviceProvider) => new JsonConverter[]
+  public static IEnumerable<JsonConverter> GetLogitarIdentityJsonConverters(this IServiceProvider serviceProvider) => new JsonConverter[]
   {
     serviceProvider.GetRequiredService<PasswordConverter>(),
     new ApiKeyIdConverter(),
@@ -53,4 +48,9 @@ public static class DependencyInjectionExtensions
     new UrlConverter(),
     new UserIdConverter()
   };
+
+  private static IServiceCollection AddPasswordStrategies(this IServiceCollection services)
+  {
+    return services.AddSingleton<IPasswordStrategy, Pbkdf2Strategy>();
+  }
 }
