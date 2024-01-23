@@ -45,6 +45,11 @@ public record FoundUsers
   }
 
   /// <summary>
+  /// Returns the number of found users.
+  /// </summary>
+  public int Count => All.Count();
+
+  /// <summary>
   /// Returns the first user found, ordered by unique identifier, then by unique name, and then by email address.
   /// </summary>
   /// <returns>The first user found.</returns>
