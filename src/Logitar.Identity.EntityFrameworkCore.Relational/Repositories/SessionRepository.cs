@@ -63,6 +63,25 @@ public class SessionRepository : EventSourcing.EntityFrameworkCore.Relational.Ag
     return Load<SessionAggregate>(events.Select(EventSerializer.Deserialize), includeDeleted);
   }
 
+  public async Task<IEnumerable<SessionAggregate>> LoadActiveAsync(UserAggregate user, CancellationToken cancellationToken)
+  {
+    IQuery query = SqlHelper.QueryFrom(EventDb.Events.Table)
+      .Join(IdentityDb.Sessions.AggregateId, EventDb.Events.AggregateId,
+        new OperatorCondition(EventDb.Events.AggregateType, Operators.IsEqualTo(AggregateType))
+      )
+      .Join(IdentityDb.Users.UserId, IdentityDb.Sessions.UserId)
+      .Where(IdentityDb.Users.AggregateId, Operators.IsEqualTo(user.Id.Value))
+      .Where(IdentityDb.Sessions.IsActive, Operators.IsEqualTo(true))
+      .SelectAll(EventDb.Events.Table)
+      .Build();
+
+    EventEntity[] events = await EventContext.Events.FromQuery(query)
+      .AsNoTracking()
+      .OrderBy(e => e.Version)
+      .ToArrayAsync(cancellationToken);
+
+    return Load<SessionAggregate>(events.Select(EventSerializer.Deserialize));
+  }
   public async Task<IEnumerable<SessionAggregate>> LoadAsync(UserAggregate user, CancellationToken cancellationToken)
     => await LoadAsync(user, includeDeleted: false, cancellationToken);
   public async Task<IEnumerable<SessionAggregate>> LoadAsync(UserAggregate user, bool includeDeleted, CancellationToken cancellationToken)

@@ -160,6 +160,7 @@ public class UserRepositoryTests : IAsyncLifetime
 
     UserAggregate? user = await _userRepository.LoadAsync(_user.Id, version, includeDeleted: true);
     Assert.NotNull(user);
+    Assert.False(user.IsDisabled);
     Assert.Equal(_user, user);
   }
 

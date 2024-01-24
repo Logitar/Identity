@@ -88,6 +88,13 @@ public interface ISessionRepository
   Task<IEnumerable<SessionAggregate>> LoadAsync(TenantId? tenantId, bool includeDeleted, CancellationToken cancellationToken = default);
 
   /// <summary>
+  /// Loads the active sessions of the specified user.
+  /// </summary>
+  /// <param name="user">The user.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The found active sessions.</returns>
+  Task<IEnumerable<SessionAggregate>> LoadActiveAsync(UserAggregate user, CancellationToken cancellationToken = default);
+  /// <summary>
   /// Loads the sessions of the specified user.
   /// </summary>
   /// <param name="user">The user.</param>
