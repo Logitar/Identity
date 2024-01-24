@@ -43,8 +43,6 @@ public class ApiKeyRepository : EventSourcing.EntityFrameworkCore.Relational.Agg
   }
 
   public async Task<IEnumerable<ApiKeyAggregate>> LoadAsync(TenantId? tenantId, CancellationToken cancellationToken = default)
-    => await LoadAsync(tenantId, includeDeleted: false, cancellationToken);
-  public async Task<IEnumerable<ApiKeyAggregate>> LoadAsync(TenantId? tenantId, bool includeDeleted, CancellationToken cancellationToken = default)
   {
     IQuery query = SqlHelper.QueryFrom(EventDb.Events.Table)
       .Join(IdentityDb.ApiKeys.AggregateId, EventDb.Events.AggregateId,

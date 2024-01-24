@@ -44,8 +44,6 @@ public class RoleRepository : EventSourcing.EntityFrameworkCore.Relational.Aggre
   }
 
   public async Task<IEnumerable<RoleAggregate>> LoadAsync(TenantId? tenantId, CancellationToken cancellationToken = default)
-    => await LoadAsync(tenantId, includeDeleted: false, cancellationToken);
-  public async Task<IEnumerable<RoleAggregate>> LoadAsync(TenantId? tenantId, bool includeDeleted, CancellationToken cancellationToken = default)
   {
     IQuery query = SqlHelper.QueryFrom(EventDb.Events.Table)
       .Join(IdentityDb.Roles.AggregateId, EventDb.Events.AggregateId,

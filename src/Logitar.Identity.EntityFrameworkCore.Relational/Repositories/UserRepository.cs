@@ -44,8 +44,6 @@ public class UserRepository : EventSourcing.EntityFrameworkCore.Relational.Aggre
   }
 
   public async Task<IEnumerable<UserAggregate>> LoadAsync(TenantId? tenantId, CancellationToken cancellationToken = default)
-    => await LoadAsync(tenantId, includeDeleted: false, cancellationToken);
-  public async Task<IEnumerable<UserAggregate>> LoadAsync(TenantId? tenantId, bool includeDeleted, CancellationToken cancellationToken = default)
   {
     IQuery query = SqlHelper.QueryFrom(EventDb.Events.Table)
       .Join(IdentityDb.Users.AggregateId, EventDb.Events.AggregateId,
@@ -60,7 +58,7 @@ public class UserRepository : EventSourcing.EntityFrameworkCore.Relational.Aggre
       .OrderBy(e => e.Version)
       .ToArrayAsync(cancellationToken);
 
-    return Load<UserAggregate>(events.Select(EventSerializer.Deserialize), includeDeleted);
+    return Load<UserAggregate>(events.Select(EventSerializer.Deserialize));
   }
 
   public virtual async Task<UserAggregate?> LoadAsync(TenantId? tenantId, UniqueNameUnit uniqueName, CancellationToken cancellationToken)

@@ -32,7 +32,7 @@ public class SessionRepository : EventSourcing.EntityFrameworkCore.Relational.Ag
   public async Task<IEnumerable<SessionAggregate>> LoadAsync(CancellationToken cancellationToken)
     => await LoadAsync(includeDeleted: false, cancellationToken);
   public async Task<IEnumerable<SessionAggregate>> LoadAsync(bool includeDeleted, CancellationToken cancellationToken)
-    => await LoadAsync<SessionAggregate>(cancellationToken);
+    => await LoadAsync<SessionAggregate>(includeDeleted, cancellationToken);
 
   public async Task<IEnumerable<SessionAggregate>> LoadAsync(IEnumerable<SessionId> ids, CancellationToken cancellationToken)
     => await LoadAsync(ids, includeDeleted: false, cancellationToken);
@@ -43,8 +43,6 @@ public class SessionRepository : EventSourcing.EntityFrameworkCore.Relational.Ag
   }
 
   public async Task<IEnumerable<SessionAggregate>> LoadAsync(TenantId? tenantId, CancellationToken cancellationToken)
-    => await LoadAsync(tenantId, includeDeleted: false, cancellationToken);
-  public async Task<IEnumerable<SessionAggregate>> LoadAsync(TenantId? tenantId, bool includeDeleted, CancellationToken cancellationToken)
   {
     IQuery query = SqlHelper.QueryFrom(EventDb.Events.Table)
       .Join(IdentityDb.Sessions.AggregateId, EventDb.Events.AggregateId,
@@ -60,7 +58,7 @@ public class SessionRepository : EventSourcing.EntityFrameworkCore.Relational.Ag
       .OrderBy(e => e.Version)
       .ToArrayAsync(cancellationToken);
 
-    return Load<SessionAggregate>(events.Select(EventSerializer.Deserialize), includeDeleted);
+    return Load<SessionAggregate>(events.Select(EventSerializer.Deserialize));
   }
 
   public async Task<IEnumerable<SessionAggregate>> LoadActiveAsync(UserAggregate user, CancellationToken cancellationToken)
@@ -83,8 +81,6 @@ public class SessionRepository : EventSourcing.EntityFrameworkCore.Relational.Ag
     return Load<SessionAggregate>(events.Select(EventSerializer.Deserialize));
   }
   public async Task<IEnumerable<SessionAggregate>> LoadAsync(UserAggregate user, CancellationToken cancellationToken)
-    => await LoadAsync(user, includeDeleted: false, cancellationToken);
-  public async Task<IEnumerable<SessionAggregate>> LoadAsync(UserAggregate user, bool includeDeleted, CancellationToken cancellationToken)
   {
     IQuery query = SqlHelper.QueryFrom(EventDb.Events.Table)
       .Join(IdentityDb.Sessions.AggregateId, EventDb.Events.AggregateId,
@@ -100,7 +96,7 @@ public class SessionRepository : EventSourcing.EntityFrameworkCore.Relational.Ag
       .OrderBy(e => e.Version)
       .ToArrayAsync(cancellationToken);
 
-    return Load<SessionAggregate>(events.Select(EventSerializer.Deserialize), includeDeleted);
+    return Load<SessionAggregate>(events.Select(EventSerializer.Deserialize));
   }
 
   public async Task SaveAsync(SessionAggregate session, CancellationToken cancellationToken)

@@ -1,5 +1,4 @@
-﻿using Bogus;
-using Logitar.Data;
+﻿using Logitar.Data;
 using Logitar.Data.SqlServer;
 using Logitar.EventSourcing;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
@@ -11,54 +10,33 @@ using Logitar.Identity.Domain.Shared;
 using Logitar.Identity.Domain.Users;
 using Logitar.Identity.EntityFrameworkCore.Relational;
 using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
-using Logitar.Identity.EntityFrameworkCore.SqlServer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Logitar.Identity.EFCore.SqlServer.IntegrationTests.Repositories;
+namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Repositories;
 
 [Trait(Traits.Category, Categories.Integration)]
-public class UserRepositoryTests : IAsyncLifetime
+public class UserRepositoryTests : RepositoryTests, IAsyncLifetime
 {
   private const string EmployeeIdKey = "EmployeeId";
   private const string PasswordString = "P@s$W0rD";
 
-  private readonly Faker _faker = new();
-
-  private readonly EventContext _eventContext;
-  private readonly IdentityContext _identityContext;
   private readonly IPasswordManager _passwordManager;
   private readonly IRoleRepository _roleRepository;
   private readonly IRoleSettings _roleSettings;
-  private readonly IServiceProvider _serviceProvider;
   private readonly IUserRepository _userRepository;
   private readonly IUserSettings _userSettings;
 
   private readonly RoleAggregate _role;
   private readonly UserAggregate _user;
 
-  public UserRepositoryTests()
+  public UserRepositoryTests() : base()
   {
-    IConfiguration configuration = new ConfigurationBuilder()
-      .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
-      .Build();
-
-    string connectionString = (configuration.GetValue<string>("SQLCONNSTR_Identity") ?? string.Empty)
-      .Replace("{Database}", nameof(UserRepositoryTests));
-
-    _serviceProvider = new ServiceCollection()
-      .AddSingleton(configuration)
-      .AddLogitarIdentityWithEntityFrameworkCoreSqlServer(connectionString)
-      .BuildServiceProvider();
-
-    _eventContext = _serviceProvider.GetRequiredService<EventContext>();
-    _identityContext = _serviceProvider.GetRequiredService<IdentityContext>();
-    _roleRepository = _serviceProvider.GetRequiredService<IRoleRepository>();
-    _passwordManager = _serviceProvider.GetRequiredService<IPasswordManager>();
-    _roleSettings = _serviceProvider.GetRequiredService<IRoleSettingsResolver>().Resolve();
-    _userRepository = _serviceProvider.GetRequiredService<IUserRepository>();
-    _userSettings = _serviceProvider.GetRequiredService<IUserSettingsResolver>().Resolve();
+    _roleRepository = ServiceProvider.GetRequiredService<IRoleRepository>();
+    _passwordManager = ServiceProvider.GetRequiredService<IPasswordManager>();
+    _roleSettings = ServiceProvider.GetRequiredService<IRoleSettingsResolver>().Resolve();
+    _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
+    _userSettings = ServiceProvider.GetRequiredService<IUserSettingsResolver>().Resolve();
 
     UserId userId = UserId.NewId();
     ActorId actorId = new(userId.Value);
@@ -66,26 +44,26 @@ public class UserRepositoryTests : IAsyncLifetime
 
     _role = new(new UniqueNameUnit(_roleSettings.UniqueName, "clerk"), tenantId, actorId);
 
-    UniqueNameUnit uniqueName = new(_userSettings.UniqueName, _faker.Person.UserName);
+    UniqueNameUnit uniqueName = new(_userSettings.UniqueName, Faker.Person.UserName);
     _user = new(uniqueName, tenantId, actorId, userId)
     {
-      FirstName = new PersonNameUnit(_faker.Person.FirstName),
-      MiddleName = new PersonNameUnit(_faker.Name.FirstName()),
-      LastName = new PersonNameUnit(_faker.Person.LastName),
+      FirstName = new PersonNameUnit(Faker.Person.FirstName),
+      MiddleName = new PersonNameUnit(Faker.Name.FirstName()),
+      LastName = new PersonNameUnit(Faker.Person.LastName),
       Nickname = new PersonNameUnit("Toto"),
-      Birthdate = _faker.Person.DateOfBirth,
-      Gender = new GenderUnit(_faker.Person.Gender.ToString()),
-      Locale = new LocaleUnit(_faker.Locale),
+      Birthdate = Faker.Person.DateOfBirth,
+      Gender = new GenderUnit(Faker.Person.Gender.ToString()),
+      Locale = new LocaleUnit(Faker.Locale),
       TimeZone = new TimeZoneUnit("America/Montreal"),
-      Picture = new UrlUnit($"https://www.{_faker.Person.Website}/img/profile.jpg"),
+      Picture = new UrlUnit($"https://www.{Faker.Person.Website}/img/profile.jpg"),
       Profile = new UrlUnit($"https://www.desjardins.com/profiles/toto"),
-      Website = new UrlUnit($"https://www.{_faker.Person.Website}")
+      Website = new UrlUnit($"https://www.{Faker.Person.Website}")
     };
     _user.SetCustomAttribute("Department", "Finances");
     _user.Update(actorId);
 
     _user.SetAddress(new AddressUnit("150 Saint-Catherine St W", "Montreal", "CA", "QC", "H2X 3Y2"), actorId);
-    _user.SetEmail(new EmailUnit(_faker.Person.Email, isVerified: true), actorId);
+    _user.SetEmail(new EmailUnit(Faker.Person.Email, isVerified: true), actorId);
     _user.SetPhone(new PhoneUnit("+1 (514) 845-4636", "CA", "123456"), actorId);
 
     _user.AddRole(_role, actorId);
@@ -97,8 +75,8 @@ public class UserRepositoryTests : IAsyncLifetime
 
   public async Task InitializeAsync()
   {
-    await _eventContext.Database.MigrateAsync();
-    await _identityContext.Database.MigrateAsync();
+    await EventContext.Database.MigrateAsync();
+    await IdentityContext.Database.MigrateAsync();
 
     TableId[] tables =
     [
@@ -113,7 +91,7 @@ public class UserRepositoryTests : IAsyncLifetime
     foreach (TableId table in tables)
     {
       ICommand command = SqlServerDeleteBuilder.From(table).Build();
-      await _identityContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
+      await IdentityContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
     }
 
     await _roleRepository.SaveAsync(_role);
@@ -194,7 +172,7 @@ public class UserRepositoryTests : IAsyncLifetime
     deleted.Delete();
     await _userRepository.SaveAsync([user, deleted]);
 
-    IEnumerable<UserAggregate> users = await _userRepository.LoadAsync(_user.TenantId, includeDeleted: false);
+    IEnumerable<UserAggregate> users = await _userRepository.LoadAsync(_user.TenantId);
     Assert.Equal(_user, users.Single());
   }
 
@@ -250,18 +228,18 @@ public class UserRepositoryTests : IAsyncLifetime
   [Fact(DisplayName = "SaveAsync: it should save the specified user.")]
   public async Task SaveAsync_it_should_save_the_specified_user()
   {
-    UserEntity? entity = await _identityContext.Users.AsNoTracking()
+    UserEntity? entity = await IdentityContext.Users.AsNoTracking()
       .Include(x => x.Identifiers)
       .Include(x => x.Roles)
       .SingleOrDefaultAsync(x => x.AggregateId == _user.Id.Value);
     Assert.NotNull(entity);
     AssertUsers.AreEqual(_user, entity);
 
-    ActorEntity? actor = await _identityContext.Actors.AsNoTracking()
+    ActorEntity? actor = await IdentityContext.Actors.AsNoTracking()
       .SingleOrDefaultAsync(x => x.Id == _user.Id.Value);
     AssertUsers.AreEquivalent(entity, actor);
 
-    Dictionary<string, string> customAttributes = await _identityContext.CustomAttributes.AsNoTracking()
+    Dictionary<string, string> customAttributes = await IdentityContext.CustomAttributes.AsNoTracking()
       .Where(x => x.EntityType == nameof(IdentityContext.Users) && x.EntityId == entity.UserId)
       .ToDictionaryAsync(x => x.Key, x => x.Value);
     Assert.Equal(_user.CustomAttributes, customAttributes);
@@ -274,7 +252,7 @@ public class UserRepositoryTests : IAsyncLifetime
     UserAggregate deleted = new(new UniqueNameUnit(_userSettings.UniqueName, "deleted"));
     await _userRepository.SaveAsync([disabled, deleted]);
 
-    Dictionary<string, UserEntity> entities = await _identityContext.Users.AsNoTracking().ToDictionaryAsync(x => x.AggregateId, x => x);
+    Dictionary<string, UserEntity> entities = await IdentityContext.Users.AsNoTracking().ToDictionaryAsync(x => x.AggregateId, x => x);
     Assert.True(entities.ContainsKey(disabled.Id.Value));
     Assert.True(entities.ContainsKey(deleted.Id.Value));
 
@@ -282,13 +260,13 @@ public class UserRepositoryTests : IAsyncLifetime
     deleted.Delete();
     await _userRepository.SaveAsync([disabled, deleted]);
 
-    entities = await _identityContext.Users.AsNoTracking().ToDictionaryAsync(x => x.AggregateId, x => x);
+    entities = await IdentityContext.Users.AsNoTracking().ToDictionaryAsync(x => x.AggregateId, x => x);
     Assert.True(entities.ContainsKey(disabled.Id.Value));
     Assert.False(entities.ContainsKey(deleted.Id.Value));
 
     AssertUsers.AreEqual(disabled, entities[disabled.Id.Value]);
 
-    ActorEntity? actor = await _identityContext.Actors.AsNoTracking()
+    ActorEntity? actor = await IdentityContext.Actors.AsNoTracking()
       .SingleOrDefaultAsync(x => x.Id == deleted.Id.Value);
     Assert.NotNull(actor);
     Assert.True(actor.IsDeleted);

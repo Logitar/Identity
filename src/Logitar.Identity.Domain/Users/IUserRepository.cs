@@ -79,14 +79,6 @@ public interface IUserRepository
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The found users.</returns>
   Task<IEnumerable<UserAggregate>> LoadAsync(TenantId? tenantId, CancellationToken cancellationToken = default);
-  /// <summary>
-  /// Loads the users in the specified tenant.
-  /// </summary>
-  /// <param name="tenantId">The identifier of the tenant.</param>
-  /// <param name="includeDeleted">A value indicating whether or not to load deleted users.</param>
-  /// <param name="cancellationToken">The cancellation token.</param>
-  /// <returns>The found users.</returns>
-  Task<IEnumerable<UserAggregate>> LoadAsync(TenantId? tenantId, bool includeDeleted, CancellationToken cancellationToken = default);
 
   /// <summary>
   /// Loads an user by the specified unique name.

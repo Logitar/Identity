@@ -78,14 +78,6 @@ public interface IApiKeyRepository
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The found API keys.</returns>
   Task<IEnumerable<ApiKeyAggregate>> LoadAsync(TenantId? tenantId, CancellationToken cancellationToken = default);
-  /// <summary>
-  /// Loads the API keys in the specified tenant.
-  /// </summary>
-  /// <param name="tenantId">The identifier of the tenant.</param>
-  /// <param name="includeDeleted">A value indicating whether or not to load deleted API keys.</param>
-  /// <param name="cancellationToken">The cancellation token.</param>
-  /// <returns>The found API keys.</returns>
-  Task<IEnumerable<ApiKeyAggregate>> LoadAsync(TenantId? tenantId, bool includeDeleted, CancellationToken cancellationToken = default);
 
   /// <summary>
   /// Loads the API keys having the specified role.
