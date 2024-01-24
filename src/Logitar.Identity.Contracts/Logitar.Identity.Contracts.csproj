@@ -6,11 +6,11 @@
     <Nullable>enable</Nullable>
     <WarningsAsErrors>Nullable</WarningsAsErrors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Title>Logitar.Identity.Infrastructure</Title>
+    <Title>Logitar.Identity.Contracts</Title>
     <Authors>Francis Pion</Authors>
     <Company>Logitar</Company>
     <Product>Logitar.Identity</Product>
-    <Description>Provides an abstraction of a data store to be used with the Identity management platform.</Description>
+    <Description>Exposes interfaces and other public contracts of an Identity system.</Description>
     <Copyright>© 2024 Logitar All Rights Reserved.</Copyright>
     <PackageIcon>logitar.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -22,10 +22,10 @@
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <Version>0.11.3</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
-    <GenerateDocumentationFile>False</GenerateDocumentationFile>
-    <PackageReleaseNotes>Created a Contracts package.</PackageReleaseNotes>
-    <PackageTags>logitar;net;framework;identity;infrastructure</PackageTags>
-    <PackageProjectUrl>https://github.com/Logitar/Identity/tree/main/src/Logitar.Identity.Infrastructure</PackageProjectUrl>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <PackageReleaseNotes>Created the contracts.</PackageReleaseNotes>
+    <PackageTags>logitar;net;framework;identity;contracts</PackageTags>
+    <PackageProjectUrl>https://github.com/Logitar/Identity/tree/main/src/Logitar.Identity.Contracts</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -41,25 +41,6 @@
       <PackagePath>\</PackagePath>
       <Pack>True</Pack>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Logitar.EventSourcing.Infrastructure" Version="5.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="8.0.1" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.2.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Logitar.Identity.Domain\Logitar.Identity.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Using Include="System.IdentityModel.Tokens.Jwt" />
-    <Using Include="System.Security.Claims" />
-    <Using Include="System.Security.Cryptography" />
-    <Using Include="System.Text" />
-    <Using Include="System.Text.Json" />
-    <Using Include="System.Text.Json.Serialization" />
   </ItemGroup>
 
 </Project>

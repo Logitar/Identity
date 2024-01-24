@@ -1,6 +1,7 @@
 ﻿using Logitar.Data;
 using Logitar.Data.SqlServer;
 using Logitar.EventSourcing;
+using Logitar.Identity.Contracts.Settings;
 using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Shared;

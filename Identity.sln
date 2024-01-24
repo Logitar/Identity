@@ -30,9 +30,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Identity.Domain.Uni
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Identity.EFCore.SqlServer.IntegrationTests", "tests\Logitar.Identity.EFCore.SqlServer.IntegrationTests\Logitar.Identity.EFCore.SqlServer.IntegrationTests.csproj", "{FA9AB722-026B-4842-B888-E9824568CBC1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.Infrastructure.UnitTests", "tests\Logitar.Identity.Infrastructure.UnitTests\Logitar.Identity.Infrastructure.UnitTests.csproj", "{04C669C6-0B63-45A1-8F0F-16A7E7FC023E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Identity.Infrastructure.UnitTests", "tests\Logitar.Identity.Infrastructure.UnitTests\Logitar.Identity.Infrastructure.UnitTests.csproj", "{04C669C6-0B63-45A1-8F0F-16A7E7FC023E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.Tests", "tests\Logitar.Identity.Tests\Logitar.Identity.Tests.csproj", "{D0781AC3-5827-4DAE-BBAD-481634FF3C0F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Identity.Tests", "tests\Logitar.Identity.Tests\Logitar.Identity.Tests.csproj", "{D0781AC3-5827-4DAE-BBAD-481634FF3C0F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.Contracts", "src\Logitar.Identity.Contracts\Logitar.Identity.Contracts.csproj", "{0E9D9B1A-B62C-4036-91B8-6E34CAA5F938}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -76,6 +78,10 @@ Global
 		{D0781AC3-5827-4DAE-BBAD-481634FF3C0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0781AC3-5827-4DAE-BBAD-481634FF3C0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0781AC3-5827-4DAE-BBAD-481634FF3C0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E9D9B1A-B62C-4036-91B8-6E34CAA5F938}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E9D9B1A-B62C-4036-91B8-6E34CAA5F938}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E9D9B1A-B62C-4036-91B8-6E34CAA5F938}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E9D9B1A-B62C-4036-91B8-6E34CAA5F938}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

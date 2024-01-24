@@ -1,4 +1,4 @@
-﻿namespace Logitar.Identity.Domain.Users;
+﻿namespace Logitar.Identity.Contracts.Users;
 
 /// <summary>
 /// Describes email addresses.

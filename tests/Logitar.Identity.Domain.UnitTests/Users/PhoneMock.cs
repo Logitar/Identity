@@ -1,4 +1,6 @@
-﻿namespace Logitar.Identity.Domain.Users;
+﻿using Logitar.Identity.Contracts.Users;
+
+namespace Logitar.Identity.Domain.Users;
 
 internal record PhoneMock : IPhone
 {
