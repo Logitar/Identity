@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Logitar.Identity.Contracts.Settings;
 using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Passwords.Validators;
 using Logitar.Identity.Domain.Settings;

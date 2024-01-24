@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Logitar.Identity.Contracts.Users;
 using Logitar.Identity.Domain.Users.Validators;
 
 namespace Logitar.Identity.Domain.Users;

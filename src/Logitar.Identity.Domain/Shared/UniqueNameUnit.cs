@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using Logitar.Identity.Domain.Settings;
+using Logitar.Identity.Contracts.Settings;
 
 namespace Logitar.Identity.Domain.Shared;
 

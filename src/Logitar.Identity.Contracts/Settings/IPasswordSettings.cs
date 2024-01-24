@@ -1,4 +1,4 @@
-﻿namespace Logitar.Identity.Domain.Settings;
+﻿namespace Logitar.Identity.Contracts.Settings;
 
 /// <summary>
 /// The settings used to validate passwords.

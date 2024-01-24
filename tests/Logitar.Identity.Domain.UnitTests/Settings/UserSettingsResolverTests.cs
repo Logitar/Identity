@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Logitar.Identity.Contracts.Settings;
+using Microsoft.Extensions.Configuration;
 
 namespace Logitar.Identity.Domain.Settings;
 

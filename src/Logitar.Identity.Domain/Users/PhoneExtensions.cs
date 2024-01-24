@@ -1,4 +1,5 @@
-﻿using PhoneNumbers;
+﻿using Logitar.Identity.Contracts.Users;
+using PhoneNumbers;
 
 namespace Logitar.Identity.Domain.Users;
 

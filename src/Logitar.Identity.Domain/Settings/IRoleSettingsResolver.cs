@@ -1,4 +1,6 @@
-﻿namespace Logitar.Identity.Domain.Settings;
+﻿using Logitar.Identity.Contracts.Settings;
+
+namespace Logitar.Identity.Domain.Settings;
 
 /// <summary>
 /// Represents a resolver for role settings, allowing developers to customize how those settings are resolved.
