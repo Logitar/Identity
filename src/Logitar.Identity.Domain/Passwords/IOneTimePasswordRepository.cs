@@ -77,14 +77,6 @@ public interface IOneTimePasswordRepository
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The found One-Time Passwords (OTP).</returns>
   Task<IEnumerable<OneTimePasswordAggregate>> LoadAsync(TenantId? tenantId, CancellationToken cancellationToken = default);
-  /// <summary>
-  /// Loads the One-Time Password (OTP)s in the specified tenant.
-  /// </summary>
-  /// <param name="tenantId">The identifier of the tenant.</param>
-  /// <param name="includeDeleted">A value indicating whether or not to load deleted One-Time Passwords (OTP).</param>
-  /// <param name="cancellationToken">The cancellation token.</param>
-  /// <returns>The found One-Time Passwords (OTP).</returns>
-  Task<IEnumerable<OneTimePasswordAggregate>> LoadAsync(TenantId? tenantId, bool includeDeleted, CancellationToken cancellationToken = default);
 
   /// <summary>
   /// Saves the specified One-Time Password (OTP) into the store.

@@ -1,5 +1,4 @@
-﻿using Bogus;
-using Logitar.Data;
+﻿using Logitar.Data;
 using Logitar.Data.SqlServer;
 using Logitar.EventSourcing;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
@@ -7,47 +6,26 @@ using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Shared;
 using Logitar.Identity.EntityFrameworkCore.Relational;
 using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
-using Logitar.Identity.EntityFrameworkCore.SqlServer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Logitar.Identity.EFCore.SqlServer.IntegrationTests.Repositories;
+namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Repositories;
 
 [Trait(Traits.Category, Categories.Integration)]
-public class OneTimePasswordRepositoryTests : IAsyncLifetime
+public class OneTimePasswordRepositoryTests : RepositoryTests, IAsyncLifetime
 {
   private const string PasswordString = "284199";
 
-  private readonly Faker _faker = new();
-
-  private readonly EventContext _eventContext;
-  private readonly IdentityContext _identityContext;
   private readonly IOneTimePasswordRepository _oneTimePasswordRepository;
   private readonly IPasswordManager _passwordManager;
-  private readonly IServiceProvider _serviceProvider;
 
   private readonly Password _password;
   private readonly OneTimePasswordAggregate _oneTimePassword;
 
-  public OneTimePasswordRepositoryTests()
+  public OneTimePasswordRepositoryTests() : base()
   {
-    IConfiguration configuration = new ConfigurationBuilder()
-      .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
-      .Build();
-
-    string connectionString = (configuration.GetValue<string>("SQLCONNSTR_Identity") ?? string.Empty)
-      .Replace("{Database}", nameof(OneTimePasswordRepositoryTests));
-
-    _serviceProvider = new ServiceCollection()
-      .AddSingleton(configuration)
-      .AddLogitarIdentityWithEntityFrameworkCoreSqlServer(connectionString)
-      .BuildServiceProvider();
-
-    _eventContext = _serviceProvider.GetRequiredService<EventContext>();
-    _identityContext = _serviceProvider.GetRequiredService<IdentityContext>();
-    _oneTimePasswordRepository = _serviceProvider.GetRequiredService<IOneTimePasswordRepository>();
-    _passwordManager = _serviceProvider.GetRequiredService<IPasswordManager>();
+    _oneTimePasswordRepository = ServiceProvider.GetRequiredService<IOneTimePasswordRepository>();
+    _passwordManager = ServiceProvider.GetRequiredService<IPasswordManager>();
 
     TenantId tenantId = new("tests");
     DateTime expiresOn = DateTime.Now.AddHours(1);
@@ -61,14 +39,14 @@ public class OneTimePasswordRepositoryTests : IAsyncLifetime
 
   public async Task InitializeAsync()
   {
-    await _eventContext.Database.MigrateAsync();
-    await _identityContext.Database.MigrateAsync();
+    await EventContext.Database.MigrateAsync();
+    await IdentityContext.Database.MigrateAsync();
 
     TableId[] tables = [IdentityDb.OneTimePasswords.Table, IdentityDb.CustomAttributes.Table, EventDb.Events.Table];
     foreach (TableId table in tables)
     {
       ICommand command = SqlServerDeleteBuilder.From(table).Build();
-      await _identityContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
+      await IdentityContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
     }
 
     await _oneTimePasswordRepository.SaveAsync(_oneTimePassword);
@@ -113,7 +91,7 @@ public class OneTimePasswordRepositoryTests : IAsyncLifetime
     deleted.Delete();
     await _oneTimePasswordRepository.SaveAsync([oneTimePassword, deleted]);
 
-    IEnumerable<OneTimePasswordAggregate> oneTimePasswords = await _oneTimePasswordRepository.LoadAsync(_oneTimePassword.TenantId, includeDeleted: false);
+    IEnumerable<OneTimePasswordAggregate> oneTimePasswords = await _oneTimePasswordRepository.LoadAsync(_oneTimePassword.TenantId);
     Assert.Equal(_oneTimePassword, oneTimePasswords.Single());
   }
 
@@ -133,12 +111,12 @@ public class OneTimePasswordRepositoryTests : IAsyncLifetime
   [Fact(DisplayName = "SaveAsync: it should save the specified One-Time Password.")]
   public async Task SaveAsync_it_should_save_the_specified_One_Time_Password()
   {
-    OneTimePasswordEntity? entity = await _identityContext.OneTimePasswords.AsNoTracking()
+    OneTimePasswordEntity? entity = await IdentityContext.OneTimePasswords.AsNoTracking()
       .SingleOrDefaultAsync(x => x.AggregateId == _oneTimePassword.Id.Value);
     Assert.NotNull(entity);
     AssertOneTimePasswords.AreEqual(_oneTimePassword, entity);
 
-    Dictionary<string, string> customAttributes = await _identityContext.CustomAttributes.AsNoTracking()
+    Dictionary<string, string> customAttributes = await IdentityContext.CustomAttributes.AsNoTracking()
       .Where(x => x.EntityType == nameof(IdentityContext.OneTimePasswords) && x.EntityId == entity.OneTimePasswordId)
       .ToDictionaryAsync(x => x.Key, x => x.Value);
     Assert.Equal(_oneTimePassword.CustomAttributes, customAttributes);
@@ -151,7 +129,7 @@ public class OneTimePasswordRepositoryTests : IAsyncLifetime
     OneTimePasswordAggregate deleted = new(_password);
     await _oneTimePasswordRepository.SaveAsync([succeeded, deleted]);
 
-    Dictionary<string, OneTimePasswordEntity> entities = await _identityContext.OneTimePasswords.AsNoTracking().ToDictionaryAsync(x => x.AggregateId, x => x);
+    Dictionary<string, OneTimePasswordEntity> entities = await IdentityContext.OneTimePasswords.AsNoTracking().ToDictionaryAsync(x => x.AggregateId, x => x);
     Assert.True(entities.ContainsKey(succeeded.Id.Value));
     Assert.True(entities.ContainsKey(deleted.Id.Value));
 
@@ -159,7 +137,7 @@ public class OneTimePasswordRepositoryTests : IAsyncLifetime
     deleted.Delete();
     await _oneTimePasswordRepository.SaveAsync([succeeded, deleted]);
 
-    entities = await _identityContext.OneTimePasswords.AsNoTracking().ToDictionaryAsync(x => x.AggregateId, x => x);
+    entities = await IdentityContext.OneTimePasswords.AsNoTracking().ToDictionaryAsync(x => x.AggregateId, x => x);
     Assert.True(entities.ContainsKey(succeeded.Id.Value));
     Assert.False(entities.ContainsKey(deleted.Id.Value));
 

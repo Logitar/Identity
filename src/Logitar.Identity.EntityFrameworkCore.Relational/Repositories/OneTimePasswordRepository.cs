@@ -42,8 +42,6 @@ public class OneTimePasswordRepository : EventSourcing.EntityFrameworkCore.Relat
   }
 
   public async Task<IEnumerable<OneTimePasswordAggregate>> LoadAsync(TenantId? tenantId, CancellationToken cancellationToken = default)
-    => await LoadAsync(tenantId, includeDeleted: false, cancellationToken);
-  public async Task<IEnumerable<OneTimePasswordAggregate>> LoadAsync(TenantId? tenantId, bool includeDeleted, CancellationToken cancellationToken = default)
   {
     IQuery query = SqlHelper.QueryFrom(EventDb.Events.Table)
       .Join(IdentityDb.OneTimePasswords.AggregateId, EventDb.Events.AggregateId,
@@ -58,7 +56,7 @@ public class OneTimePasswordRepository : EventSourcing.EntityFrameworkCore.Relat
       .OrderBy(e => e.Version)
       .ToArrayAsync(cancellationToken);
 
-    return Load<OneTimePasswordAggregate>(events.Select(EventSerializer.Deserialize), includeDeleted);
+    return Load<OneTimePasswordAggregate>(events.Select(EventSerializer.Deserialize));
   }
 
   public virtual async Task SaveAsync(OneTimePasswordAggregate oneTimePassword, CancellationToken cancellationToken)

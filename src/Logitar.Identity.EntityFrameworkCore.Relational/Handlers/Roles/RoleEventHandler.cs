@@ -1,16 +1,22 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Roles.Events;
+using Logitar.Identity.EntityFrameworkCore.Relational.CustomAttributes;
 using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Roles;
 
-public class RoleEventHandler : EventHandler, IRoleEventHandler
+public class RoleEventHandler : IRoleEventHandler
 {
   protected const string EntityType = nameof(IdentityContext.Roles);
 
-  public RoleEventHandler(IdentityContext context) : base(context)
+  protected virtual IdentityContext Context { get; }
+  protected virtual ICustomAttributeService CustomAttributes { get; }
+
+  public RoleEventHandler(IdentityContext context, ICustomAttributeService customAttributes)
   {
+    Context = context;
+    CustomAttributes = customAttributes;
   }
 
   public virtual async Task HandleAsync(RoleCreatedEvent @event, CancellationToken cancellationToken)
@@ -55,7 +61,7 @@ public class RoleEventHandler : EventHandler, IRoleEventHandler
     {
       role.Update(@event);
 
-      await SynchronizeCustomAttributesAsync(EntityType, role.RoleId, @event.CustomAttributes, cancellationToken);
+      await CustomAttributes.SynchronizeAsync(EntityType, role.RoleId, @event.CustomAttributes, cancellationToken);
       await Context.SaveChangesAsync(cancellationToken);
     }
   }

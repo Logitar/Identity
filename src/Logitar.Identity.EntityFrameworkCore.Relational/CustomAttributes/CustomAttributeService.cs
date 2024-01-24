@@ -1,18 +1,18 @@
 ﻿using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers;
+namespace Logitar.Identity.EntityFrameworkCore.Relational.CustomAttributes;
 
-public abstract class EventHandler
+public class CustomAttributeService : ICustomAttributeService
 {
-  protected IdentityContext Context { get; }
+  protected virtual IdentityContext Context { get; }
 
-  protected EventHandler(IdentityContext context)
+  public CustomAttributeService(IdentityContext context)
   {
     Context = context;
   }
 
-  protected async Task SynchronizeCustomAttributesAsync(string entityType, int entityId, Dictionary<string, string?> customAttributes, CancellationToken cancellationToken = default)
+  public virtual async Task SynchronizeAsync(string entityType, int entityId, Dictionary<string, string?> customAttributes, CancellationToken cancellationToken)
   {
     if (customAttributes.Count == 0)
     {

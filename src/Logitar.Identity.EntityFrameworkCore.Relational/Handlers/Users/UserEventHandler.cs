@@ -1,16 +1,22 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Users.Events;
+using Logitar.Identity.EntityFrameworkCore.Relational.CustomAttributes;
 using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Users;
 
-public class UserEventHandler : EventHandler, IUserEventHandler
+public class UserEventHandler : IUserEventHandler
 {
   protected const string EntityType = nameof(IdentityContext.Users);
 
-  public UserEventHandler(IdentityContext context) : base(context)
+  protected virtual IdentityContext Context { get; }
+  protected virtual ICustomAttributeService CustomAttributes { get; }
+
+  public UserEventHandler(IdentityContext context, ICustomAttributeService customAttributes)
   {
+    Context = context;
+    CustomAttributes = customAttributes;
   }
 
   public virtual async Task HandleAsync(UserAddressChangedEvent @event, CancellationToken cancellationToken)
@@ -194,7 +200,7 @@ public class UserEventHandler : EventHandler, IUserEventHandler
     {
       user.Update(@event);
 
-      await SynchronizeCustomAttributesAsync(EntityType, user.UserId, @event.CustomAttributes, cancellationToken);
+      await CustomAttributes.SynchronizeAsync(EntityType, user.UserId, @event.CustomAttributes, cancellationToken);
       await SaveActorAsync(user, cancellationToken);
       await Context.SaveChangesAsync(cancellationToken);
     }

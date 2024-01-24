@@ -1,16 +1,22 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Sessions.Events;
+using Logitar.Identity.EntityFrameworkCore.Relational.CustomAttributes;
 using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Sessions;
 
-public class SessionEventHandler : EventHandler, ISessionEventHandler
+public class SessionEventHandler : ISessionEventHandler
 {
   protected const string EntityType = nameof(IdentityContext.Sessions);
 
-  public SessionEventHandler(IdentityContext context) : base(context)
+  protected virtual IdentityContext Context { get; }
+  protected virtual ICustomAttributeService CustomAttributes { get; }
+
+  public SessionEventHandler(IdentityContext context, ICustomAttributeService customAttributes)
   {
+    Context = context;
+    CustomAttributes = customAttributes;
   }
 
   public virtual async Task HandleAsync(SessionCreatedEvent @event, CancellationToken cancellationToken)
@@ -68,7 +74,7 @@ public class SessionEventHandler : EventHandler, ISessionEventHandler
     {
       session.Update(@event);
 
-      await SynchronizeCustomAttributesAsync(EntityType, session.SessionId, @event.CustomAttributes, cancellationToken);
+      await CustomAttributes.SynchronizeAsync(EntityType, session.SessionId, @event.CustomAttributes, cancellationToken);
       await Context.SaveChangesAsync(cancellationToken);
     }
   }

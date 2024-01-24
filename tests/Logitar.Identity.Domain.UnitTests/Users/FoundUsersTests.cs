@@ -30,6 +30,22 @@ public class FoundUsersTests
     Assert.Contains(byEmail, all);
   }
 
+  [Fact(DisplayName = "Count: it should return the count of users found.")]
+  public void Count_it_should_return_the_count_of_users_found()
+  {
+    FoundUsers users = new();
+    Assert.Equal(0, users.Count);
+
+    UserAggregate byId = new(new UniqueNameUnit(_uniqueNameSettings, _faker.Person.UserName));
+    UserAggregate byEmail = new(new UniqueNameUnit(_uniqueNameSettings, _faker.Person.Email));
+    users = new()
+    {
+      ById = byId,
+      ByEmail = byEmail
+    };
+    Assert.Equal(2, users.Count);
+  }
+
   [Fact(DisplayName = "First: it should return the first user found.")]
   public void First_it_should_return_the_first_user_found()
   {

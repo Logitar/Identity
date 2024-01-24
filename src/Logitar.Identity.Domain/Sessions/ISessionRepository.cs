@@ -78,15 +78,14 @@ public interface ISessionRepository
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The found sessions.</returns>
   Task<IEnumerable<SessionAggregate>> LoadAsync(TenantId? tenantId, CancellationToken cancellationToken = default);
-  /// <summary>
-  /// Loads the sessions in the specified tenant.
-  /// </summary>
-  /// <param name="tenantId">The identifier of the tenant.</param>
-  /// <param name="includeDeleted">A value indicating whether or not to load deleted sessions.</param>
-  /// <param name="cancellationToken">The cancellation token.</param>
-  /// <returns>The found sessions.</returns>
-  Task<IEnumerable<SessionAggregate>> LoadAsync(TenantId? tenantId, bool includeDeleted, CancellationToken cancellationToken = default);
 
+  /// <summary>
+  /// Loads the active sessions of the specified user.
+  /// </summary>
+  /// <param name="user">The user.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The found active sessions.</returns>
+  Task<IEnumerable<SessionAggregate>> LoadActiveAsync(UserAggregate user, CancellationToken cancellationToken = default);
   /// <summary>
   /// Loads the sessions of the specified user.
   /// </summary>
@@ -94,14 +93,6 @@ public interface ISessionRepository
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The found sessions.</returns>
   Task<IEnumerable<SessionAggregate>> LoadAsync(UserAggregate user, CancellationToken cancellationToken = default);
-  /// <summary>
-  /// Loads the sessions of the specified user.
-  /// </summary>
-  /// <param name="user">The user.</param>
-  /// <param name="includeDeleted">A value indicating whether or not to load deleted sessions.</param>
-  /// <param name="cancellationToken">The cancellation token.</param>
-  /// <returns>The found sessions.</returns>
-  Task<IEnumerable<SessionAggregate>> LoadAsync(UserAggregate user, bool includeDeleted, CancellationToken cancellationToken = default);
 
   /// <summary>
   /// Saves the specified session into the store.
