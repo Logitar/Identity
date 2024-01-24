@@ -1,16 +1,22 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Passwords.Events;
+using Logitar.Identity.EntityFrameworkCore.Relational.CustomAttributes;
 using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Passwords;
 
-public class OneTimePasswordEventHandler : EventHandler, IOneTimePasswordEventHandler
+public class OneTimePasswordEventHandler : IOneTimePasswordEventHandler
 {
   protected const string EntityType = nameof(IdentityContext.OneTimePasswords);
 
-  public OneTimePasswordEventHandler(IdentityContext context) : base(context)
+  protected virtual IdentityContext Context { get; }
+  protected virtual ICustomAttributeService CustomAttributes { get; }
+
+  public OneTimePasswordEventHandler(IdentityContext context, ICustomAttributeService customAttributes)
   {
+    Context = context;
+    CustomAttributes = customAttributes;
   }
 
   public virtual async Task HandleAsync(OneTimePasswordCreatedEvent @event, CancellationToken cancellationToken)
@@ -44,7 +50,7 @@ public class OneTimePasswordEventHandler : EventHandler, IOneTimePasswordEventHa
     {
       oneTimePassword.Update(@event);
 
-      await SynchronizeCustomAttributesAsync(EntityType, oneTimePassword.OneTimePasswordId, @event.CustomAttributes, cancellationToken);
+      await CustomAttributes.SynchronizeAsync(EntityType, oneTimePassword.OneTimePasswordId, @event.CustomAttributes, cancellationToken);
       await Context.SaveChangesAsync(cancellationToken);
     }
   }

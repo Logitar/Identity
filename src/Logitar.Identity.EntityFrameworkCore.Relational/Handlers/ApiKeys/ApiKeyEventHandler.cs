@@ -1,16 +1,22 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Domain.ApiKeys.Events;
+using Logitar.Identity.EntityFrameworkCore.Relational.CustomAttributes;
 using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers.ApiKeys;
 
-public class ApiKeyEventHandler : EventHandler, IApiKeyEventHandler
+public class ApiKeyEventHandler : IApiKeyEventHandler
 {
   protected const string EntityType = nameof(IdentityContext.ApiKeys);
 
-  public ApiKeyEventHandler(IdentityContext context) : base(context)
+  protected virtual IdentityContext Context { get; }
+  protected virtual ICustomAttributeService CustomAttributes { get; }
+
+  public ApiKeyEventHandler(IdentityContext context, ICustomAttributeService customAttributes)
   {
+    Context = context;
+    CustomAttributes = customAttributes;
   }
 
   public virtual async Task HandleAsync(ApiKeyAuthenticatedEvent @event, CancellationToken cancellationToken)
@@ -83,7 +89,7 @@ public class ApiKeyEventHandler : EventHandler, IApiKeyEventHandler
     {
       apiKey.Update(@event);
 
-      await SynchronizeCustomAttributesAsync(EntityType, apiKey.ApiKeyId, @event.CustomAttributes, cancellationToken);
+      await CustomAttributes.SynchronizeAsync(EntityType, apiKey.ApiKeyId, @event.CustomAttributes, cancellationToken);
       await SaveActorAsync(apiKey, cancellationToken);
       await Context.SaveChangesAsync(cancellationToken);
     }
