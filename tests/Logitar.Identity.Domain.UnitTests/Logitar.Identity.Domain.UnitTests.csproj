@@ -35,6 +35,7 @@
     <Using Include="System.IdentityModel.Tokens.Jwt" />
     <Using Include="System.Reflection" />
     <Using Include="System.Security.Claims" />
+    <Using Include="System.Text.Json" />
     <Using Include="Xunit" />
   </ItemGroup>
 

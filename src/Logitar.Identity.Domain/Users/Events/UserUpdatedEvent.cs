@@ -63,11 +63,12 @@ public record UserUpdatedEvent : DomainEvent, INotification
   /// <summary>
   /// Gets or sets the custom attribute modifications of the user.
   /// </summary>
-  public Dictionary<string, string?> CustomAttributes { get; } = [];
+  public Dictionary<string, string?> CustomAttributes { get; init; } = [];
 
   /// <summary>
   /// Gets a value indicating whether or not the user is being modified.
   /// </summary>
+  [JsonIgnore]
   public bool HasChanges => FirstName != null || MiddleName != null || LastName != null || FullName != null || Nickname != null
     || Birthdate != null || Gender != null || Locale != null || TimeZone != null
     || Picture != null || Profile != null || Website != null
