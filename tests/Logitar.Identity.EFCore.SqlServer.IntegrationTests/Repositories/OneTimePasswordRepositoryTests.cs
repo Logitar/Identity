@@ -4,6 +4,7 @@ using Logitar.EventSourcing;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Shared;
+using Logitar.Identity.Domain.Users;
 using Logitar.Identity.EntityFrameworkCore.Relational;
 using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -106,6 +107,36 @@ public class OneTimePasswordRepositoryTests : RepositoryTests, IAsyncLifetime
     Assert.Equal(2, oneTimePasswords.Count());
     Assert.Contains(oneTimePasswords, _oneTimePassword.Equals);
     Assert.Contains(oneTimePasswords, deleted.Equals);
+  }
+
+  [Fact(DisplayName = "SaveAsync: it should save the deleted One-Time Password.")]
+  public async Task SaveAsync_it_should_save_the_deleted_One_Time_Password()
+  {
+    _oneTimePassword.SetCustomAttribute("Purpose", "reset_password");
+    _oneTimePassword.SetCustomAttribute("UserId", UserId.NewId().Value);
+    _oneTimePassword.Update();
+    await _oneTimePasswordRepository.SaveAsync(_oneTimePassword);
+
+    OneTimePasswordEntity? entity = await IdentityContext.OneTimePasswords.AsNoTracking()
+      .SingleOrDefaultAsync(x => x.AggregateId == _oneTimePassword.Id.Value);
+    Assert.NotNull(entity);
+
+    CustomAttributeEntity[] customAttributes = await IdentityContext.CustomAttributes.AsNoTracking()
+      .Where(x => x.EntityType == nameof(IdentityContext.OneTimePasswords) && x.EntityId == entity.OneTimePasswordId)
+      .ToArrayAsync();
+    Assert.Equal(_oneTimePassword.CustomAttributes.Count, customAttributes.Length);
+    foreach (KeyValuePair<string, string> customAttribute in _oneTimePassword.CustomAttributes)
+    {
+      Assert.Contains(customAttributes, c => c.Key == customAttribute.Key && c.Value == customAttribute.Value);
+    }
+
+    _oneTimePassword.Delete();
+    await _oneTimePasswordRepository.SaveAsync(_oneTimePassword);
+
+    customAttributes = await IdentityContext.CustomAttributes.AsNoTracking()
+      .Where(x => x.EntityType == nameof(IdentityContext.OneTimePasswords) && x.EntityId == entity.OneTimePasswordId)
+      .ToArrayAsync();
+    Assert.Empty(customAttributes);
   }
 
   [Fact(DisplayName = "SaveAsync: it should save the specified One-Time Password.")]
