@@ -152,6 +152,36 @@ public class SessionRepositoryTests : RepositoryTests, IAsyncLifetime
     Assert.Contains(sessions, deleted.Equals);
   }
 
+  [Fact(DisplayName = "SaveAsync: it should save the deleted session.")]
+  public async Task SaveAsync_it_should_save_the_deleted_session()
+  {
+    _session.SetCustomAttribute("AdditionalInformation", $@"{{""User-Agent"":""{Faker.Internet.UserAgent()}""}}");
+    _session.SetCustomAttribute("IpAddress", Faker.Internet.Ip());
+    _session.Update();
+    await _sessionRepository.SaveAsync(_session);
+
+    SessionEntity? entity = await IdentityContext.Sessions.AsNoTracking()
+      .SingleOrDefaultAsync(x => x.AggregateId == _session.Id.Value);
+    Assert.NotNull(entity);
+
+    CustomAttributeEntity[] customAttributes = await IdentityContext.CustomAttributes.AsNoTracking()
+      .Where(x => x.EntityType == nameof(IdentityContext.Sessions) && x.EntityId == entity.SessionId)
+      .ToArrayAsync();
+    Assert.Equal(_session.CustomAttributes.Count, customAttributes.Length);
+    foreach (KeyValuePair<string, string> customAttribute in _session.CustomAttributes)
+    {
+      Assert.Contains(customAttributes, c => c.Key == customAttribute.Key && c.Value == customAttribute.Value);
+    }
+
+    _session.Delete();
+    await _sessionRepository.SaveAsync(_session);
+
+    customAttributes = await IdentityContext.CustomAttributes.AsNoTracking()
+      .Where(x => x.EntityType == nameof(IdentityContext.Sessions) && x.EntityId == entity.SessionId)
+      .ToArrayAsync();
+    Assert.Empty(customAttributes);
+  }
+
   [Fact(DisplayName = "SaveAsync: it should save the specified session.")]
   public async Task SaveAsync_it_should_save_the_specified_session()
   {

@@ -52,6 +52,7 @@ public class ApiKeyEventHandler : IApiKeyEventHandler
       Context.ApiKeys.Remove(apiKey);
 
       await DeleteActorAsync(apiKey, cancellationToken);
+      await CustomAttributes.RemoveAsync(EntityType, apiKey.ApiKeyId, cancellationToken);
       await Context.SaveChangesAsync(cancellationToken);
     }
   }

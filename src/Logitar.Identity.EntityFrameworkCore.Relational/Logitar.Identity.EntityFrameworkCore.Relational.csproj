@@ -16,14 +16,14 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Logitar/Identity</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <AssemblyVersion>0.11.2.0</AssemblyVersion>
+    <AssemblyVersion>0.11.3.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>0.11.2</Version>
+    <Version>0.11.3</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
-    <PackageReleaseNotes>Implemented CustomAttributeService and SessionRepository.LoadActiveAsync.</PackageReleaseNotes>
+    <PackageReleaseNotes>Remove custom attributes when deleting an entity.</PackageReleaseNotes>
     <PackageTags>logitar;net;framework;identity;entityframeworkcore;relational</PackageTags>
     <PackageProjectUrl>https://github.com/Logitar/Identity/tree/main/src/Logitar.Identity.EntityFrameworkCore.Relational</PackageProjectUrl>
   </PropertyGroup>

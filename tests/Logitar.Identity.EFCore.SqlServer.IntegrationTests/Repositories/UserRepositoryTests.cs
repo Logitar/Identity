@@ -226,6 +226,36 @@ public class UserRepositoryTests : RepositoryTests, IAsyncLifetime
     Assert.Contains(users, deleted.Equals);
   }
 
+  [Fact(DisplayName = "SaveAsync: it should save the deleted user.")]
+  public async Task SaveAsync_it_should_save_the_deleted_user()
+  {
+    _user.SetCustomAttribute("HealthInsuranceNumber", Faker.Person.BuildHealthInsuranceNumber());
+    _user.SetCustomAttribute("JobTitle", "Sales Manager");
+    _user.Update();
+    await _userRepository.SaveAsync(_user);
+
+    UserEntity? entity = await IdentityContext.Users.AsNoTracking()
+      .SingleOrDefaultAsync(x => x.AggregateId == _user.Id.Value);
+    Assert.NotNull(entity);
+
+    CustomAttributeEntity[] customAttributes = await IdentityContext.CustomAttributes.AsNoTracking()
+      .Where(x => x.EntityType == nameof(IdentityContext.Users) && x.EntityId == entity.UserId)
+      .ToArrayAsync();
+    Assert.Equal(_user.CustomAttributes.Count, customAttributes.Length);
+    foreach (KeyValuePair<string, string> customAttribute in _user.CustomAttributes)
+    {
+      Assert.Contains(customAttributes, c => c.Key == customAttribute.Key && c.Value == customAttribute.Value);
+    }
+
+    _user.Delete();
+    await _userRepository.SaveAsync(_user);
+
+    customAttributes = await IdentityContext.CustomAttributes.AsNoTracking()
+      .Where(x => x.EntityType == nameof(IdentityContext.Users) && x.EntityId == entity.UserId)
+      .ToArrayAsync();
+    Assert.Empty(customAttributes);
+  }
+
   [Fact(DisplayName = "SaveAsync: it should save the specified user.")]
   public async Task SaveAsync_it_should_save_the_specified_user()
   {

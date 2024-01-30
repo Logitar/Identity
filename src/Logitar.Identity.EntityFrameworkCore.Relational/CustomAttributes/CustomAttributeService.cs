@@ -12,6 +12,14 @@ public class CustomAttributeService : ICustomAttributeService
     Context = context;
   }
 
+  public virtual async Task RemoveAsync(string entityType, int entityId, CancellationToken cancellationToken)
+  {
+    CustomAttributeEntity[] entities = await Context.CustomAttributes
+      .Where(x => x.EntityType == entityType && x.EntityId == entityId)
+      .ToArrayAsync(cancellationToken);
+    Context.CustomAttributes.RemoveRange(entities);
+  }
+
   public virtual async Task SynchronizeAsync(string entityType, int entityId, Dictionary<string, string?> customAttributes, CancellationToken cancellationToken)
   {
     if (customAttributes.Count == 0)

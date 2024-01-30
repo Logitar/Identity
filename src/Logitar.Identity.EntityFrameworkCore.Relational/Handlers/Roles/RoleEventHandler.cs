@@ -39,6 +39,7 @@ public class RoleEventHandler : IRoleEventHandler
     {
       Context.Roles.Remove(role);
 
+      await CustomAttributes.RemoveAsync(EntityType, role.RoleId, cancellationToken);
       await Context.SaveChangesAsync(cancellationToken);
     }
   }

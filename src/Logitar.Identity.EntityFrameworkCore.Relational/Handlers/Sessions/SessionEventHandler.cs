@@ -41,6 +41,8 @@ public class SessionEventHandler : ISessionEventHandler
     if (session != null)
     {
       Context.Sessions.Remove(session);
+
+      await CustomAttributes.RemoveAsync(EntityType, session.SessionId, cancellationToken);
       await Context.SaveChangesAsync(cancellationToken);
     }
   }
