@@ -63,6 +63,7 @@ public class UserEventHandler : IUserEventHandler
       Context.Users.Remove(user);
 
       await DeleteActorAsync(user, cancellationToken);
+      await CustomAttributes.RemoveAsync(EntityType, user.UserId, cancellationToken);
       await Context.SaveChangesAsync(cancellationToken);
     }
   }
@@ -90,6 +91,17 @@ public class UserEventHandler : IUserEventHandler
     }
   }
 
+  public virtual async Task HandleAsync(UserEnabledEvent @event, CancellationToken cancellationToken)
+  {
+    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    if (user != null)
+    {
+      user.Enable(@event);
+
+      await Context.SaveChangesAsync(cancellationToken);
+    }
+  }
+
   public virtual async Task HandleAsync(UserIdentifierChangedEvent @event, CancellationToken cancellationToken)
   {
     UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
@@ -100,23 +112,13 @@ public class UserEventHandler : IUserEventHandler
       await Context.SaveChangesAsync(cancellationToken);
     }
   }
+
   public virtual async Task HandleAsync(UserIdentifierRemovedEvent @event, CancellationToken cancellationToken)
   {
     UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (user != null)
     {
       user.RemoveCustomIdentifier(@event);
-
-      await Context.SaveChangesAsync(cancellationToken);
-    }
-  }
-
-  public virtual async Task HandleAsync(UserEnabledEvent @event, CancellationToken cancellationToken)
-  {
-    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
-    if (user != null)
-    {
-      user.Enable(@event);
 
       await Context.SaveChangesAsync(cancellationToken);
     }

@@ -31,3 +31,5 @@ public class Program
     application.Run();
   }
 }
+
+// TODO(fpion): CustomAttributes are not deleted when an entity is deleted

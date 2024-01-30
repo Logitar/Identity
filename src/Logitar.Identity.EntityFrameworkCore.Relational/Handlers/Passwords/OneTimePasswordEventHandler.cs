@@ -39,6 +39,7 @@ public class OneTimePasswordEventHandler : IOneTimePasswordEventHandler
     {
       Context.OneTimePasswords.Remove(oneTimePassword);
 
+      await CustomAttributes.RemoveAsync(EntityType, oneTimePassword.OneTimePasswordId, cancellationToken);
       await Context.SaveChangesAsync(cancellationToken);
     }
   }
