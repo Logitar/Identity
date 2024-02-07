@@ -7,7 +7,7 @@ namespace Logitar.Identity.Domain.Shared;
 /// by an optional <see href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2">ISO 3166-1 Alpha-2 country code</see>. These codes shall be separated by an
 /// hyphen (-).
 /// </summary>
-public class LocaleUnit
+public record LocaleUnit
 {
   /// <summary>
   /// The maximum length of locale codes.

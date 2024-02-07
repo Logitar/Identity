@@ -44,6 +44,22 @@ public class TimeZoneUnitTests
     Assert.Contains(exception.Errors, e => e.ErrorCode == "TimeZoneValidator");
   }
 
+  [Theory(DisplayName = "Equals: two time zones with the same identifier should be equal.")]
+  [InlineData("America/Montreal")]
+  [InlineData("America/New_York")]
+  public void Equals_two_time_zones_with_the_same_identifier_should_be_equal(string id)
+  {
+    TimeZoneUnit left = new(id);
+
+    DateTimeZone? dtz = DateTimeZoneProviders.Tzdb.GetZoneOrNull(id);
+    Assert.NotNull(dtz);
+    TimeZoneUnit right = new(dtz);
+
+    Assert.Equal(left, right);
+    Assert.True(left.Equals(right));
+    Assert.True(left == right);
+  }
+
   [Theory(DisplayName = "TryCreate: it should return a time zone when the value is not empty.")]
   [InlineData("America/New_York")]
   [InlineData("  America/Montreal  ")]

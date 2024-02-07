@@ -77,6 +77,19 @@ public class LocaleUnitTests
     });
   }
 
+  [Theory(DisplayName = "Equals: two locales with the same code should be equal.")]
+  [InlineData("en")]
+  [InlineData("en-US")]
+  public void Equals_two_locales_with_the_same_code_should_be_equal(string code)
+  {
+    LocaleUnit left = new(code);
+    LocaleUnit right = new(CultureInfo.GetCultureInfo(code));
+
+    Assert.Equal(left, right);
+    Assert.True(left.Equals(right));
+    Assert.True(left == right);
+  }
+
   [Theory(DisplayName = "TryCreate: it should return a locale when the value is not empty.")]
   [InlineData("es-MX")]
   [InlineData("   es")]
