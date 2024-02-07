@@ -94,6 +94,19 @@ public class UrlUnitTests
     });
   }
 
+  [Theory(DisplayName = "Equals: two URLs with the same value should be equal.")]
+  [InlineData("https://www.test.com/")]
+  [InlineData("https://www.test.com/projects/123?source=google#sub")]
+  public void Equals_two_Urls_with_the_same_value_should_be_equal(string value)
+  {
+    UrlUnit left = new(value);
+    UrlUnit right = new(new Uri(value));
+
+    Assert.Equal(left, right);
+    Assert.True(left.Equals(right));
+    Assert.True(left == right);
+  }
+
   [Theory(DisplayName = "TryCreate: it should return a URL when the value is not empty.")]
   [InlineData("http://test.com")]
   [InlineData("  https://www.test.com/  ")]
