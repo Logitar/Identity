@@ -33,8 +33,8 @@ public class UserRepositoryTests : RepositoryTests, IAsyncLifetime
 
   public UserRepositoryTests() : base()
   {
-    _roleRepository = ServiceProvider.GetRequiredService<IRoleRepository>();
     _passwordManager = ServiceProvider.GetRequiredService<IPasswordManager>();
+    _roleRepository = ServiceProvider.GetRequiredService<IRoleRepository>();
     _roleSettings = ServiceProvider.GetRequiredService<IRoleSettingsResolver>().Resolve();
     _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
     _userSettings = ServiceProvider.GetRequiredService<IUserSettingsResolver>().Resolve();
