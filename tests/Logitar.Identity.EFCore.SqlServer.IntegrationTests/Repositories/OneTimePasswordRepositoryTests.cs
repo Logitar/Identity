@@ -36,6 +36,9 @@ public class OneTimePasswordRepositoryTests : RepositoryTests, IAsyncLifetime
 
     _password = _passwordManager.Create(PasswordString);
     _oneTimePassword = new(_password, tenantId, expiresOn, maximumAttempts, actorId, id);
+    _oneTimePassword.SetCustomAttribute("Purpose", "MultiFactorAuthentication");
+    _oneTimePassword.SetCustomAttribute("UserId", Guid.NewGuid().ToString());
+    _oneTimePassword.Update(actorId);
   }
 
   public async Task InitializeAsync()
@@ -151,6 +154,10 @@ public class OneTimePasswordRepositoryTests : RepositoryTests, IAsyncLifetime
       .Where(x => x.EntityType == nameof(IdentityContext.OneTimePasswords) && x.EntityId == entity.OneTimePasswordId)
       .ToDictionaryAsync(x => x.Key, x => x.Value);
     Assert.Equal(_oneTimePassword.CustomAttributes, customAttributes);
+
+    OneTimePasswordAggregate? oneTimePassword = await _oneTimePasswordRepository.LoadAsync(_oneTimePassword.Id);
+    Assert.NotNull(oneTimePassword);
+    Assert.Equal(_oneTimePassword.CustomAttributes, oneTimePassword.CustomAttributes);
   }
 
   [Fact(DisplayName = "SaveAsync: it should save the specified One-Time Passwords.")]
