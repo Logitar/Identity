@@ -77,7 +77,7 @@ public class ApiKeyEntity : AggregateEntity
   {
     Update(@event);
 
-    AuthenticatedOn = @event.OccurredOn;
+    AuthenticatedOn = @event.OccurredOn.ToUniversalTime();
   }
 
   public void RemoveRole(ApiKeyRoleRemovedEvent @event)
@@ -105,7 +105,7 @@ public class ApiKeyEntity : AggregateEntity
     }
     if (@event.ExpiresOn.HasValue)
     {
-      ExpiresOn = @event.ExpiresOn.Value;
+      ExpiresOn = @event.ExpiresOn.Value.ToUniversalTime();
     }
 
     foreach (KeyValuePair<string, string?> customAttribute in @event.CustomAttributes)
