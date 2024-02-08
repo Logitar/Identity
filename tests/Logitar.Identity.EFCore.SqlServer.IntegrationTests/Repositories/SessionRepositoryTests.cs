@@ -195,6 +195,10 @@ public class SessionRepositoryTests : RepositoryTests, IAsyncLifetime
       .Where(x => x.EntityType == nameof(IdentityContext.Sessions) && x.EntityId == entity.SessionId)
       .ToDictionaryAsync(x => x.Key, x => x.Value);
     Assert.Equal(_session.CustomAttributes, customAttributes);
+
+    SessionAggregate? session = await _sessionRepository.LoadAsync(_session.Id);
+    Assert.NotNull(session);
+    Assert.Equal(_session.CustomAttributes, session.CustomAttributes);
   }
 
   [Fact(DisplayName = "SaveAsync: it should save the specified sessions.")]

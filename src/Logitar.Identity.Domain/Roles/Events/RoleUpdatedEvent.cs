@@ -12,11 +12,11 @@ public record RoleUpdatedEvent : DomainEvent, INotification
   /// <summary>
   /// Gets or sets the display name of the role.
   /// </summary>
-  public Modification<DisplayNameUnit>? DisplayName { get; internal set; }
+  public Modification<DisplayNameUnit>? DisplayName { get; set; }
   /// <summary>
   /// Gets or sets the description of the role.
   /// </summary>
-  public Modification<DescriptionUnit>? Description { get; internal set; }
+  public Modification<DescriptionUnit>? Description { get; set; }
 
   /// <summary>
   /// Gets or sets the custom attribute modifications of the role.
