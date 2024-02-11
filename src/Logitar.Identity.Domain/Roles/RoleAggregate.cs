@@ -1,4 +1,5 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Identity.Contracts;
 using Logitar.Identity.Domain.Roles.Events;
 using Logitar.Identity.Domain.Shared;
 
