@@ -274,6 +274,21 @@ public class UserRepositoryTests : RepositoryTests, IAsyncLifetime
       .Where(x => x.EntityType == nameof(IdentityContext.Users) && x.EntityId == entity.UserId)
       .ToDictionaryAsync(x => x.Key, x => x.Value);
     Assert.Equal(_user.CustomAttributes, customAttributes);
+
+    UserAggregate? user = await _userRepository.LoadAsync(_user.Id);
+    Assert.NotNull(user);
+    Assert.Equal(_user.FirstName, user.FirstName);
+    Assert.Equal(_user.MiddleName, user.MiddleName);
+    Assert.Equal(_user.LastName, user.LastName);
+    Assert.Equal(_user.Nickname, user.Nickname);
+    Assert.Equal(_user.Birthdate, user.Birthdate);
+    Assert.Equal(_user.Gender, user.Gender);
+    Assert.Equal(_user.Locale, user.Locale);
+    Assert.Equal(_user.TimeZone, user.TimeZone);
+    Assert.Equal(_user.Picture, user.Picture);
+    Assert.Equal(_user.Profile, user.Profile);
+    Assert.Equal(_user.Website, user.Website);
+    Assert.Equal(_user.CustomAttributes, user.CustomAttributes);
   }
 
   [Fact(DisplayName = "SaveAsync: it should save the specified users.")]

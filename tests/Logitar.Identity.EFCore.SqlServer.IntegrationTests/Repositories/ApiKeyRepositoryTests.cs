@@ -49,7 +49,7 @@ public class ApiKeyRepositoryTests : RepositoryTests, IAsyncLifetime
       Description = new DescriptionUnit("This is the default API key.")
     };
     _apiKey.SetExpiration(DateTime.Now.AddYears(1));
-    _apiKey.SetCustomAttribute("TODO", "TODO");
+    _apiKey.SetCustomAttribute("OwnerId", Guid.NewGuid().ToString());
     _apiKey.Update(actorId);
 
     _apiKey.AddRole(_role, actorId);
@@ -153,8 +153,8 @@ public class ApiKeyRepositoryTests : RepositoryTests, IAsyncLifetime
   [Fact(DisplayName = "SaveAsync: it should save the deleted API key.")]
   public async Task SaveAsync_it_should_save_the_deleted_Api_key()
   {
-    _apiKey.SetCustomAttribute("TODO", "TODO");
-    _apiKey.SetCustomAttribute("TODO", "TODO");
+    _apiKey.SetCustomAttribute("Confidentiality", "Private");
+    _apiKey.SetCustomAttribute("SubSystem", "IntegrationTests");
     _apiKey.Update();
     await _apiKeyRepository.SaveAsync(_apiKey);
 
@@ -197,6 +197,12 @@ public class ApiKeyRepositoryTests : RepositoryTests, IAsyncLifetime
       .Where(x => x.EntityType == nameof(IdentityContext.ApiKeys) && x.EntityId == entity.ApiKeyId)
       .ToDictionaryAsync(x => x.Key, x => x.Value);
     Assert.Equal(_apiKey.CustomAttributes, customAttributes);
+
+    ApiKeyAggregate? apiKey = await _apiKeyRepository.LoadAsync(_apiKey.Id);
+    Assert.NotNull(apiKey);
+    Assert.Equal(_apiKey.Description, apiKey.Description);
+    Assert.Equal(_apiKey.ExpiresOn, apiKey.ExpiresOn);
+    Assert.Equal(_apiKey.CustomAttributes, apiKey.CustomAttributes);
   }
 
   [Fact(DisplayName = "SaveAsync: it should save the specified API keys.")]
