@@ -16,14 +16,14 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Logitar/Identity</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <AssemblyVersion>0.11.3.0</AssemblyVersion>
+    <AssemblyVersion>0.11.4.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>0.11.3</Version>
+    <Version>0.11.4</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
-    <PackageReleaseNotes>Created a Contracts package.</PackageReleaseNotes>
+    <PackageReleaseNotes>Updated NuGet packages.</PackageReleaseNotes>
     <PackageTags>logitar;net;framework;identity;infrastructure</PackageTags>
     <PackageProjectUrl>https://github.com/Logitar/Identity/tree/main/src/Logitar.Identity.Infrastructure</PackageProjectUrl>
   </PropertyGroup>
@@ -46,7 +46,7 @@
   <ItemGroup>
     <PackageReference Include="Logitar.EventSourcing.Infrastructure" Version="5.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="8.0.1" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.2.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.3.1" />
   </ItemGroup>
 
   <ItemGroup>
