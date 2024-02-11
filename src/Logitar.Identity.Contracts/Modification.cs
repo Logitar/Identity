@@ -1,4 +1,4 @@
-﻿namespace Logitar.Identity.Domain;
+﻿namespace Logitar.Identity.Contracts;
 
 /// <summary>
 /// Represents the modification of a value.
