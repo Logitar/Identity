@@ -16,14 +16,14 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Logitar/Identity</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <AssemblyVersion>0.11.8.0</AssemblyVersion>
+    <AssemblyVersion>0.11.9.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>0.11.8</Version>
+    <Version>0.11.9</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <PackageReleaseNotes>Updated NuGet packages.</PackageReleaseNotes>
+    <PackageReleaseNotes>Added Guid methods to aggregate identifiers.</PackageReleaseNotes>
     <PackageTags>logitar;net;framework;identity;domain</PackageTags>
     <PackageProjectUrl>https://github.com/Logitar/Identity/tree/main/src/Logitar.Identity.Domain</PackageProjectUrl>
   </PropertyGroup>

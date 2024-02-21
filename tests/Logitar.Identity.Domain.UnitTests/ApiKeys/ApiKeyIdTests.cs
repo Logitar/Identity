@@ -9,6 +9,15 @@ public class ApiKeyIdTests
 {
   private readonly Faker _faker = new();
 
+  [Fact(DisplayName = "ctor: it should create an identifier from a Guid.")]
+  public void ctor_it_should_create_an_identifier_from_a_Guid()
+  {
+    Guid guid = Guid.NewGuid();
+    ApiKeyId id = new(guid);
+    string expected = new AggregateId(guid).Value;
+    Assert.Equal(expected, id.Value);
+  }
+
   [Theory(DisplayName = "ctor: it should create a new API key identifier.")]
   [InlineData("64192609-6ad1-4f54-a8f0-a44372f229c8")]
   [InlineData("  bbea05b5-75c0-4ab5-8572-6d0dee8aa046  ")]
@@ -52,6 +61,14 @@ public class ApiKeyIdTests
   {
     ApiKeyId id = ApiKeyId.NewId();
     Assert.Equal(id.AggregateId.Value, id.Value);
+  }
+
+  [Fact(DisplayName = "ToGuid: it should convert the identifier to a Guid.")]
+  public void ToGuid_it_should_convert_the_identifier_to_a_Guid()
+  {
+    Guid guid = Guid.NewGuid();
+    ApiKeyId id = new(new AggregateId(guid));
+    Assert.Equal(guid, id.ToGuid());
   }
 
   [Theory(DisplayName = "TryCreate: it should return an API key identifier when the value is not empty.")]

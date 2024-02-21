@@ -21,6 +21,15 @@ public record ApiKeyId
   /// <summary>
   /// Initializes a new instance of the <see cref="ApiKeyId"/> class.
   /// </summary>
+  /// <param name="id">The unique identifier.</param>
+  /// <param name="propertyName">The name of the property, used for validation.</param>
+  public ApiKeyId(Guid id, string? propertyName = null) : this(new AggregateId(id), propertyName)
+  {
+  }
+
+  /// <summary>
+  /// Initializes a new instance of the <see cref="ApiKeyId"/> class.
+  /// </summary>
   /// <param name="aggregateId">The aggregate identifier.</param>
   /// <param name="propertyName">The name of the property, used for validation.</param>
   public ApiKeyId(AggregateId aggregateId, string? propertyName = null)
@@ -59,4 +68,10 @@ public record ApiKeyId
   {
     return string.IsNullOrWhiteSpace(value) ? null : new(value, propertyName);
   }
+
+  /// <summary>
+  /// Converts the identifier to a <see cref="Guid"/>. The conversion will fail if the identifier has not been created from a <see cref="Guid"/>.
+  /// </summary>
+  /// <returns>The resulting Guid.</returns>
+  public Guid ToGuid() => AggregateId.ToGuid();
 }

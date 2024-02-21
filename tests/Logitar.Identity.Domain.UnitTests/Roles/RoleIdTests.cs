@@ -8,6 +8,15 @@ public class RoleIdTests
 {
   private readonly Faker _faker = new();
 
+  [Fact(DisplayName = "ctor: it should create an identifier from a Guid.")]
+  public void ctor_it_should_create_an_identifier_from_a_Guid()
+  {
+    Guid guid = Guid.NewGuid();
+    RoleId id = new(guid);
+    string expected = new AggregateId(guid).Value;
+    Assert.Equal(expected, id.Value);
+  }
+
   [Theory(DisplayName = "ctor: it should create a new role identifier.")]
   [InlineData("930a9c48-c168-47c8-9797-7106969dd7f7")]
   [InlineData("  admin  ")]
@@ -51,6 +60,14 @@ public class RoleIdTests
   {
     RoleId id = RoleId.NewId();
     Assert.Equal(id.AggregateId.Value, id.Value);
+  }
+
+  [Fact(DisplayName = "ToGuid: it should convert the identifier to a Guid.")]
+  public void ToGuid_it_should_convert_the_identifier_to_a_Guid()
+  {
+    Guid guid = Guid.NewGuid();
+    RoleId id = new(new AggregateId(guid));
+    Assert.Equal(guid, id.ToGuid());
   }
 
   [Theory(DisplayName = "TryCreate: it should return a role identifier when the value is not empty.")]

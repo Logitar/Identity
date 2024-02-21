@@ -8,6 +8,15 @@ public class SessionIdTests
 {
   private readonly Faker _faker = new();
 
+  [Fact(DisplayName = "ctor: it should create an identifier from a Guid.")]
+  public void ctor_it_should_create_an_identifier_from_a_Guid()
+  {
+    Guid guid = Guid.NewGuid();
+    SessionId id = new(guid);
+    string expected = new AggregateId(guid).Value;
+    Assert.Equal(expected, id.Value);
+  }
+
   [Theory(DisplayName = "ctor: it should create a new session identifier.")]
   [InlineData("8b0a5032-f81f-4cef-99a6-de119025e379")]
   [InlineData("  702f0d94-a99c-4279-bc18-1ecc5762cf1d  ")]
@@ -51,6 +60,14 @@ public class SessionIdTests
   {
     SessionId id = SessionId.NewId();
     Assert.Equal(id.AggregateId.Value, id.Value);
+  }
+
+  [Fact(DisplayName = "ToGuid: it should convert the identifier to a Guid.")]
+  public void ToGuid_it_should_convert_the_identifier_to_a_Guid()
+  {
+    Guid guid = Guid.NewGuid();
+    SessionId id = new(new AggregateId(guid));
+    Assert.Equal(guid, id.ToGuid());
   }
 
   [Theory(DisplayName = "TryCreate: it should return a session identifier when the value is not empty.")]

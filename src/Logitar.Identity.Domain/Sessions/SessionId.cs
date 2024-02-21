@@ -21,6 +21,15 @@ public record SessionId
   /// <summary>
   /// Initializes a new instance of the <see cref="SessionId"/> class.
   /// </summary>
+  /// <param name="id">The unique identifier.</param>
+  /// <param name="propertyName">The name of the property, used for validation.</param>
+  public SessionId(Guid id, string? propertyName = null) : this(new AggregateId(id), propertyName)
+  {
+  }
+
+  /// <summary>
+  /// Initializes a new instance of the <see cref="SessionId"/> class.
+  /// </summary>
   /// <param name="aggregateId">The aggregate identifier.</param>
   /// <param name="propertyName">The name of the property, used for validation.</param>
   public SessionId(AggregateId aggregateId, string? propertyName = null)
@@ -59,4 +68,10 @@ public record SessionId
   {
     return string.IsNullOrWhiteSpace(value) ? null : new(value, propertyName);
   }
+
+  /// <summary>
+  /// Converts the identifier to a <see cref="Guid"/>. The conversion will fail if the identifier has not been created from a <see cref="Guid"/>.
+  /// </summary>
+  /// <returns>The resulting Guid.</returns>
+  public Guid ToGuid() => AggregateId.ToGuid();
 }
