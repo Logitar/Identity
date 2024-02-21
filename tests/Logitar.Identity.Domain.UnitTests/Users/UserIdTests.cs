@@ -8,6 +8,15 @@ public class UserIdTests
 {
   private readonly Faker _faker = new();
 
+  [Fact(DisplayName = "ctor: it should create an identifier from a Guid.")]
+  public void ctor_it_should_create_an_identifier_from_a_Guid()
+  {
+    Guid guid = Guid.NewGuid();
+    UserId id = new(guid);
+    string expected = new AggregateId(guid).Value;
+    Assert.Equal(expected, id.Value);
+  }
+
   [Theory(DisplayName = "ctor: it should create a new user identifier.")]
   [InlineData("86f2b595-a803-40c5-b270-f33ea53620b0")]
   [InlineData("  admin  ")]
@@ -51,6 +60,14 @@ public class UserIdTests
   {
     UserId id = UserId.NewId();
     Assert.Equal(id.AggregateId.Value, id.Value);
+  }
+
+  [Fact(DisplayName = "ToGuid: it should convert the identifier to a Guid.")]
+  public void ToGuid_it_should_convert_the_identifier_to_a_Guid()
+  {
+    Guid guid = Guid.NewGuid();
+    UserId id = new(new AggregateId(guid));
+    Assert.Equal(guid, id.ToGuid());
   }
 
   [Theory(DisplayName = "TryCreate: it should return an user identifier when the value is not empty.")]
