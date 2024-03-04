@@ -22,10 +22,10 @@ public class SessionEventHandler : ISessionEventHandler
 
   public virtual async Task HandleAsync(SessionCreatedEvent @event, CancellationToken cancellationToken)
   {
-    var session = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    SessionEntity? session = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (session == null)
     {
-      var user = await Context.Users
+      UserEntity user = await Context.Users
         .SingleOrDefaultAsync(x => x.AggregateId == @event.UserId.Value, cancellationToken)
         ?? throw new InvalidOperationException($"The user entity 'AggregateId={@event.AggregateId}' could not be found.");
 
@@ -38,7 +38,7 @@ public class SessionEventHandler : ISessionEventHandler
 
   public virtual async Task HandleAsync(SessionDeletedEvent @event, CancellationToken cancellationToken)
   {
-    var session = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    SessionEntity? session = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (session != null)
     {
       Context.Sessions.Remove(session);
@@ -50,7 +50,7 @@ public class SessionEventHandler : ISessionEventHandler
 
   public virtual async Task HandleAsync(SessionRenewedEvent @event, CancellationToken cancellationToken)
   {
-    var session = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    SessionEntity? session = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (session != null)
     {
       session.Renew(@event);
@@ -61,7 +61,7 @@ public class SessionEventHandler : ISessionEventHandler
 
   public virtual async Task HandleAsync(SessionSignedOutEvent @event, CancellationToken cancellationToken)
   {
-    var session = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    SessionEntity? session = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (session != null)
     {
       session.SignOut(@event);
@@ -72,7 +72,7 @@ public class SessionEventHandler : ISessionEventHandler
 
   public virtual async Task HandleAsync(SessionUpdatedEvent @event, CancellationToken cancellationToken)
   {
-    var session = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    SessionEntity? session = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (session != null)
     {
       session.Update(@event);

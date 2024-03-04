@@ -22,7 +22,7 @@ public class RoleEventHandler : IRoleEventHandler
 
   public virtual async Task HandleAsync(RoleCreatedEvent @event, CancellationToken cancellationToken)
   {
-    var role = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    RoleEntity? role = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (role == null)
     {
       role = new(@event);
@@ -35,7 +35,7 @@ public class RoleEventHandler : IRoleEventHandler
 
   public virtual async Task HandleAsync(RoleDeletedEvent @event, CancellationToken cancellationToken)
   {
-    var role = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    RoleEntity? role = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (role != null)
     {
       Context.Roles.Remove(role);
@@ -47,7 +47,7 @@ public class RoleEventHandler : IRoleEventHandler
 
   public virtual async Task HandleAsync(RoleUniqueNameChangedEvent @event, CancellationToken cancellationToken)
   {
-    var role = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    RoleEntity? role = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (role != null)
     {
       role.SetUniqueName(@event);
@@ -58,7 +58,7 @@ public class RoleEventHandler : IRoleEventHandler
 
   public virtual async Task HandleAsync(RoleUpdatedEvent @event, CancellationToken cancellationToken)
   {
-    var role = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    RoleEntity? role = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (role != null)
     {
       role.Update(@event);

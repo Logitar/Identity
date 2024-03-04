@@ -22,7 +22,7 @@ public class OneTimePasswordEventHandler : IOneTimePasswordEventHandler
 
   public virtual async Task HandleAsync(OneTimePasswordCreatedEvent @event, CancellationToken cancellationToken)
   {
-    var oneTimePassword = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    OneTimePasswordEntity? oneTimePassword = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (oneTimePassword == null)
     {
       oneTimePassword = new(@event);
@@ -35,7 +35,7 @@ public class OneTimePasswordEventHandler : IOneTimePasswordEventHandler
 
   public virtual async Task HandleAsync(OneTimePasswordDeletedEvent @event, CancellationToken cancellationToken)
   {
-    var oneTimePassword = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    OneTimePasswordEntity? oneTimePassword = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (oneTimePassword != null)
     {
       Context.OneTimePasswords.Remove(oneTimePassword);
@@ -47,7 +47,7 @@ public class OneTimePasswordEventHandler : IOneTimePasswordEventHandler
 
   public virtual async Task HandleAsync(OneTimePasswordUpdatedEvent @event, CancellationToken cancellationToken)
   {
-    var oneTimePassword = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    OneTimePasswordEntity? oneTimePassword = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (oneTimePassword != null)
     {
       oneTimePassword.Update(@event);
@@ -59,7 +59,7 @@ public class OneTimePasswordEventHandler : IOneTimePasswordEventHandler
 
   public virtual async Task HandleAsync(OneTimePasswordValidationFailedEvent @event, CancellationToken cancellationToken)
   {
-    var oneTimePassword = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    OneTimePasswordEntity? oneTimePassword = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (oneTimePassword != null)
     {
       oneTimePassword.Fail(@event);
@@ -70,7 +70,7 @@ public class OneTimePasswordEventHandler : IOneTimePasswordEventHandler
 
   public virtual async Task HandleAsync(OneTimePasswordValidationSucceededEvent @event, CancellationToken cancellationToken)
   {
-    var oneTimePassword = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    OneTimePasswordEntity? oneTimePassword = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (oneTimePassword != null)
     {
       oneTimePassword.Succeed(@event);

@@ -22,7 +22,7 @@ public class ApiKeyEventHandler : IApiKeyEventHandler
 
   public virtual async Task HandleAsync(ApiKeyAuthenticatedEvent @event, CancellationToken cancellationToken)
   {
-    var apiKey = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    ApiKeyEntity? apiKey = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (apiKey != null)
     {
       apiKey.Authenticate(@event);
@@ -33,7 +33,7 @@ public class ApiKeyEventHandler : IApiKeyEventHandler
 
   public virtual async Task HandleAsync(ApiKeyCreatedEvent @event, CancellationToken cancellationToken)
   {
-    var apiKey = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    ApiKeyEntity? apiKey = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (apiKey == null)
     {
       apiKey = new(@event);
@@ -47,7 +47,7 @@ public class ApiKeyEventHandler : IApiKeyEventHandler
 
   public virtual async Task HandleAsync(ApiKeyDeletedEvent @event, CancellationToken cancellationToken)
   {
-    var apiKey = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    ApiKeyEntity? apiKey = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (apiKey != null)
     {
       Context.ApiKeys.Remove(apiKey);
@@ -60,10 +60,10 @@ public class ApiKeyEventHandler : IApiKeyEventHandler
 
   public virtual async Task HandleAsync(ApiKeyRoleAddedEvent @event, CancellationToken cancellationToken)
   {
-    var apiKey = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    ApiKeyEntity? apiKey = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (apiKey != null)
     {
-      var role = await Context.Roles
+      RoleEntity role = await Context.Roles
         .SingleOrDefaultAsync(x => x.AggregateId == @event.RoleId.AggregateId.Value, cancellationToken)
         ?? throw new InvalidOperationException($"The role entity 'AggregateId={@event.AggregateId}' could not be found.");
 
@@ -75,7 +75,7 @@ public class ApiKeyEventHandler : IApiKeyEventHandler
 
   public virtual async Task HandleAsync(ApiKeyRoleRemovedEvent @event, CancellationToken cancellationToken)
   {
-    var apiKey = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    ApiKeyEntity? apiKey = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (apiKey != null)
     {
       apiKey.RemoveRole(@event);
@@ -86,7 +86,7 @@ public class ApiKeyEventHandler : IApiKeyEventHandler
 
   public virtual async Task HandleAsync(ApiKeyUpdatedEvent @event, CancellationToken cancellationToken)
   {
-    var apiKey = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    ApiKeyEntity? apiKey = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (apiKey != null)
     {
       apiKey.Update(@event);
@@ -115,7 +115,7 @@ public class ApiKeyEventHandler : IApiKeyEventHandler
     => await SaveActorAsync(apiKey, isDeleted: false, cancellationToken);
   protected virtual async Task SaveActorAsync(ApiKeyEntity apiKey, bool isDeleted, CancellationToken cancellationToken)
   {
-    var actor = await Context.Actors
+    ActorEntity? actor = await Context.Actors
       .SingleOrDefaultAsync(x => x.Id == apiKey.AggregateId, cancellationToken);
 
     if (actor == null)
