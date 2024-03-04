@@ -2,9 +2,10 @@
 using Logitar.Identity.Domain.Roles.Events;
 using Logitar.Identity.EntityFrameworkCore.Relational.CustomAttributes;
 using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
+using Logitar.Identity.Infrastructure.Handlers;
 using Microsoft.EntityFrameworkCore;
 
-namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Roles;
+namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers;
 
 public class RoleEventHandler : IRoleEventHandler
 {
@@ -21,7 +22,7 @@ public class RoleEventHandler : IRoleEventHandler
 
   public virtual async Task HandleAsync(RoleCreatedEvent @event, CancellationToken cancellationToken)
   {
-    RoleEntity? role = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var role = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (role == null)
     {
       role = new(@event);
@@ -34,7 +35,7 @@ public class RoleEventHandler : IRoleEventHandler
 
   public virtual async Task HandleAsync(RoleDeletedEvent @event, CancellationToken cancellationToken)
   {
-    RoleEntity? role = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var role = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (role != null)
     {
       Context.Roles.Remove(role);
@@ -46,7 +47,7 @@ public class RoleEventHandler : IRoleEventHandler
 
   public virtual async Task HandleAsync(RoleUniqueNameChangedEvent @event, CancellationToken cancellationToken)
   {
-    RoleEntity? role = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var role = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (role != null)
     {
       role.SetUniqueName(@event);
@@ -57,7 +58,7 @@ public class RoleEventHandler : IRoleEventHandler
 
   public virtual async Task HandleAsync(RoleUpdatedEvent @event, CancellationToken cancellationToken)
   {
-    RoleEntity? role = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var role = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (role != null)
     {
       role.Update(@event);

@@ -1,5 +1,4 @@
 ﻿using Logitar.EventSourcing.EntityFrameworkCore.Relational;
-using Logitar.EventSourcing.Infrastructure;
 using Logitar.Identity.Domain.ApiKeys;
 using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Roles;
@@ -7,14 +6,11 @@ using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Tokens;
 using Logitar.Identity.Domain.Users;
 using Logitar.Identity.EntityFrameworkCore.Relational.CustomAttributes;
-using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.ApiKeys;
-using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Passwords;
-using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Roles;
-using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Sessions;
-using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Users;
+using Logitar.Identity.EntityFrameworkCore.Relational.Handlers;
 using Logitar.Identity.EntityFrameworkCore.Relational.Repositories;
 using Logitar.Identity.EntityFrameworkCore.Relational.Tokens;
 using Logitar.Identity.Infrastructure;
+using Logitar.Identity.Infrastructure.Handlers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Logitar.Identity.EntityFrameworkCore.Relational;
@@ -30,7 +26,6 @@ public static class DependencyInjectionExtensions
       .AddMediatR(config => config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()))
       .AddRepositories()
       .AddTransient<ICustomAttributeService, CustomAttributeService>()
-      .AddTransient<IEventBus, EventBus>()
       .AddTransient<ITokenBlacklist, TokenBlacklist>();
   }
 

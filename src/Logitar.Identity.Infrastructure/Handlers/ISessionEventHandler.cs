@@ -1,6 +1,6 @@
 ﻿using Logitar.Identity.Domain.Sessions.Events;
 
-namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Sessions;
+namespace Logitar.Identity.Infrastructure.Handlers;
 
 public interface ISessionEventHandler
 {

@@ -1,6 +1,6 @@
 ﻿using Logitar.Identity.Domain.Passwords.Events;
 
-namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Passwords;
+namespace Logitar.Identity.Infrastructure.Handlers;
 
 public interface IOneTimePasswordEventHandler
 {

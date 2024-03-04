@@ -1,6 +1,6 @@
 ﻿using Logitar.Identity.Domain.ApiKeys.Events;
 
-namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers.ApiKeys;
+namespace Logitar.Identity.Infrastructure.Handlers;
 
 public interface IApiKeyEventHandler
 {

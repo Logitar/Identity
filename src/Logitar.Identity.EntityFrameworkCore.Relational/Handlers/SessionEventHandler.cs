@@ -2,9 +2,10 @@
 using Logitar.Identity.Domain.Sessions.Events;
 using Logitar.Identity.EntityFrameworkCore.Relational.CustomAttributes;
 using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
+using Logitar.Identity.Infrastructure.Handlers;
 using Microsoft.EntityFrameworkCore;
 
-namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Sessions;
+namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers;
 
 public class SessionEventHandler : ISessionEventHandler
 {
@@ -21,10 +22,10 @@ public class SessionEventHandler : ISessionEventHandler
 
   public virtual async Task HandleAsync(SessionCreatedEvent @event, CancellationToken cancellationToken)
   {
-    SessionEntity? session = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var session = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (session == null)
     {
-      UserEntity user = await Context.Users
+      var user = await Context.Users
         .SingleOrDefaultAsync(x => x.AggregateId == @event.UserId.Value, cancellationToken)
         ?? throw new InvalidOperationException($"The user entity 'AggregateId={@event.AggregateId}' could not be found.");
 
@@ -37,7 +38,7 @@ public class SessionEventHandler : ISessionEventHandler
 
   public virtual async Task HandleAsync(SessionDeletedEvent @event, CancellationToken cancellationToken)
   {
-    SessionEntity? session = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var session = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (session != null)
     {
       Context.Sessions.Remove(session);
@@ -49,7 +50,7 @@ public class SessionEventHandler : ISessionEventHandler
 
   public virtual async Task HandleAsync(SessionRenewedEvent @event, CancellationToken cancellationToken)
   {
-    SessionEntity? session = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var session = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (session != null)
     {
       session.Renew(@event);
@@ -60,7 +61,7 @@ public class SessionEventHandler : ISessionEventHandler
 
   public virtual async Task HandleAsync(SessionSignedOutEvent @event, CancellationToken cancellationToken)
   {
-    SessionEntity? session = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var session = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (session != null)
     {
       session.SignOut(@event);
@@ -71,7 +72,7 @@ public class SessionEventHandler : ISessionEventHandler
 
   public virtual async Task HandleAsync(SessionUpdatedEvent @event, CancellationToken cancellationToken)
   {
-    SessionEntity? session = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var session = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (session != null)
     {
       session.Update(@event);

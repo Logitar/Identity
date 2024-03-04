@@ -27,11 +27,12 @@ public static class DependencyInjectionExtensions
         IConfiguration configuration = serviceProvider.GetRequiredService<IConfiguration>();
         return configuration.GetSection("Pbkdf2").Get<Pbkdf2Settings>() ?? new();
       })
+      .AddTransient<IEventBus, EventBus>()
       .AddTransient<ITokenManager, JsonWebTokenManager>();
   }
 
-  public static IEnumerable<JsonConverter> GetLogitarIdentityJsonConverters(this IServiceProvider serviceProvider) => new JsonConverter[]
-  {
+  public static IEnumerable<JsonConverter> GetLogitarIdentityJsonConverters(this IServiceProvider serviceProvider) =>
+  [
     serviceProvider.GetRequiredService<PasswordConverter>(),
     new ApiKeyIdConverter(),
     new DescriptionConverter(),
@@ -47,7 +48,7 @@ public static class DependencyInjectionExtensions
     new UniqueNameConverter(),
     new UrlConverter(),
     new UserIdConverter()
-  };
+  ];
 
   private static IServiceCollection AddPasswordStrategies(this IServiceCollection services)
   {

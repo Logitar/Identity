@@ -2,9 +2,10 @@
 using Logitar.Identity.Domain.Users.Events;
 using Logitar.Identity.EntityFrameworkCore.Relational.CustomAttributes;
 using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
+using Logitar.Identity.Infrastructure.Handlers;
 using Microsoft.EntityFrameworkCore;
 
-namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Users;
+namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers;
 
 public class UserEventHandler : IUserEventHandler
 {
@@ -21,7 +22,7 @@ public class UserEventHandler : IUserEventHandler
 
   public virtual async Task HandleAsync(UserAddressChangedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var user = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (user != null)
     {
       user.SetAddress(@event);
@@ -32,7 +33,7 @@ public class UserEventHandler : IUserEventHandler
 
   public virtual async Task HandleAsync(UserAuthenticatedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var user = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (user != null)
     {
       user.Authenticate(@event);
@@ -43,7 +44,7 @@ public class UserEventHandler : IUserEventHandler
 
   public virtual async Task HandleAsync(UserCreatedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var user = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (user == null)
     {
       user = new(@event);
@@ -57,7 +58,7 @@ public class UserEventHandler : IUserEventHandler
 
   public virtual async Task HandleAsync(UserDeletedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var user = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (user != null)
     {
       Context.Users.Remove(user);
@@ -70,7 +71,7 @@ public class UserEventHandler : IUserEventHandler
 
   public virtual async Task HandleAsync(UserDisabledEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var user = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (user != null)
     {
       user.Disable(@event);
@@ -81,7 +82,7 @@ public class UserEventHandler : IUserEventHandler
 
   public virtual async Task HandleAsync(UserEmailChangedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var user = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (user != null)
     {
       user.SetEmail(@event);
@@ -93,7 +94,7 @@ public class UserEventHandler : IUserEventHandler
 
   public virtual async Task HandleAsync(UserEnabledEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var user = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (user != null)
     {
       user.Enable(@event);
@@ -104,7 +105,7 @@ public class UserEventHandler : IUserEventHandler
 
   public virtual async Task HandleAsync(UserIdentifierChangedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var user = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (user != null)
     {
       user.SetCustomIdentifier(@event);
@@ -115,7 +116,7 @@ public class UserEventHandler : IUserEventHandler
 
   public virtual async Task HandleAsync(UserIdentifierRemovedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var user = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (user != null)
     {
       user.RemoveCustomIdentifier(@event);
@@ -126,7 +127,7 @@ public class UserEventHandler : IUserEventHandler
 
   public virtual async Task HandleAsync(UserPasswordEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var user = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (user != null)
     {
       user.SetPassword(@event);
@@ -137,7 +138,7 @@ public class UserEventHandler : IUserEventHandler
 
   public virtual async Task HandleAsync(UserPhoneChangedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var user = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (user != null)
     {
       user.SetPhone(@event);
@@ -148,10 +149,10 @@ public class UserEventHandler : IUserEventHandler
 
   public virtual async Task HandleAsync(UserRoleAddedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var user = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (user != null)
     {
-      RoleEntity role = await Context.Roles
+      var role = await Context.Roles
       .SingleOrDefaultAsync(x => x.AggregateId == @event.RoleId.AggregateId.Value, cancellationToken)
       ?? throw new InvalidOperationException($"The role entity 'AggregateId={@event.AggregateId}' could not be found.");
 
@@ -163,7 +164,7 @@ public class UserEventHandler : IUserEventHandler
 
   public virtual async Task HandleAsync(UserRoleRemovedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var user = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (user != null)
     {
       user.RemoveRole(@event);
@@ -174,7 +175,7 @@ public class UserEventHandler : IUserEventHandler
 
   public virtual async Task HandleAsync(UserSignedInEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var user = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (user != null)
     {
       user.SignIn(@event);
@@ -185,7 +186,7 @@ public class UserEventHandler : IUserEventHandler
 
   public virtual async Task HandleAsync(UserUniqueNameChangedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var user = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (user != null)
     {
       user.SetUniqueName(@event);
@@ -197,7 +198,7 @@ public class UserEventHandler : IUserEventHandler
 
   public virtual async Task HandleAsync(UserUpdatedEvent @event, CancellationToken cancellationToken)
   {
-    UserEntity? user = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var user = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (user != null)
     {
       user.Update(@event);
@@ -227,7 +228,7 @@ public class UserEventHandler : IUserEventHandler
     => await SaveActorAsync(user, isDeleted: false, cancellationToken);
   protected virtual async Task SaveActorAsync(UserEntity user, bool isDeleted, CancellationToken cancellationToken)
   {
-    ActorEntity? actor = await Context.Actors
+    var actor = await Context.Actors
       .SingleOrDefaultAsync(x => x.Id == user.AggregateId, cancellationToken);
 
     if (actor == null)

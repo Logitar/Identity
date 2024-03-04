@@ -2,9 +2,10 @@
 using Logitar.Identity.Domain.Passwords.Events;
 using Logitar.Identity.EntityFrameworkCore.Relational.CustomAttributes;
 using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
+using Logitar.Identity.Infrastructure.Handlers;
 using Microsoft.EntityFrameworkCore;
 
-namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Passwords;
+namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers;
 
 public class OneTimePasswordEventHandler : IOneTimePasswordEventHandler
 {
@@ -21,7 +22,7 @@ public class OneTimePasswordEventHandler : IOneTimePasswordEventHandler
 
   public virtual async Task HandleAsync(OneTimePasswordCreatedEvent @event, CancellationToken cancellationToken)
   {
-    OneTimePasswordEntity? oneTimePassword = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var oneTimePassword = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (oneTimePassword == null)
     {
       oneTimePassword = new(@event);
@@ -34,7 +35,7 @@ public class OneTimePasswordEventHandler : IOneTimePasswordEventHandler
 
   public virtual async Task HandleAsync(OneTimePasswordDeletedEvent @event, CancellationToken cancellationToken)
   {
-    OneTimePasswordEntity? oneTimePassword = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var oneTimePassword = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (oneTimePassword != null)
     {
       Context.OneTimePasswords.Remove(oneTimePassword);
@@ -46,7 +47,7 @@ public class OneTimePasswordEventHandler : IOneTimePasswordEventHandler
 
   public virtual async Task HandleAsync(OneTimePasswordUpdatedEvent @event, CancellationToken cancellationToken)
   {
-    OneTimePasswordEntity? oneTimePassword = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var oneTimePassword = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (oneTimePassword != null)
     {
       oneTimePassword.Update(@event);
@@ -58,7 +59,7 @@ public class OneTimePasswordEventHandler : IOneTimePasswordEventHandler
 
   public virtual async Task HandleAsync(OneTimePasswordValidationFailedEvent @event, CancellationToken cancellationToken)
   {
-    OneTimePasswordEntity? oneTimePassword = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var oneTimePassword = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (oneTimePassword != null)
     {
       oneTimePassword.Fail(@event);
@@ -69,7 +70,7 @@ public class OneTimePasswordEventHandler : IOneTimePasswordEventHandler
 
   public virtual async Task HandleAsync(OneTimePasswordValidationSucceededEvent @event, CancellationToken cancellationToken)
   {
-    OneTimePasswordEntity? oneTimePassword = await TryLoadAsync(@event.AggregateId, cancellationToken);
+    var oneTimePassword = await TryLoadAsync(@event.AggregateId, cancellationToken);
     if (oneTimePassword != null)
     {
       oneTimePassword.Succeed(@event);
