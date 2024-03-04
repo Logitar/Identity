@@ -1,6 +1,6 @@
 ﻿using Logitar.Identity.Domain.Users.Events;
 
-namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Users;
+namespace Logitar.Identity.Infrastructure.Handlers;
 
 public interface IUserEventHandler
 {

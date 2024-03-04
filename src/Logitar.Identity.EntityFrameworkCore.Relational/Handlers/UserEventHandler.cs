@@ -2,9 +2,10 @@
 using Logitar.Identity.Domain.Users.Events;
 using Logitar.Identity.EntityFrameworkCore.Relational.CustomAttributes;
 using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
+using Logitar.Identity.Infrastructure.Handlers;
 using Microsoft.EntityFrameworkCore;
 
-namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Users;
+namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers;
 
 public class UserEventHandler : IUserEventHandler
 {
@@ -152,8 +153,8 @@ public class UserEventHandler : IUserEventHandler
     if (user != null)
     {
       RoleEntity role = await Context.Roles
-      .SingleOrDefaultAsync(x => x.AggregateId == @event.RoleId.AggregateId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The role entity 'AggregateId={@event.AggregateId}' could not be found.");
+        .SingleOrDefaultAsync(x => x.AggregateId == @event.RoleId.AggregateId.Value, cancellationToken)
+        ?? throw new InvalidOperationException($"The role entity 'AggregateId={@event.AggregateId}' could not be found.");
 
       user.AddRole(role, @event);
 

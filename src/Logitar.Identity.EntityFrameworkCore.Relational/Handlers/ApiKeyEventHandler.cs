@@ -2,9 +2,10 @@
 using Logitar.Identity.Domain.ApiKeys.Events;
 using Logitar.Identity.EntityFrameworkCore.Relational.CustomAttributes;
 using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
+using Logitar.Identity.Infrastructure.Handlers;
 using Microsoft.EntityFrameworkCore;
 
-namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers.ApiKeys;
+namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers;
 
 public class ApiKeyEventHandler : IApiKeyEventHandler
 {

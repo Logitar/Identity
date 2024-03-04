@@ -5,14 +5,10 @@ using Logitar.Identity.Domain.Passwords.Events;
 using Logitar.Identity.Domain.Roles.Events;
 using Logitar.Identity.Domain.Sessions.Events;
 using Logitar.Identity.Domain.Users.Events;
-using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.ApiKeys;
-using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Passwords;
-using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Roles;
-using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Sessions;
-using Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Users;
+using Logitar.Identity.Infrastructure.Handlers;
 using MediatR;
 
-namespace Logitar.Identity.EntityFrameworkCore.Relational;
+namespace Logitar.Identity.Infrastructure;
 
 public class EventBus : IEventBus
 {

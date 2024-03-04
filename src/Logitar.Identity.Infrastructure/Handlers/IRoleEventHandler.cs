@@ -1,6 +1,6 @@
 ﻿using Logitar.Identity.Domain.Roles.Events;
 
-namespace Logitar.Identity.EntityFrameworkCore.Relational.Handlers.Roles;
+namespace Logitar.Identity.Infrastructure.Handlers;
 
 public interface IRoleEventHandler
 {
