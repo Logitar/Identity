@@ -48,7 +48,19 @@ public class UserManager : IUserManager
   /// <returns>The found users.</returns>
   public virtual async Task<FoundUsers> FindAsync(string? tenantIdValue, string id, CancellationToken cancellationToken)
   {
-    IUserSettings userSettings = UserSettingsResolver.Resolve();
+    return await FindAsync(tenantIdValue, id, userSettings: null, cancellationToken);
+  }
+  /// <summary>
+  /// Tries finding an user by its unique identifier, unique name, or email address if they are unique.
+  /// </summary>
+  /// <param name="tenantIdValue">The identifier of the tenant in which to search.</param>
+  /// <param name="id">The identifier of the user to find.</param>
+  /// <param name="userSettings">The user settings.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The found users.</returns>
+  public virtual async Task<FoundUsers> FindAsync(string? tenantIdValue, string id, IUserSettings? userSettings, CancellationToken cancellationToken)
+  {
+    userSettings ??= UserSettingsResolver.Resolve();
 
     TenantId? tenantId = null;
     try
@@ -117,6 +129,18 @@ public class UserManager : IUserManager
   /// <returns>The asynchronous operation.</returns>
   public virtual async Task SaveAsync(UserAggregate user, ActorId actorId, CancellationToken cancellationToken)
   {
+    await SaveAsync(user, userSettings: null, actorId, cancellationToken);
+  }
+  /// <summary>
+  /// Saves the specified user, performing model validation such as unique name and email address unicity.
+  /// </summary>
+  /// <param name="user">The user to save.</param>
+  /// <param name="userSettings">The user settings.</param>
+  /// <param name="actorId">The actor identifier.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The asynchronous operation.</returns>
+  public virtual async Task SaveAsync(UserAggregate user, IUserSettings? userSettings, ActorId actorId, CancellationToken cancellationToken)
+  {
     bool hasBeenDeleted = false;
     bool hasEmailChanged = false;
     bool hasUniqueNameChanged = false;
@@ -147,7 +171,7 @@ public class UserManager : IUserManager
 
     if (hasEmailChanged && user.Email != null)
     {
-      IUserSettings userSettings = UserSettingsResolver.Resolve();
+      userSettings ??= UserSettingsResolver.Resolve();
       if (userSettings.RequireUniqueEmail)
       {
         IEnumerable<UserAggregate> users = await UserRepository.LoadAsync(user.TenantId, user.Email, cancellationToken);
