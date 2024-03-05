@@ -9,6 +9,14 @@ services:
       ACCEPT_EULA: 'Y'
       SA_PASSWORD: Ks875v3qctRxE6Z4
 
+  identity_postgres:
+    image: postgres
+    container_name: Logitar.Identity_postgres
+    ports:
+      - 5436:5432
+    environment:
+      POSTGRES_PASSWORD: zHSNLvy74Z3nUgcC
+
   identity_demo:
     build:
       context: .
@@ -18,8 +26,9 @@ services:
     depends_on:
       - identity_mssql
     restart: unless-stopped
+    ports:
+      - 8086:8080
     environment:
       ASPNETCORE_Environment: Development
+      POSTGRESQLCONNSTR_Identity: "User ID=postgres;Password=zHSNLvy74Z3nUgcC;Host=identity_postgres;Port=5432;Database=Identity;Pooling=true;Min Pool Size=0;Max Pool Size=100;Connection Lifetime=0;"
       SQLCONNSTR_Identity: "Server=identity_mssql;Database=Identity;User Id=SA;Password=Ks875v3qctRxE6Z4;Persist Security Info=False;Encrypt=False;"
-    ports:
-      - 36190:8080

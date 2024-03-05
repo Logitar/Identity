@@ -34,7 +34,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Identity.Infrastruc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Identity.Tests", "tests\Logitar.Identity.Tests\Logitar.Identity.Tests.csproj", "{D0781AC3-5827-4DAE-BBAD-481634FF3C0F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.Contracts", "src\Logitar.Identity.Contracts\Logitar.Identity.Contracts.csproj", "{0E9D9B1A-B62C-4036-91B8-6E34CAA5F938}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Identity.Contracts", "src\Logitar.Identity.Contracts\Logitar.Identity.Contracts.csproj", "{0E9D9B1A-B62C-4036-91B8-6E34CAA5F938}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.EntityFrameworkCore.PostgreSQL", "src\Logitar.Identity.EntityFrameworkCore.PostgreSQL\Logitar.Identity.EntityFrameworkCore.PostgreSQL.csproj", "{B06204BC-FE92-4C5E-9A70-25D100AB5857}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -82,6 +84,10 @@ Global
 		{0E9D9B1A-B62C-4036-91B8-6E34CAA5F938}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E9D9B1A-B62C-4036-91B8-6E34CAA5F938}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E9D9B1A-B62C-4036-91B8-6E34CAA5F938}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B06204BC-FE92-4C5E-9A70-25D100AB5857}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B06204BC-FE92-4C5E-9A70-25D100AB5857}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B06204BC-FE92-4C5E-9A70-25D100AB5857}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B06204BC-FE92-4C5E-9A70-25D100AB5857}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
