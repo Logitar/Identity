@@ -188,7 +188,7 @@ public class UserEntity : AggregateEntity
   {
     Update(@event);
 
-    AuthenticatedOn = @event.OccurredOn;
+    AuthenticatedOn = @event.OccurredOn.ToUniversalTime();
   }
 
   public void Disable(UserDisabledEvent @event)
@@ -323,7 +323,7 @@ public class UserEntity : AggregateEntity
   {
     Update(@event);
 
-    AuthenticatedOn = @event.OccurredOn;
+    AuthenticatedOn = @event.OccurredOn.ToUniversalTime();
   }
 
   public void Update(UserUpdatedEvent @event)

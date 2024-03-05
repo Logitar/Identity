@@ -1,7 +1,7 @@
 ﻿using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 
-namespace Logitar.Identity.EntityFrameworkCore.SqlServer;
+namespace Logitar.Identity.EntityFrameworkCore.Relational;
 
 internal static class AssertSessions
 {
@@ -16,9 +16,9 @@ internal static class AssertSessions
 
     Assert.Equal(session.Version, entity.Version);
     Assert.Equal(session.CreatedBy.Value, entity.CreatedBy);
-    Assertions.Equal(session.CreatedOn, entity.CreatedOn, TimeSpan.FromMinutes(1));
+    Assertions.Equal(session.CreatedOn, entity.CreatedOn, TimeSpan.FromSeconds(1));
     Assert.Equal(session.UpdatedBy.Value, entity.UpdatedBy);
-    Assertions.Equal(session.UpdatedOn, entity.UpdatedOn, TimeSpan.FromMinutes(1));
+    Assertions.Equal(session.UpdatedOn, entity.UpdatedOn, TimeSpan.FromSeconds(1));
 
     Assert.NotNull(entity.User);
     Assert.Equal(session.UserId.Value, entity.User.AggregateId);

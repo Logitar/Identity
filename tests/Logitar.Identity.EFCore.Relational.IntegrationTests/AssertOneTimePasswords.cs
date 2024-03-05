@@ -1,7 +1,7 @@
 ﻿using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 
-namespace Logitar.Identity.EntityFrameworkCore.SqlServer;
+namespace Logitar.Identity.EntityFrameworkCore.Relational;
 
 internal static class AssertOneTimePasswords
 {
@@ -16,13 +16,13 @@ internal static class AssertOneTimePasswords
 
     Assert.Equal(oneTimePassword.Version, entity.Version);
     Assert.Equal(oneTimePassword.CreatedBy.Value, entity.CreatedBy);
-    Assertions.Equal(oneTimePassword.CreatedOn, entity.CreatedOn, TimeSpan.FromMinutes(1));
+    Assertions.Equal(oneTimePassword.CreatedOn, entity.CreatedOn, TimeSpan.FromSeconds(1));
     Assert.Equal(oneTimePassword.UpdatedBy.Value, entity.UpdatedBy);
-    Assertions.Equal(oneTimePassword.UpdatedOn, entity.UpdatedOn, TimeSpan.FromMinutes(1));
+    Assertions.Equal(oneTimePassword.UpdatedOn, entity.UpdatedOn, TimeSpan.FromSeconds(1));
 
     Assert.Equal(oneTimePassword.TenantId?.Value, entity.TenantId);
 
-    Assertions.Equal(oneTimePassword.ExpiresOn, entity.ExpiresOn);
+    Assertions.Equal(oneTimePassword.ExpiresOn, entity.ExpiresOn, TimeSpan.FromSeconds(1));
     Assert.Equal(oneTimePassword.MaximumAttempts, entity.MaximumAttempts);
 
     Assert.Equal(oneTimePassword.AttemptCount, entity.AttemptCount);

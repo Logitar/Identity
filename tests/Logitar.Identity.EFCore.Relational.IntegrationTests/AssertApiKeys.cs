@@ -1,9 +1,8 @@
 ﻿using Logitar.Identity.Domain.ApiKeys;
 using Logitar.Identity.Domain.Roles;
-using Logitar.Identity.EntityFrameworkCore.Relational;
 using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 
-namespace Logitar.Identity.EntityFrameworkCore.SqlServer;
+namespace Logitar.Identity.EntityFrameworkCore.Relational;
 
 internal static class AssertApiKeys
 {
@@ -18,16 +17,16 @@ internal static class AssertApiKeys
 
     Assert.Equal(apiKey.Version, entity.Version);
     Assert.Equal(apiKey.CreatedBy.Value, entity.CreatedBy);
-    Assertions.Equal(apiKey.CreatedOn, entity.CreatedOn, TimeSpan.FromMinutes(1));
+    Assertions.Equal(apiKey.CreatedOn, entity.CreatedOn, TimeSpan.FromSeconds(1));
     Assert.Equal(apiKey.UpdatedBy.Value, entity.UpdatedBy);
-    Assertions.Equal(apiKey.UpdatedOn, entity.UpdatedOn, TimeSpan.FromMinutes(1));
+    Assertions.Equal(apiKey.UpdatedOn, entity.UpdatedOn, TimeSpan.FromSeconds(1));
 
     Assert.Equal(apiKey.TenantId?.Value, entity.TenantId);
     Assert.NotEmpty(entity.SecretHash);
     Assert.Equal(apiKey.DisplayName.Value, entity.DisplayName);
     Assert.Equal(apiKey.Description?.Value, entity.Description);
-    Assert.Equal(apiKey.ExpiresOn?.ToUniversalTime(), entity.ExpiresOn);
-    Assert.Equal(apiKey.AuthenticatedOn?.ToUniversalTime(), entity.AuthenticatedOn);
+    Assertions.Equal(apiKey.ExpiresOn?.ToUniversalTime(), entity.ExpiresOn, TimeSpan.FromSeconds(1));
+    Assertions.Equal(apiKey.AuthenticatedOn?.ToUniversalTime(), entity.AuthenticatedOn, TimeSpan.FromSeconds(1));
 
     Assert.Equal(apiKey.CustomAttributes, entity.CustomAttributes);
 

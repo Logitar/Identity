@@ -1,4 +1,4 @@
-﻿namespace Logitar.Identity.EntityFrameworkCore.SqlServer;
+﻿namespace Logitar.Identity.EntityFrameworkCore.Relational;
 
 internal static class Assertions
 {
@@ -22,16 +22,16 @@ internal static class Assertions
     }
     if (actual.Kind == DateTimeKind.Unspecified)
     {
-      actual = DateTime.SpecifyKind(expected, DateTimeKind.Utc);
+      actual = DateTime.SpecifyKind(actual, DateTimeKind.Utc);
     }
 
     if (precision.HasValue)
     {
-      Assert.Equal(expected, actual, precision.Value);
+      Assert.Equal(expected.ToUniversalTime(), actual.ToUniversalTime(), precision.Value);
     }
     else
     {
-      Assert.Equal(expected, actual);
+      Assert.Equal(expected.ToUniversalTime(), actual.ToUniversalTime());
     }
   }
 }

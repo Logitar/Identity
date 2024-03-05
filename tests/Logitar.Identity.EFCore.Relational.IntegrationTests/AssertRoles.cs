@@ -1,7 +1,7 @@
 ﻿using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 
-namespace Logitar.Identity.EntityFrameworkCore.SqlServer;
+namespace Logitar.Identity.EntityFrameworkCore.Relational;
 
 internal static class AssertRoles
 {
@@ -16,9 +16,9 @@ internal static class AssertRoles
 
     Assert.Equal(role.Version, entity.Version);
     Assert.Equal(role.CreatedBy.Value, entity.CreatedBy);
-    Assertions.Equal(role.CreatedOn, entity.CreatedOn, TimeSpan.FromMinutes(1));
+    Assertions.Equal(role.CreatedOn, entity.CreatedOn, TimeSpan.FromSeconds(1));
     Assert.Equal(role.UpdatedBy.Value, entity.UpdatedBy);
-    Assertions.Equal(role.UpdatedOn, entity.UpdatedOn, TimeSpan.FromMinutes(1));
+    Assertions.Equal(role.UpdatedOn, entity.UpdatedOn, TimeSpan.FromSeconds(1));
 
     Assert.Equal(role.TenantId?.Value, entity.TenantId);
     Assert.Equal(role.UniqueName.Value, entity.UniqueName);

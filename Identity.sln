@@ -38,6 +38,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Identity.Contracts"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.EntityFrameworkCore.PostgreSQL", "src\Logitar.Identity.EntityFrameworkCore.PostgreSQL\Logitar.Identity.EntityFrameworkCore.PostgreSQL.csproj", "{B06204BC-FE92-4C5E-9A70-25D100AB5857}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.EFCore.Relational.IntegrationTests", "tests\Logitar.Identity.EFCore.Relational.IntegrationTests\Logitar.Identity.EFCore.Relational.IntegrationTests.csproj", "{5C6B80B4-D3BA-4DE0-928A-E4F5BA9529CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.EFCore.PostgreSQL.IntegrationTests", "tests\Logitar.Identity.EFCore.PostgreSQL.IntegrationTests\Logitar.Identity.EFCore.PostgreSQL.IntegrationTests.csproj", "{FBB0D3D5-0282-4E6A-9B03-144CC1347072}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,6 +92,14 @@ Global
 		{B06204BC-FE92-4C5E-9A70-25D100AB5857}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B06204BC-FE92-4C5E-9A70-25D100AB5857}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B06204BC-FE92-4C5E-9A70-25D100AB5857}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C6B80B4-D3BA-4DE0-928A-E4F5BA9529CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C6B80B4-D3BA-4DE0-928A-E4F5BA9529CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C6B80B4-D3BA-4DE0-928A-E4F5BA9529CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C6B80B4-D3BA-4DE0-928A-E4F5BA9529CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBB0D3D5-0282-4E6A-9B03-144CC1347072}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBB0D3D5-0282-4E6A-9B03-144CC1347072}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBB0D3D5-0282-4E6A-9B03-144CC1347072}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBB0D3D5-0282-4E6A-9B03-144CC1347072}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -97,6 +109,8 @@ Global
 		{FA9AB722-026B-4842-B888-E9824568CBC1} = {BCB8A692-DF88-4E50-91A7-AD91E466559C}
 		{04C669C6-0B63-45A1-8F0F-16A7E7FC023E} = {BCB8A692-DF88-4E50-91A7-AD91E466559C}
 		{D0781AC3-5827-4DAE-BBAD-481634FF3C0F} = {BCB8A692-DF88-4E50-91A7-AD91E466559C}
+		{5C6B80B4-D3BA-4DE0-928A-E4F5BA9529CA} = {BCB8A692-DF88-4E50-91A7-AD91E466559C}
+		{FBB0D3D5-0282-4E6A-9B03-144CC1347072} = {BCB8A692-DF88-4E50-91A7-AD91E466559C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {45FD7647-C5AB-4CE1-A93C-59A73FDD2196}

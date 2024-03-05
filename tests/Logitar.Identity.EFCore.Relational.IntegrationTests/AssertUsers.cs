@@ -1,9 +1,8 @@
 ﻿using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Users;
-using Logitar.Identity.EntityFrameworkCore.Relational;
 using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 
-namespace Logitar.Identity.EntityFrameworkCore.SqlServer;
+namespace Logitar.Identity.EntityFrameworkCore.Relational;
 
 internal static class AssertUsers
 {
@@ -18,9 +17,9 @@ internal static class AssertUsers
 
     Assert.Equal(user.Version, entity.Version);
     Assert.Equal(user.CreatedBy.Value, entity.CreatedBy);
-    Assertions.Equal(user.CreatedOn, entity.CreatedOn, TimeSpan.FromMinutes(1));
+    Assertions.Equal(user.CreatedOn, entity.CreatedOn, TimeSpan.FromSeconds(1));
     Assert.Equal(user.UpdatedBy.Value, entity.UpdatedBy);
-    Assertions.Equal(user.UpdatedOn, entity.UpdatedOn, TimeSpan.FromMinutes(1));
+    Assertions.Equal(user.UpdatedOn, entity.UpdatedOn, TimeSpan.FromSeconds(1));
 
     Assert.Equal(user.TenantId?.Value, entity.TenantId);
 
@@ -114,7 +113,7 @@ internal static class AssertUsers
     Assert.Equal(user.FullName, entity.FullName);
     Assert.Equal(user.Nickname?.Value, entity.Nickname);
 
-    Assertions.Equal(user.Birthdate, entity.Birthdate, TimeSpan.FromMinutes(1));
+    Assertions.Equal(user.Birthdate, entity.Birthdate, TimeSpan.FromSeconds(1));
     Assert.Equal(user.Gender?.Value, entity.Gender);
     Assert.Equal(user.Locale?.Code, entity.Locale);
     Assert.Equal(user.TimeZone?.Id, entity.TimeZone);
@@ -123,7 +122,7 @@ internal static class AssertUsers
     Assert.Equal(user.Profile?.Value, entity.Profile);
     Assert.Equal(user.Website?.Value, entity.Website);
 
-    Assert.Equal(user.AuthenticatedOn, entity.AuthenticatedOn);
+    Assertions.Equal(user.AuthenticatedOn, entity.AuthenticatedOn, TimeSpan.FromSeconds(1));
 
     Assert.Equal(user.CustomAttributes, entity.CustomAttributes);
 

@@ -1,10 +1,10 @@
 ﻿using Bogus;
+using Logitar.Data;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
-using Logitar.Identity.EntityFrameworkCore.Relational;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Repositories;
+namespace Logitar.Identity.EntityFrameworkCore.Relational.Repositories;
 
 public abstract class RepositoryTests
 {
@@ -20,15 +20,16 @@ public abstract class RepositoryTests
       .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
       .Build();
 
-    string connectionString = (configuration.GetValue<string>("SQLCONNSTR_Identity") ?? string.Empty)
-      .Replace("{Database}", GetType().Name);
-
-    ServiceProvider = new ServiceCollection()
-      .AddSingleton(configuration)
-      .AddLogitarIdentityWithEntityFrameworkCoreSqlServer(connectionString)
-      .BuildServiceProvider();
+    ServiceCollection services = new();
+    services.AddSingleton(configuration);
+    ConfigureServices(services, configuration);
+    ServiceProvider = services.BuildServiceProvider();
 
     EventContext = ServiceProvider.GetRequiredService<EventContext>();
     IdentityContext = ServiceProvider.GetRequiredService<IdentityContext>();
   }
+
+  protected abstract void ConfigureServices(IServiceCollection services, IConfiguration configuration);
+
+  protected abstract IDeleteBuilder CreateDeleteBuilder(TableId table);
 }
