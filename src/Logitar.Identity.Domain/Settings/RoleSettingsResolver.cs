@@ -32,7 +32,7 @@ public class RoleSettingsResolver : IRoleSettingsResolver
   /// <returns>The role settings.</returns>
   public virtual IRoleSettings Resolve()
   {
-    RoleSettings ??= Configuration.GetSection("Role").Get<RoleSettings>() ?? new();
+    RoleSettings ??= Configuration.GetSection("Identity").GetSection("Role").Get<RoleSettings>() ?? new();
     return RoleSettings;
   }
 }

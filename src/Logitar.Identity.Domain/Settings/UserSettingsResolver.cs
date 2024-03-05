@@ -32,7 +32,7 @@ public class UserSettingsResolver : IUserSettingsResolver
   /// <returns>The user settings.</returns>
   public virtual IUserSettings Resolve()
   {
-    UserSettings ??= Configuration.GetSection("User").Get<UserSettings>() ?? new();
+    UserSettings ??= Configuration.GetSection("Identity").GetSection("User").Get<UserSettings>() ?? new();
     return UserSettings;
   }
 }

@@ -8,9 +8,9 @@ public class UserSettingsResolverTests
 {
   private readonly Dictionary<string, string?> _settings = new()
   {
-    ["User:Password:HashingStrategy"] = "CUSTOM",
-    ["User:UniqueName:AllowedCharacters"] = "abcdefghijklmnopqrstuvwxyz0123456789@",
-    ["User:RequireUniqueEmail"] = "true"
+    ["Identity:User:Password:HashingStrategy"] = "CUSTOM",
+    ["Identity:User:UniqueName:AllowedCharacters"] = "abcdefghijklmnopqrstuvwxyz0123456789@",
+    ["Identity:User:RequireUniqueEmail"] = "true"
   };
 
   private readonly IConfiguration _configuration;
@@ -34,8 +34,8 @@ public class UserSettingsResolverTests
     IUserSettings settings = _resolver.Resolve();
     Assert.Equal(1, _resolver.ReadCounter);
 
-    Assert.Equal(_settings["User:Password:HashingStrategy"], settings.Password.HashingStrategy);
-    Assert.Equal(_settings["User:UniqueName:AllowedCharacters"], settings.UniqueName.AllowedCharacters);
+    Assert.Equal(_settings["Identity:User:Password:HashingStrategy"], settings.Password.HashingStrategy);
+    Assert.Equal(_settings["Identity:User:UniqueName:AllowedCharacters"], settings.UniqueName.AllowedCharacters);
     Assert.True(settings.RequireUniqueEmail);
   }
 }
