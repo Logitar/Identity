@@ -8,7 +8,7 @@ public class RoleSettingsResolverTests
 {
   private readonly Dictionary<string, string?> _settings = new()
   {
-    ["Role:UniqueName:AllowedCharacters"] = "abcdefghijklmnopqrstuvwxyz_"
+    ["Identity:Role:UniqueName:AllowedCharacters"] = "abcdefghijklmnopqrstuvwxyz_"
   };
 
   private readonly IConfiguration _configuration;
@@ -32,6 +32,6 @@ public class RoleSettingsResolverTests
     IRoleSettings settings = _resolver.Resolve();
     Assert.Equal(1, _resolver.ReadCounter);
 
-    Assert.Equal(_settings["Role:UniqueName:AllowedCharacters"], settings.UniqueName.AllowedCharacters);
+    Assert.Equal(_settings["Identity:Role:UniqueName:AllowedCharacters"], settings.UniqueName.AllowedCharacters);
   }
 }
