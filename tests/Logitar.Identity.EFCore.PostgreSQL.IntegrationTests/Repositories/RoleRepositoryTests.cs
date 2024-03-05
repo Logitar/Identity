@@ -1,10 +1,10 @@
 ﻿using Logitar.Data;
-using Logitar.Data.SqlServer;
+using Logitar.Data.PostgreSQL;
 using Logitar.Identity.EntityFrameworkCore.Relational.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Repositories;
+namespace Logitar.Identity.EntityFrameworkCore.PostgreSQL.Repositories;
 
 [Trait(Traits.Category, Categories.Integration)]
 public class RoleRepositoryTests : RoleRepositoryTestsBase, IAsyncLifetime
@@ -15,9 +15,9 @@ public class RoleRepositoryTests : RoleRepositoryTestsBase, IAsyncLifetime
 
   protected override void ConfigureServices(IServiceCollection services, IConfiguration configuration)
   {
-    string connectionString = (configuration.GetValue<string>("SQLCONNSTR_Identity") ?? string.Empty).Replace("{Database}", GetType().Name);
-    services.AddLogitarIdentityWithEntityFrameworkCoreSqlServer(connectionString);
+    string connectionString = (configuration.GetValue<string>("POSTGRESQLCONNSTR_Identity") ?? string.Empty).Replace("{Database}", GetType().Name);
+    services.AddLogitarIdentityWithEntityFrameworkCorePostgreSQL(connectionString);
   }
 
-  protected override IDeleteBuilder CreateDeleteBuilder(TableId table) => SqlServerDeleteBuilder.From(table);
+  protected override IDeleteBuilder CreateDeleteBuilder(TableId table) => PostgresDeleteBuilder.From(table);
 }

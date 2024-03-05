@@ -1,4 +1,5 @@
-﻿using Logitar.Identity.EntityFrameworkCore.SqlServer;
+﻿using Logitar.Identity.EntityFrameworkCore.PostgreSQL;
+using Logitar.Identity.EntityFrameworkCore.SqlServer;
 
 namespace Logitar.Identity.Demo;
 
@@ -26,8 +27,21 @@ internal class Startup : StartupBase
       services.AddSwaggerGen();
     }
 
-    string connectionString = _configuration.GetValue<string>("SQLCONNSTR_Identity") ?? string.Empty;
-    services.AddLogitarIdentityWithEntityFrameworkCoreSqlServer(connectionString);
+    string connectionString;
+    DatabaseProvider databaseProvider = _configuration.GetValue<DatabaseProvider?>("DatabaseProvider") ?? DatabaseProvider.EntityFrameworkCoreSqlServer;
+    switch (databaseProvider)
+    {
+      case DatabaseProvider.EntityFrameworkCorePostgreSQL:
+        connectionString = _configuration.GetValue<string>("POSTGRESQLCONNSTR_Identity") ?? string.Empty;
+        services.AddLogitarIdentityWithEntityFrameworkCorePostgreSQL(connectionString);
+        break;
+      case DatabaseProvider.EntityFrameworkCoreSqlServer:
+        connectionString = _configuration.GetValue<string>("SQLCONNSTR_Identity") ?? string.Empty;
+        services.AddLogitarIdentityWithEntityFrameworkCoreSqlServer(connectionString);
+        break;
+      default:
+        throw new DatabaseProviderNotSupportedException(databaseProvider);
+    }
   }
 
   public override void Configure(IApplicationBuilder builder)
