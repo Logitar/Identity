@@ -15,14 +15,14 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Logitar/Identity</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <AssemblyVersion>0.11.4.0</AssemblyVersion>
+    <AssemblyVersion>0.12.0.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>0.11.4</Version>
+    <Version>0.12.0</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <PackageReleaseNotes>Added the Modification contract.</PackageReleaseNotes>
+    <PackageReleaseNotes>Refactored the EventBus, warnings, settings and databases.</PackageReleaseNotes>
     <PackageTags>logitar;net;framework;identity;contracts</PackageTags>
     <PackageProjectUrl>https://github.com/Logitar/Identity/tree/main/src/Logitar.Identity.Contracts</PackageProjectUrl>
   </PropertyGroup>
