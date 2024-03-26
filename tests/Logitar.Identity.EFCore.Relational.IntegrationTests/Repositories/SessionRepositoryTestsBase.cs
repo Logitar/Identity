@@ -1,5 +1,6 @@
 ﻿using Logitar.Data;
 using Logitar.EventSourcing;
+using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using Logitar.Identity.Contracts.Settings;
 using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Settings;
