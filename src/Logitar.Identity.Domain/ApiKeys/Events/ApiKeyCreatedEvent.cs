@@ -28,13 +28,11 @@ public record ApiKeyCreatedEvent : DomainEvent, INotification
   /// <summary>
   /// Initializes a new instance of the <see cref="ApiKeyCreatedEvent"/> class.
   /// </summary>
-  /// <param name="actorId">The actor identifier.</param>
   /// <param name="displayName">The display name of the API key.</param>
   /// <param name="secret">The secret of the API key.</param>
   /// <param name="tenantId">The tenant identifier of the API key.</param>
-  public ApiKeyCreatedEvent(ActorId actorId, DisplayNameUnit displayName, Password secret, TenantId? tenantId)
+  public ApiKeyCreatedEvent(DisplayNameUnit displayName, Password secret, TenantId? tenantId)
   {
-    ActorId = actorId;
     DisplayName = displayName;
     Secret = secret;
     TenantId = tenantId;

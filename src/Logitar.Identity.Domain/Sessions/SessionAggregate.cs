@@ -66,7 +66,7 @@ public class SessionAggregate : AggregateRoot
     : base((id ?? SessionId.NewId()).AggregateId)
   {
     actorId ??= new(user.Id.Value);
-    Raise(new SessionCreatedEvent(actorId.Value, secret, user.Id));
+    Raise(new SessionCreatedEvent(secret, user.Id), actorId.Value);
   }
   /// <summary>
   /// Applies the specified event.
@@ -89,7 +89,7 @@ public class SessionAggregate : AggregateRoot
   {
     if (!IsDeleted)
     {
-      Raise(new SessionDeletedEvent(actorId));
+      Raise(new SessionDeletedEvent(), actorId);
     }
   }
 
@@ -133,7 +133,7 @@ public class SessionAggregate : AggregateRoot
     }
 
     actorId ??= new(UserId.Value);
-    Raise(new SessionRenewedEvent(actorId.Value, newSecret));
+    Raise(new SessionRenewedEvent(newSecret), actorId.Value);
   }
   /// <summary>
   /// Applies the specified event.
@@ -172,7 +172,7 @@ public class SessionAggregate : AggregateRoot
     if (IsActive)
     {
       actorId ??= new(UserId.Value);
-      Raise(new SessionSignedOutEvent(actorId.Value));
+      Raise(new SessionSignedOutEvent(), actorId.Value);
     }
   }
   /// <summary>
@@ -192,8 +192,7 @@ public class SessionAggregate : AggregateRoot
   {
     if (_updatedEvent.HasChanges)
     {
-      _updatedEvent.ActorId = actorId;
-      Raise(_updatedEvent);
+      Raise(_updatedEvent, actorId, DateTime.Now);
       _updatedEvent = new();
     }
   }

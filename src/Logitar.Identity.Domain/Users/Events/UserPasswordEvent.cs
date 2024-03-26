@@ -16,11 +16,9 @@ public abstract record UserPasswordEvent : DomainEvent
   /// <summary>
   /// Initializes a new instance of the <see cref="UserPasswordEvent"/> class.
   /// </summary>
-  /// <param name="actorId">The actor identifier, generally the user's identifier.</param>
   /// <param name="password">The new password of the user.</param>
-  protected UserPasswordEvent(ActorId actorId, Password password)
+  protected UserPasswordEvent(Password password)
   {
-    ActorId = actorId;
     Password = password;
   }
 }

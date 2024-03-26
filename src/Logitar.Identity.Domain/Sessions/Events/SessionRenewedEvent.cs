@@ -17,11 +17,9 @@ public record SessionRenewedEvent : DomainEvent, INotification
   /// <summary>
   /// Initializes a new instance of the <see cref="SessionRenewedEvent"/> class.
   /// </summary>
-  /// <param name="actorId">The actor identifier.</param>
   /// <param name="secret">The new secret of the session.</param>
-  public SessionRenewedEvent(ActorId actorId, Password secret)
+  public SessionRenewedEvent(Password secret)
   {
-    ActorId = actorId;
     Secret = secret;
   }
 }

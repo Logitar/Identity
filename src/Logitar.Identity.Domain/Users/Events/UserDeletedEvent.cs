@@ -11,10 +11,8 @@ public record UserDeletedEvent : DomainEvent, INotification
   /// <summary>
   /// Initializes a new instance of the <see cref="UserDeletedEvent"/> class.
   /// </summary>
-  /// <param name="actorId">The actor identifier.</param>
-  public UserDeletedEvent(ActorId actorId)
+  public UserDeletedEvent()
   {
-    ActorId = actorId;
     IsDeleted = true;
   }
 }

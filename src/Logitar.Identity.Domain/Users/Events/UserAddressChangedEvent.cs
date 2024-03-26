@@ -16,11 +16,9 @@ public record UserAddressChangedEvent : DomainEvent, INotification
   /// <summary>
   /// Initializes a new instance of the <see cref="UserAddressChangedEvent"/> class.
   /// </summary>
-  /// <param name="actorId">The actor identifier.</param>
   /// <param name="address">The new postal address of the user.</param>
-  public UserAddressChangedEvent(ActorId actorId, AddressUnit? address)
+  public UserAddressChangedEvent(AddressUnit? address)
   {
-    ActorId = actorId;
     Address = address;
   }
 }

@@ -11,11 +11,9 @@ public record UserSignedInEvent : DomainEvent, INotification
   /// <summary>
   /// Initializes a new instance of the <see cref="UserSignedInEvent"/> class.
   /// </summary>
-  /// <param name="actorId">The actor identifier.</param>
   /// <param name="occurredOn">The date and time when the authentication occurred.</param>
-  public UserSignedInEvent(ActorId actorId, DateTime occurredOn)
+  public UserSignedInEvent(DateTime occurredOn)
   {
-    ActorId = actorId;
     OccurredOn = occurredOn;
   }
 }

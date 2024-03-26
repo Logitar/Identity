@@ -16,11 +16,9 @@ public record UserEmailChangedEvent : DomainEvent, INotification
   /// <summary>
   /// Initializes a new instance of the <see cref="UserAddressChangedEvent"/> class.
   /// </summary>
-  /// <param name="actorId">The actor identifier.</param>
   /// <param name="email">The new email address of the user.</param>
-  public UserEmailChangedEvent(ActorId actorId, EmailUnit? email)
+  public UserEmailChangedEvent(EmailUnit? email)
   {
-    ActorId = actorId;
     Email = email;
   }
 }

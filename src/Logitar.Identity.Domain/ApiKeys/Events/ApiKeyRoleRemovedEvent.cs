@@ -17,11 +17,9 @@ public record ApiKeyRoleRemovedEvent : DomainEvent, INotification
   /// <summary>
   /// Initializes a new instance of the <see cref="ApiKeyRoleRemovedEvent"/> class.
   /// </summary>
-  /// <param name="actorId">The actor identifier.</param>
   /// <param name="roleId">The role identifier.</param>
-  public ApiKeyRoleRemovedEvent(ActorId actorId, RoleId roleId)
+  public ApiKeyRoleRemovedEvent(RoleId roleId)
   {
-    ActorId = actorId;
     RoleId = roleId;
   }
 }

@@ -22,12 +22,10 @@ public record SessionCreatedEvent : DomainEvent, INotification
   /// <summary>
   /// Initializes a new instance of the <see cref="SessionCreatedEvent"/> class.
   /// </summary>
-  /// <param name="actorId">The actor identifier.</param>
   /// <param name="secret">The secret of the session.</param>
   /// <param name="userId">The identifier of the user owning the session.</param>
-  public SessionCreatedEvent(ActorId actorId, Password? secret, UserId userId)
+  public SessionCreatedEvent(Password? secret, UserId userId)
   {
-    ActorId = actorId;
     Secret = secret;
     UserId = userId;
   }

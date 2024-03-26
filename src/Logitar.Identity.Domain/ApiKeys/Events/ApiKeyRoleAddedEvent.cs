@@ -17,11 +17,9 @@ public record ApiKeyRoleAddedEvent : DomainEvent, INotification
   /// <summary>
   /// Initializes a new instance of the <see cref="ApiKeyRoleAddedEvent"/> class.
   /// </summary>
-  /// <param name="actorId">The actor identifier.</param>
   /// <param name="roleId">The role identifier.</param>
-  public ApiKeyRoleAddedEvent(ActorId actorId, RoleId roleId)
+  public ApiKeyRoleAddedEvent(RoleId roleId)
   {
-    ActorId = actorId;
     RoleId = roleId;
   }
 }

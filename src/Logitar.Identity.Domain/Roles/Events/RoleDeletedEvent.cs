@@ -11,10 +11,8 @@ public record RoleDeletedEvent : DomainEvent, INotification
   /// <summary>
   /// Initializes a new instance of the <see cref="RoleDeletedEvent"/> class.
   /// </summary>
-  /// <param name="actorId">The actor identifier.</param>
-  public RoleDeletedEvent(ActorId actorId)
+  public RoleDeletedEvent()
   {
-    ActorId = actorId;
     IsDeleted = true;
   }
 }
