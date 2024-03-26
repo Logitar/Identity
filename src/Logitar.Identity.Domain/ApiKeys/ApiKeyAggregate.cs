@@ -88,7 +88,7 @@ public class ApiKeyAggregate : AggregateRoot
   public ApiKeyAggregate(DisplayNameUnit displayName, Password secret, TenantId? tenantId = null, ActorId actorId = default, ApiKeyId? id = null)
     : base((id ?? ApiKeyId.NewId()).AggregateId)
   {
-    Raise(new ApiKeyCreatedEvent(actorId, displayName, secret, tenantId));
+    Raise(new ApiKeyCreatedEvent(displayName, secret, tenantId), actorId);
   }
   /// <summary>
   /// Applies the specified event.
@@ -135,7 +135,7 @@ public class ApiKeyAggregate : AggregateRoot
 
     if (!HasRole(role))
     {
-      Raise(new ApiKeyRoleAddedEvent(actorId, role.Id));
+      Raise(new ApiKeyRoleAddedEvent(role.Id), actorId);
     }
   }
   /// <summary>
@@ -166,7 +166,7 @@ public class ApiKeyAggregate : AggregateRoot
     }
 
     actorId ??= new(Id.Value);
-    Raise(new ApiKeyAuthenticatedEvent(actorId.Value));
+    Raise(new ApiKeyAuthenticatedEvent(), actorId.Value);
   }
   /// <summary>
   /// Applies the specified event.
@@ -185,7 +185,7 @@ public class ApiKeyAggregate : AggregateRoot
   {
     if (!IsDeleted)
     {
-      Raise(new ApiKeyDeletedEvent(actorId));
+      Raise(new ApiKeyDeletedEvent(), actorId);
     }
   }
 
@@ -227,7 +227,7 @@ public class ApiKeyAggregate : AggregateRoot
   {
     if (HasRole(role))
     {
-      Raise(new ApiKeyRoleRemovedEvent(actorId, role.Id));
+      Raise(new ApiKeyRoleRemovedEvent(role.Id), actorId);
     }
   }
   /// <summary>
@@ -282,8 +282,7 @@ public class ApiKeyAggregate : AggregateRoot
   {
     if (_updatedEvent.HasChanges)
     {
-      _updatedEvent.ActorId = actorId;
-      Raise(_updatedEvent);
+      Raise(_updatedEvent, actorId, DateTime.Now);
       _updatedEvent = new();
     }
   }
@@ -325,3 +324,5 @@ public class ApiKeyAggregate : AggregateRoot
   /// <returns>The string representation.</returns>
   public override string ToString() => $"{DisplayName.Value} | {base.ToString()}";
 }
+
+// Added: Aggregate Raise methods.

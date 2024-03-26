@@ -308,7 +308,7 @@ public class UserAggregate : AggregateRoot
   public UserAggregate(UniqueNameUnit uniqueName, TenantId? tenantId = null, ActorId actorId = default, UserId? id = null)
     : base((id ?? UserId.NewId()).AggregateId)
   {
-    Raise(new UserCreatedEvent(actorId, tenantId, uniqueName));
+    Raise(new UserCreatedEvent(tenantId, uniqueName), actorId);
   }
   /// <summary>
   /// Applies the specified event.
@@ -336,7 +336,7 @@ public class UserAggregate : AggregateRoot
 
     if (!HasRole(role))
     {
-      Raise(new UserRoleAddedEvent(actorId, role.Id));
+      Raise(new UserRoleAddedEvent(role.Id), actorId);
     }
   }
   /// <summary>
@@ -372,7 +372,7 @@ public class UserAggregate : AggregateRoot
     }
 
     actorId ??= new(Id.Value);
-    Raise(new UserAuthenticatedEvent(actorId.Value));
+    Raise(new UserAuthenticatedEvent(), actorId.Value);
   }
   /// <summary>
   /// Applies the specified event.
@@ -408,7 +408,7 @@ public class UserAggregate : AggregateRoot
     }
 
     actorId ??= new(Id.Value);
-    Raise(new UserPasswordChangedEvent(actorId.Value, newPassword));
+    Raise(new UserPasswordChangedEvent(newPassword), actorId.Value);
   }
   /// <summary>
   /// Applies the specified event.
@@ -427,7 +427,7 @@ public class UserAggregate : AggregateRoot
   {
     if (!IsDeleted)
     {
-      Raise(new UserDeletedEvent(actorId));
+      Raise(new UserDeletedEvent(), actorId);
     }
   }
 
@@ -439,7 +439,7 @@ public class UserAggregate : AggregateRoot
   {
     if (!IsDisabled)
     {
-      Raise(new UserDisabledEvent(actorId));
+      Raise(new UserDisabledEvent(), actorId);
     }
   }
   /// <summary>
@@ -459,7 +459,7 @@ public class UserAggregate : AggregateRoot
   {
     if (IsDisabled)
     {
-      Raise(new UserEnabledEvent(actorId));
+      Raise(new UserEnabledEvent(), actorId);
     }
   }
   /// <summary>
@@ -510,7 +510,7 @@ public class UserAggregate : AggregateRoot
 
     if (_customIdentifiers.ContainsKey(key))
     {
-      Raise(new UserIdentifierRemovedEvent(actorId, key));
+      Raise(new UserIdentifierRemovedEvent(key), actorId);
     }
   }
   /// <summary>
@@ -531,7 +531,7 @@ public class UserAggregate : AggregateRoot
   {
     if (HasRole(role))
     {
-      Raise(new UserRoleRemovedEvent(actorId, role.Id));
+      Raise(new UserRoleRemovedEvent(role.Id), actorId);
     }
   }
   /// <summary>
@@ -557,7 +557,7 @@ public class UserAggregate : AggregateRoot
     }
 
     actorId ??= new(Id.Value);
-    Raise(new UserPasswordResetEvent(actorId.Value, password));
+    Raise(new UserPasswordResetEvent(password), actorId.Value);
   }
   /// <summary>
   /// Applies the specified event.
@@ -577,7 +577,7 @@ public class UserAggregate : AggregateRoot
   {
     if (address != Address)
     {
-      Raise(new UserAddressChangedEvent(actorId, address));
+      Raise(new UserAddressChangedEvent(address), actorId);
     }
   }
   /// <summary>
@@ -623,7 +623,7 @@ public class UserAggregate : AggregateRoot
 
     if (!_customIdentifiers.TryGetValue(key, out string? existingValue) || existingValue != value)
     {
-      Raise(new UserIdentifierChangedEvent(actorId, key, value));
+      Raise(new UserIdentifierChangedEvent(key, value), actorId);
     }
   }
   /// <summary>
@@ -644,7 +644,7 @@ public class UserAggregate : AggregateRoot
   {
     if (email != Email)
     {
-      Raise(new UserEmailChangedEvent(actorId, email));
+      Raise(new UserEmailChangedEvent(email), actorId);
     }
   }
   /// <summary>
@@ -663,7 +663,7 @@ public class UserAggregate : AggregateRoot
   /// <param name="actorId">The actor identifier.</param>
   public void SetPassword(Password password, ActorId actorId = default)
   {
-    Raise(new UserPasswordUpdatedEvent(actorId, password));
+    Raise(new UserPasswordUpdatedEvent(password), actorId);
   }
   /// <summary>
   /// Applies the specified event.
@@ -683,7 +683,7 @@ public class UserAggregate : AggregateRoot
   {
     if (phone != Phone)
     {
-      Raise(new UserPhoneChangedEvent(actorId, phone));
+      Raise(new UserPhoneChangedEvent(phone), actorId);
     }
   }
   /// <summary>
@@ -704,7 +704,7 @@ public class UserAggregate : AggregateRoot
   {
     if (uniqueName != _uniqueName)
     {
-      Raise(new UserUniqueNameChangedEvent(actorId, uniqueName));
+      Raise(new UserUniqueNameChangedEvent(uniqueName), actorId);
     }
   }
   /// <summary>
@@ -759,7 +759,7 @@ public class UserAggregate : AggregateRoot
 
     actorId ??= new(Id.Value);
     SessionAggregate session = new(this, secret, actorId, sessionId);
-    Raise(new UserSignedInEvent(actorId.Value, session.CreatedOn));
+    Raise(new UserSignedInEvent(session.CreatedOn), actorId.Value);
 
     return session;
   }
@@ -780,8 +780,7 @@ public class UserAggregate : AggregateRoot
   {
     if (_updatedEvent.HasChanges)
     {
-      _updatedEvent.ActorId = actorId;
-      Raise(_updatedEvent);
+      Raise(_updatedEvent, actorId, DateTime.Now);
       _updatedEvent = new();
     }
   }

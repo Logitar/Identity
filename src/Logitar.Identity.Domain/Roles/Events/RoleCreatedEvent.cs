@@ -22,12 +22,10 @@ public record RoleCreatedEvent : DomainEvent, INotification
   /// <summary>
   /// Initializes a new instance of the <see cref="RoleCreatedEvent"/> class.
   /// </summary>
-  /// <param name="actorId">The actor identifier.</param>
   /// <param name="tenantId">The tenant identifier of the role.</param>
   /// <param name="uniqueName">The unique name of the role.</param>
-  public RoleCreatedEvent(ActorId actorId, TenantId? tenantId, UniqueNameUnit uniqueName)
+  public RoleCreatedEvent(TenantId? tenantId, UniqueNameUnit uniqueName)
   {
-    ActorId = actorId;
     TenantId = tenantId;
     UniqueName = uniqueName;
   }

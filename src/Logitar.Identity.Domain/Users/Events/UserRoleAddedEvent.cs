@@ -17,11 +17,9 @@ public record UserRoleAddedEvent : DomainEvent, INotification
   /// <summary>
   /// Initializes a new instance of the <see cref="UserRoleAddedEvent"/> class.
   /// </summary>
-  /// <param name="actorId">The actor identifier.</param>
   /// <param name="roleId">The role identifier.</param>
-  public UserRoleAddedEvent(ActorId actorId, RoleId roleId)
+  public UserRoleAddedEvent(RoleId roleId)
   {
-    ActorId = actorId;
     RoleId = roleId;
   }
 }

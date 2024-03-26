@@ -22,12 +22,10 @@ public record UserCreatedEvent : DomainEvent, INotification
   /// <summary>
   /// Initializes a new instance of the <see cref="UserCreatedEvent"/> class.
   /// </summary>
-  /// <param name="actorId">The actor identifier.</param>
   /// <param name="tenantId">The tenant identifier of the user.</param>
   /// <param name="uniqueName">The unique name of the user.</param>
-  public UserCreatedEvent(ActorId actorId, TenantId? tenantId, UniqueNameUnit uniqueName)
+  public UserCreatedEvent(TenantId? tenantId, UniqueNameUnit uniqueName)
   {
-    ActorId = actorId;
     TenantId = tenantId;
     UniqueName = uniqueName;
   }

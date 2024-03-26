@@ -93,7 +93,7 @@ public class RoleAggregate : AggregateRoot
   public RoleAggregate(UniqueNameUnit uniqueName, TenantId? tenantId = null, ActorId actorId = default, RoleId? id = null)
     : base((id ?? RoleId.NewId()).AggregateId)
   {
-    Raise(new RoleCreatedEvent(actorId, tenantId, uniqueName));
+    Raise(new RoleCreatedEvent(tenantId, uniqueName), actorId);
   }
   /// <summary>
   /// Applies the specified event.
@@ -114,7 +114,7 @@ public class RoleAggregate : AggregateRoot
   {
     if (!IsDeleted)
     {
-      Raise(new RoleDeletedEvent(actorId));
+      Raise(new RoleDeletedEvent(), actorId);
     }
   }
 
@@ -161,7 +161,7 @@ public class RoleAggregate : AggregateRoot
   {
     if (uniqueName != _uniqueName)
     {
-      Raise(new RoleUniqueNameChangedEvent(actorId, uniqueName));
+      Raise(new RoleUniqueNameChangedEvent(uniqueName), actorId);
     }
   }
   /// <summary>
@@ -181,8 +181,7 @@ public class RoleAggregate : AggregateRoot
   {
     if (_updatedEvent.HasChanges)
     {
-      _updatedEvent.ActorId = actorId;
-      Raise(_updatedEvent);
+      Raise(_updatedEvent, actorId, DateTime.Now);
       _updatedEvent = new();
     }
   }

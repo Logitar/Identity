@@ -11,10 +11,8 @@ public record OneTimePasswordDeletedEvent : DomainEvent, INotification
   /// <summary>
   /// Initializes a new instance of the <see cref="OneTimePasswordDeletedEvent"/> class.
   /// </summary>
-  /// <param name="actorId">The actor identifier.</param>
-  public OneTimePasswordDeletedEvent(ActorId actorId)
+  public OneTimePasswordDeletedEvent()
   {
-    ActorId = actorId;
     IsDeleted = true;
   }
 }

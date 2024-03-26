@@ -20,12 +20,10 @@ public record UserIdentifierChangedEvent : DomainEvent, INotification
   /// <summary>
   /// Initializes a new instance of the <see cref="UserIdentifierChangedEvent"/> class.
   /// </summary>
-  /// <param name="actorId">The actor identifier.</param>
   /// <param name="key">The key of the custom identifier.</param>
   /// <param name="value">The value of the custom identifier.</param>
-  public UserIdentifierChangedEvent(ActorId actorId, string key, string value)
+  public UserIdentifierChangedEvent(string key, string value)
   {
-    ActorId = actorId;
     Key = key;
     Value = value;
   }

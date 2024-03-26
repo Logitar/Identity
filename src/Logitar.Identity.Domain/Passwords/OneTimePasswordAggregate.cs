@@ -80,7 +80,7 @@ public class OneTimePasswordAggregate : AggregateRoot
       new MaximumAttemptsValidator().ValidateAndThrow(maximumAttempts.Value);
     }
 
-    Raise(new OneTimePasswordCreatedEvent(actorId, expiresOn, maximumAttempts, password, tenantId));
+    Raise(new OneTimePasswordCreatedEvent(expiresOn, maximumAttempts, password, tenantId), actorId);
   }
   /// <summary>
   /// Applies the specified event.
@@ -104,7 +104,7 @@ public class OneTimePasswordAggregate : AggregateRoot
   {
     if (!IsDeleted)
     {
-      Raise(new OneTimePasswordDeletedEvent(actorId));
+      Raise(new OneTimePasswordDeletedEvent(), actorId);
     }
   }
 
@@ -157,8 +157,7 @@ public class OneTimePasswordAggregate : AggregateRoot
   {
     if (_updatedEvent.HasChanges)
     {
-      _updatedEvent.ActorId = actorId;
-      Raise(_updatedEvent);
+      Raise(_updatedEvent, actorId, DateTime.Now);
       _updatedEvent = new();
     }
   }
@@ -206,11 +205,11 @@ public class OneTimePasswordAggregate : AggregateRoot
     }
     else if (_password == null || !_password.IsMatch(password))
     {
-      Raise(new OneTimePasswordValidationFailedEvent(actorId));
+      Raise(new OneTimePasswordValidationFailedEvent(), actorId);
       throw new IncorrectOneTimePasswordPasswordException(this, password);
     }
 
-    Raise(new OneTimePasswordValidationSucceededEvent(actorId));
+    Raise(new OneTimePasswordValidationSucceededEvent(), actorId);
   }
   /// <summary>
   /// Applies the specified event.

@@ -11,10 +11,8 @@ public record SessionDeletedEvent : DomainEvent, INotification
   /// <summary>
   /// Initializes a new instance of the <see cref="SessionDeletedEvent"/> class.
   /// </summary>
-  /// <param name="actorId">The actor identifier.</param>
-  public SessionDeletedEvent(ActorId actorId)
+  public SessionDeletedEvent()
   {
-    ActorId = actorId;
     IsDeleted = true;
   }
 }

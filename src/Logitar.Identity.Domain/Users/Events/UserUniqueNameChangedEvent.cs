@@ -17,11 +17,9 @@ public record UserUniqueNameChangedEvent : DomainEvent, INotification
   /// <summary>
   /// Initializes a new instance of the <see cref="UserUniqueNameChangedEvent"/> class.
   /// </summary>
-  /// <param name="actorId">The actor identifier.</param>
   /// <param name="uniqueName">The unique name of the user.</param>
-  public UserUniqueNameChangedEvent(ActorId actorId, UniqueNameUnit uniqueName)
+  public UserUniqueNameChangedEvent(UniqueNameUnit uniqueName)
   {
-    ActorId = actorId;
     UniqueName = uniqueName;
   }
 }

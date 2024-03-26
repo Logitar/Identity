@@ -16,11 +16,9 @@ public record UserPhoneChangedEvent : DomainEvent, INotification
   /// <summary>
   /// Initializes a new instance of the <see cref="UserAddressChangedEvent"/> class.
   /// </summary>
-  /// <param name="actorId">The actor identifier.</param>
   /// <param name="phone">The new phone number of the user.</param>
-  public UserPhoneChangedEvent(ActorId actorId, PhoneUnit? phone)
+  public UserPhoneChangedEvent(PhoneUnit? phone)
   {
-    ActorId = actorId;
     Phone = phone;
   }
 }

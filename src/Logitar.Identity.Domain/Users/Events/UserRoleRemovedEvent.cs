@@ -17,11 +17,9 @@ public record UserRoleRemovedEvent : DomainEvent, INotification
   /// <summary>
   /// Initializes a new instance of the <see cref="UserRoleRemovedEvent"/> class.
   /// </summary>
-  /// <param name="actorId">The actor identifier.</param>
   /// <param name="roleId">The role identifier.</param>
-  public UserRoleRemovedEvent(ActorId actorId, RoleId roleId)
+  public UserRoleRemovedEvent(RoleId roleId)
   {
-    ActorId = actorId;
     RoleId = roleId;
   }
 }

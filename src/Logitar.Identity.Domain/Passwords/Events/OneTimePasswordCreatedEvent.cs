@@ -31,14 +31,12 @@ public record OneTimePasswordCreatedEvent : DomainEvent, INotification
   /// <summary>
   /// Initializes a new instance of the <see cref="OneTimePasswordCreatedEvent"/> class.
   /// </summary>
-  /// <param name="actorId">The actor identifier.</param>
   /// <param name="expiresOn">The expiration date and time of the One-Time Password (OTP).</param>
   /// <param name="maximumAttempts">The maximum number of attempts of the One-Time Password (OTP).</param>
   /// <param name="password">The encoded value of the One-Time Password (OTP).</param>
   /// <param name="tenantId">The tenant identifier of the One-Time Password (OTP).</param>
-  public OneTimePasswordCreatedEvent(ActorId actorId, DateTime? expiresOn, int? maximumAttempts, Password password, TenantId? tenantId)
+  public OneTimePasswordCreatedEvent(DateTime? expiresOn, int? maximumAttempts, Password password, TenantId? tenantId)
   {
-    ActorId = actorId;
     ExpiresOn = expiresOn;
     MaximumAttempts = maximumAttempts;
     Password = password;

@@ -16,11 +16,9 @@ public record UserIdentifierRemovedEvent : DomainEvent, INotification
   /// <summary>
   /// Initializes a new instance of the <see cref="UserIdentifierRemovedEvent"/> class.
   /// </summary>
-  /// <param name="actorId">The actor identifier.</param>
   /// <param name="key">The key of the custom identifier.</param>
-  public UserIdentifierRemovedEvent(ActorId actorId, string key)
+  public UserIdentifierRemovedEvent(string key)
   {
-    ActorId = actorId;
     Key = key;
   }
 }
