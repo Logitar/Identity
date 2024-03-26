@@ -52,7 +52,7 @@
 
   <ItemGroup>
     <PackageReference Include="Logitar.Data.PostgreSQL" Version="3.0.0" />
-    <PackageReference Include="Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL" Version="5.0.0" />
+    <PackageReference Include="Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL" Version="5.0.1" />
   </ItemGroup>
 
   <ItemGroup>
