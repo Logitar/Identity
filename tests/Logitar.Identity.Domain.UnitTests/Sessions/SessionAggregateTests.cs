@@ -30,19 +30,6 @@ public class SessionAggregateTests
     Assert.Contains(session.Changes, change => change is SessionCreatedEvent @event && @event.ActorId == actorId);
   }
 
-  [Fact(DisplayName = "ctor: it should create a new session with id.")]
-  public void ctor_it_should_create_a_new_session_with_id()
-  {
-    SessionId sessionId = new(AggregateId.NewId());
-
-    SessionAggregate session = new(sessionId.AggregateId);
-
-    Assert.Equal(sessionId, session.Id);
-    Assert.Equal(sessionId.AggregateId, session.Id.AggregateId);
-    Assert.False(session.IsActive);
-    Assert.False(session.IsPersistent);
-  }
-
   [Fact(DisplayName = "ctor: it should create a new session with parameters.")]
   public void ctor_it_should_create_a_new_session_with_parameters()
   {

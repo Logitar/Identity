@@ -7,7 +7,7 @@ namespace Logitar.Identity.Domain.ApiKeys.Events;
 /// <summary>
 /// The event raised when a role is removed from an API key.
 /// </summary>
-public record ApiKeyRoleRemovedEvent : DomainEvent, INotification
+public class ApiKeyRoleRemovedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Gets the role identifier.

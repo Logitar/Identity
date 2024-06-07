@@ -7,7 +7,7 @@ namespace Logitar.Identity.Domain.Passwords.Events;
 /// <summary>
 /// The event raised when a new One-Time Password (OTP) is created.
 /// </summary>
-public record OneTimePasswordCreatedEvent : DomainEvent, INotification
+public class OneTimePasswordCreatedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Gets the tenant identifier of the One-Time Password (OTP).

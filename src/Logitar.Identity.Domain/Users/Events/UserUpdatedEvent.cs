@@ -8,7 +8,7 @@ namespace Logitar.Identity.Domain.Users.Events;
 /// <summary>
 /// The event raised when an existing user is modified.
 /// </summary>
-public record UserUpdatedEvent : DomainEvent, INotification
+public class UserUpdatedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Gets or sets the first name of the user.

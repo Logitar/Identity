@@ -15,14 +15,14 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Logitar/Identity</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>1.0.0</Version>
+    <Version>2.0.0</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
-    <PackageReleaseNotes>Upgraded NuGet packages.</PackageReleaseNotes>
+    <PackageReleaseNotes>Refactored domain events and aggregates.</PackageReleaseNotes>
     <PackageTags>logitar;net;framework;identity;infrastructure</PackageTags>
     <PackageProjectUrl>https://github.com/Logitar/Identity/tree/main/src/Logitar.Identity.Infrastructure</PackageProjectUrl>
   </PropertyGroup>
@@ -51,10 +51,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Logitar.EventSourcing.Infrastructure" Version="5.0.2" />
-    <PackageReference Include="MediatR" Version="12.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="8.0.3" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.4.1" />
+    <PackageReference Include="Logitar.EventSourcing.Infrastructure" Version="6.0.0" />
+    <PackageReference Include="MediatR" Version="12.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="8.0.6" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.0" />
   </ItemGroup>
 
   <ItemGroup>

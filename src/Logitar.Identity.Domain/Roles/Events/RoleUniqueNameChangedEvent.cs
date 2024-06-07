@@ -7,7 +7,7 @@ namespace Logitar.Identity.Domain.Roles.Events;
 /// <summary>
 /// The event raised when the unique name of a role is changed.
 /// </summary>
-public record RoleUniqueNameChangedEvent : DomainEvent, INotification
+public class RoleUniqueNameChangedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Gets the unique name of the role.

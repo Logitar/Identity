@@ -71,8 +71,7 @@ public class ApiKeyAggregate : AggregateRoot
   /// Initializes a new instance of the <see cref="ApiKeyAggregate"/> class.
   /// DO NOT use this constructor to create a new API key. It is only intended to be used by the event sourcing.
   /// </summary>
-  /// <param name="id">The identifier of the API key.</param>
-  public ApiKeyAggregate(AggregateId id) : base(id)
+  public ApiKeyAggregate() : base()
   {
   }
 

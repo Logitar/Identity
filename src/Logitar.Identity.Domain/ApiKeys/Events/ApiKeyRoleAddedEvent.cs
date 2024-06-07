@@ -7,7 +7,7 @@ namespace Logitar.Identity.Domain.ApiKeys.Events;
 /// <summary>
 /// The event raised when a role is added to an API key.
 /// </summary>
-public record ApiKeyRoleAddedEvent : DomainEvent, INotification
+public class ApiKeyRoleAddedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Gets the role identifier.

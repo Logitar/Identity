@@ -6,7 +6,7 @@ namespace Logitar.Identity.Domain.Passwords.Events;
 /// <summary>
 /// The event raised when an existing One-Time Password (OTP) is modified.
 /// </summary>
-public record OneTimePasswordUpdatedEvent : DomainEvent, INotification
+public class OneTimePasswordUpdatedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Gets or sets the custom attribute modifications of the One-Time Password (OTP).

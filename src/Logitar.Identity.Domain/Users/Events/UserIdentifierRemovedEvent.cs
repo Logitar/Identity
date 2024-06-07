@@ -6,7 +6,7 @@ namespace Logitar.Identity.Domain.Users.Events;
 /// <summary>
 /// The event raised when a custom identifier is removed from an user.
 /// </summary>
-public record UserIdentifierRemovedEvent : DomainEvent, INotification
+public class UserIdentifierRemovedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Gets the key of the custom identifier.

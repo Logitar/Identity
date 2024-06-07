@@ -15,14 +15,14 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Logitar/Identity</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>1.0.0</Version>
+    <Version>2.0.0</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
-    <PackageReleaseNotes>Upgraded NuGet packages.</PackageReleaseNotes>
+    <PackageReleaseNotes>Refactored domain events and aggregates.</PackageReleaseNotes>
     <PackageTags>logitar;net;framework;identity;entityframeworkcore;postgres</PackageTags>
     <PackageProjectUrl>https://github.com/Logitar/Identity/tree/main/src/Logitar.Identity.EntityFrameworkCore.PostgreSQL</PackageProjectUrl>
   </PropertyGroup>
@@ -52,7 +52,7 @@
 
   <ItemGroup>
     <PackageReference Include="Logitar.Data.PostgreSQL" Version="3.0.0" />
-    <PackageReference Include="Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL" Version="5.0.1" />
+    <PackageReference Include="Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>

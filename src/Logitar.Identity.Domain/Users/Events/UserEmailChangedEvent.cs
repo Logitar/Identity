@@ -6,7 +6,7 @@ namespace Logitar.Identity.Domain.Users.Events;
 /// <summary>
 /// The event raised when the email address of an user is updated.
 /// </summary>
-public record UserEmailChangedEvent : DomainEvent, INotification
+public class UserEmailChangedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Gets the new email address of the user.

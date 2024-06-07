@@ -7,7 +7,7 @@ namespace Logitar.Identity.Domain.Roles.Events;
 /// <summary>
 /// The event raised when a new role is created.
 /// </summary>
-public record RoleCreatedEvent : DomainEvent, INotification
+public class RoleCreatedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Gets the tenant identifier of the role.

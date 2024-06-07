@@ -94,23 +94,11 @@ public class ApiKeyAggregateTests
   [Fact(DisplayName = "Authenticate: it should throw IncorrectApiKeySecretException when the API key has no secret.")]
   public void Authenticate_it_should_throw_IncorrectApiKeySecretException_when_the_Api_key_has_no_secret()
   {
-    ApiKeyAggregate apiKey = new(AggregateId.NewId());
+    ApiKeyAggregate apiKey = new();
 
     var exception = Assert.Throws<IncorrectApiKeySecretException>(() => apiKey.Authenticate(SecretString));
     Assert.Equal(SecretString, exception.AttemptedSecret);
     Assert.Equal(apiKey.Id, exception.ApiKeyId);
-  }
-
-  [Fact(DisplayName = "ctor: it should create a new API key with id.")]
-  public void ctor_it_should_create_a_new_Api_key_with_id()
-  {
-    ApiKeyId apiKeyId = new(AggregateId.NewId());
-
-    ApiKeyAggregate apiKey = new(apiKeyId.AggregateId);
-
-    Assert.Equal(apiKeyId, apiKey.Id);
-    Assert.Equal(apiKeyId.AggregateId, apiKey.Id.AggregateId);
-    Assert.Null(apiKey.TenantId);
   }
 
   [Fact(DisplayName = "ctor: it should create a new API key with parameters.")]

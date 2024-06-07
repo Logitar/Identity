@@ -15,14 +15,14 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Logitar/Identity</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>1.0.0</Version>
+    <Version>2.0.0</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
-    <PackageReleaseNotes>Removed the EventDb class and upgraded NuGet packages.</PackageReleaseNotes>
+    <PackageReleaseNotes>Refactored domain events and aggregates.</PackageReleaseNotes>
     <PackageTags>logitar;net;framework;identity;entityframeworkcore;relational</PackageTags>
     <PackageProjectUrl>https://github.com/Logitar/Identity/tree/main/src/Logitar.Identity.EntityFrameworkCore.Relational</PackageProjectUrl>
   </PropertyGroup>
@@ -52,7 +52,7 @@
 
   <ItemGroup>
     <PackageReference Include="Logitar.Data" Version="3.0.0" />
-    <PackageReference Include="Logitar.EventSourcing.EntityFrameworkCore.Relational" Version="5.1.0" />
+    <PackageReference Include="Logitar.EventSourcing.EntityFrameworkCore.Relational" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>

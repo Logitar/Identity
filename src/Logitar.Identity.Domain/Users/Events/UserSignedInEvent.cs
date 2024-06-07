@@ -6,7 +6,7 @@ namespace Logitar.Identity.Domain.Users.Events;
 /// <summary>
 /// The event raised when an user signs-in.
 /// </summary>
-public record UserSignedInEvent : DomainEvent, INotification
+public class UserSignedInEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Initializes a new instance of the <see cref="UserSignedInEvent"/> class.

@@ -6,7 +6,7 @@ namespace Logitar.Identity.Domain.Users.Events;
 /// <summary>
 /// The event raised when a custom identifier is added to an user, or updated.
 /// </summary>
-public record UserIdentifierChangedEvent : DomainEvent, INotification
+public class UserIdentifierChangedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Gets the key of the custom identifier.

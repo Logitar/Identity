@@ -6,7 +6,7 @@ namespace Logitar.Identity.Domain.Users.Events;
 /// <summary>
 /// The event raised when the phone number of an user is updated.
 /// </summary>
-public record UserPhoneChangedEvent : DomainEvent, INotification
+public class UserPhoneChangedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Gets the new phone number of the user.

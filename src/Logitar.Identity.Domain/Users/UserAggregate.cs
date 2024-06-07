@@ -292,8 +292,7 @@ public class UserAggregate : AggregateRoot
   /// Initializes a new instance of the <see cref="UserAggregate"/> class.
   /// DO NOT use this constructor to create a new user. It is only intended to be used by the event sourcing.
   /// </summary>
-  /// <param name="id">The identifier of the user.</param>
-  public UserAggregate(AggregateId id) : base(id)
+  public UserAggregate() : base()
   {
   }
 

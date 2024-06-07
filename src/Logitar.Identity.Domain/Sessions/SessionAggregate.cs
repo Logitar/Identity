@@ -49,8 +49,7 @@ public class SessionAggregate : AggregateRoot
   /// Initializes a new instance of the <see cref="SessionAggregate"/> class.
   /// DO NOT use this constructor to create a new session. It is only intended to be used by the event sourcing.
   /// </summary>
-  /// <param name="id">The identifier of the session.</param>
-  public SessionAggregate(AggregateId id) : base(id)
+  public SessionAggregate() : base()
   {
   }
 

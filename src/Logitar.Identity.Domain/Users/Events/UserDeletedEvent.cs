@@ -6,7 +6,7 @@ namespace Logitar.Identity.Domain.Users.Events;
 /// <summary>
 /// The event raised when an user is deleted.
 /// </summary>
-public record UserDeletedEvent : DomainEvent, INotification
+public class UserDeletedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Initializes a new instance of the <see cref="UserDeletedEvent"/> class.

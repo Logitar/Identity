@@ -6,4 +6,4 @@ namespace Logitar.Identity.Domain.Users.Events;
 /// <summary>
 /// The event raised when an user is enabled.
 /// </summary>
-public record UserEnabledEvent : DomainEvent, INotification;
+public class UserEnabledEvent : DomainEvent, INotification;

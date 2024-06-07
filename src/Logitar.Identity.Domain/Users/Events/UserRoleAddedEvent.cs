@@ -7,7 +7,7 @@ namespace Logitar.Identity.Domain.Users.Events;
 /// <summary>
 /// The event raised when a role is added to an user.
 /// </summary>
-public record UserRoleAddedEvent : DomainEvent, INotification
+public class UserRoleAddedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Gets the role identifier.

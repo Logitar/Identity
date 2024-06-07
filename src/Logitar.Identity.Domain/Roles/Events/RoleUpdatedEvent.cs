@@ -8,7 +8,7 @@ namespace Logitar.Identity.Domain.Roles.Events;
 /// <summary>
 /// The event raised when an existing role is modified.
 /// </summary>
-public record RoleUpdatedEvent : DomainEvent, INotification
+public class RoleUpdatedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Gets or sets the display name of the role.
