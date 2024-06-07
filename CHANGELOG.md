@@ -13,6 +13,7 @@ Nothing yet.
 
 ### Changed
 
+- Contracts project now targets .NET Standard 2.1.
 - Refactored domain events and aggregates.
 - Upgraded NuGet packages.
 
