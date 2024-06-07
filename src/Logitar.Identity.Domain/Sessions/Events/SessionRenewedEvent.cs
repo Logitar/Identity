@@ -7,7 +7,7 @@ namespace Logitar.Identity.Domain.Sessions.Events;
 /// <summary>
 /// The event raised when a session is renewed.
 /// </summary>
-public record SessionRenewedEvent : DomainEvent, INotification
+public class SessionRenewedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Gets the new secret of the session.

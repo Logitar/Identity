@@ -6,7 +6,7 @@ namespace Logitar.Identity.Domain.Sessions.Events;
 /// <summary>
 /// The event raised when a session is deleted.
 /// </summary>
-public record SessionDeletedEvent : DomainEvent, INotification
+public class SessionDeletedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Initializes a new instance of the <see cref="SessionDeletedEvent"/> class.

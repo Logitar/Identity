@@ -77,8 +77,7 @@ public class RoleAggregate : AggregateRoot
   /// Initializes a new instance of the <see cref="RoleAggregate"/> class.
   /// DO NOT use this constructor to create a new role. It is only intended to be used by the event sourcing.
   /// </summary>
-  /// <param name="id">The identifier of the role.</param>
-  public RoleAggregate(AggregateId id) : base(id)
+  public RoleAggregate() : base()
   {
   }
 

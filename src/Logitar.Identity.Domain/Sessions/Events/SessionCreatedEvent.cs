@@ -8,7 +8,7 @@ namespace Logitar.Identity.Domain.Sessions.Events;
 /// <summary>
 /// The event raised when a new session is created.
 /// </summary>
-public record SessionCreatedEvent : DomainEvent, INotification
+public class SessionCreatedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Gets the identifier of the user owning the session.

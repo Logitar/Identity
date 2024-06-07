@@ -6,4 +6,4 @@ namespace Logitar.Identity.Domain.Users.Events;
 /// <summary>
 /// The event raised when an user is authenticated.
 /// </summary>
-public record UserAuthenticatedEvent : DomainEvent, INotification;
+public class UserAuthenticatedEvent : DomainEvent, INotification;

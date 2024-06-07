@@ -6,7 +6,7 @@ namespace Logitar.Identity.Domain.Sessions.Events;
 /// <summary>
 /// The event raised when an existing session is modified.
 /// </summary>
-public record SessionUpdatedEvent : DomainEvent, INotification
+public class SessionUpdatedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Gets or sets the custom attribute modifications of the session.

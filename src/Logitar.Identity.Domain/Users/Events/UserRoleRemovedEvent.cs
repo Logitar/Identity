@@ -7,7 +7,7 @@ namespace Logitar.Identity.Domain.Users.Events;
 /// <summary>
 /// The event raised when a role is removed from an user.
 /// </summary>
-public record UserRoleRemovedEvent : DomainEvent, INotification
+public class UserRoleRemovedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Gets the role identifier.

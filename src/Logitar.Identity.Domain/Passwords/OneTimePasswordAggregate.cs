@@ -54,8 +54,7 @@ public class OneTimePasswordAggregate : AggregateRoot
   /// Initializes a new instance of the <see cref="OneTimePasswordAggregate"/> class.
   /// DO NOT use this constructor to create a new One-Time Password (OTP). It is only intended to be used by the event sourcing.
   /// </summary>
-  /// <param name="id">The identifier of the One-Time Password (OTP).</param>
-  public OneTimePasswordAggregate(AggregateId id) : base(id)
+  public OneTimePasswordAggregate() : base()
   {
   }
 

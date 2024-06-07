@@ -7,7 +7,7 @@ namespace Logitar.Identity.Domain.Users.Events;
 /// <summary>
 /// The event raised when the unique name of an user is changed.
 /// </summary>
-public record UserUniqueNameChangedEvent : DomainEvent, INotification
+public class UserUniqueNameChangedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Gets the unique name of the user.

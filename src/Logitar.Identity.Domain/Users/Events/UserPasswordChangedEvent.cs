@@ -6,7 +6,7 @@ namespace Logitar.Identity.Domain.Users.Events;
 /// <summary>
 /// The event raised when an user changes its password.
 /// </summary>
-public record UserPasswordChangedEvent : UserPasswordEvent, INotification
+public class UserPasswordChangedEvent : UserPasswordEvent, INotification
 {
   /// <summary>
   /// Initializes a new instance of the <see cref="UserPasswordChangedEvent"/> class.

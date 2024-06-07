@@ -20,18 +20,6 @@ public class RoleAggregateTests
     _role = new(_uniqueName);
   }
 
-  [Fact(DisplayName = "ctor: it should create a new role with id.")]
-  public void ctor_it_should_create_a_new_role_with_id()
-  {
-    RoleId roleId = new(AggregateId.NewId());
-
-    RoleAggregate role = new(roleId.AggregateId);
-
-    Assert.Equal(roleId, role.Id);
-    Assert.Equal(roleId.AggregateId, role.Id.AggregateId);
-    Assert.Null(role.TenantId);
-  }
-
   [Fact(DisplayName = "ctor: it should create a new role with parameters.")]
   public void ctor_it_should_create_a_new_role_with_parameters()
   {
@@ -160,7 +148,7 @@ public class RoleAggregateTests
   [Fact(DisplayName = "UniqueName: it should throw InvalidOperationException when it has not been initialized yet.")]
   public void UniqueName_it_should_throw_InvalidOperationException_when_it_has_not_been_initialized_yet()
   {
-    RoleAggregate role = new(AggregateId.NewId());
+    RoleAggregate role = new();
     Assert.Throws<InvalidOperationException>(() => _ = role.UniqueName);
   }
 

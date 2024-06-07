@@ -7,7 +7,7 @@ namespace Logitar.Identity.Domain.Users.Events;
 /// <summary>
 /// The event raised when a new user is created.
 /// </summary>
-public record UserCreatedEvent : DomainEvent, INotification
+public class UserCreatedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Gets the tenant identifier of the user.

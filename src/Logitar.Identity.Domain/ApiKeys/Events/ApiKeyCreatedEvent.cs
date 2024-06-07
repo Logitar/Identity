@@ -8,7 +8,7 @@ namespace Logitar.Identity.Domain.ApiKeys.Events;
 /// <summary>
 /// The event raised when a new API key is created.
 /// </summary>
-public record ApiKeyCreatedEvent : DomainEvent, INotification
+public class ApiKeyCreatedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Gets the secret of the API key.

@@ -21,18 +21,6 @@ public class OneTimePasswordAggregateTests
     _oneTimePassword = new(_password);
   }
 
-  [Fact(DisplayName = "ctor: it should create a new One-Time Password with ID.")]
-  public void ctor_it_should_create_a_new_One_Time_Password_with_id()
-  {
-    OneTimePasswordId oneTimePasswordId = new(AggregateId.NewId());
-
-    OneTimePasswordAggregate oneTimePassword = new(oneTimePasswordId.AggregateId);
-
-    Assert.Equal(oneTimePasswordId, oneTimePassword.Id);
-    Assert.Equal(oneTimePasswordId.AggregateId, oneTimePassword.Id.AggregateId);
-    Assert.Null(oneTimePassword.TenantId);
-  }
-
   [Fact(DisplayName = "ctor: it should create a new One-Time Password with parameters.")]
   public void ctor_it_should_create_a_new_One_Time_Password_with_parameters()
   {

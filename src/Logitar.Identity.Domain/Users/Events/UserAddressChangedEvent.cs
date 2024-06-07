@@ -6,7 +6,7 @@ namespace Logitar.Identity.Domain.Users.Events;
 /// <summary>
 /// The event raised when the postal address of an user is updated.
 /// </summary>
-public record UserAddressChangedEvent : DomainEvent, INotification
+public class UserAddressChangedEvent : DomainEvent, INotification
 {
   /// <summary>
   /// Gets the new postal address of the user.

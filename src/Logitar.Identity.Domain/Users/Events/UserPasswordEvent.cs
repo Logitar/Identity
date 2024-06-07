@@ -6,7 +6,7 @@ namespace Logitar.Identity.Domain.Users.Events;
 /// <summary>
 /// An abstraction of user password modifying events.
 /// </summary>
-public abstract record UserPasswordEvent : DomainEvent
+public abstract class UserPasswordEvent : DomainEvent
 {
   /// <summary>
   /// Gets the new password of the user.

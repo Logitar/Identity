@@ -200,18 +200,6 @@ public class UserAggregateTests
     Assert.Equal(_user.Id, exception.UserId);
   }
 
-  [Fact(DisplayName = "ctor: it should create a new user with id.")]
-  public void ctor_it_should_create_a_new_user_with_id()
-  {
-    UserId userId = new(AggregateId.NewId());
-
-    UserAggregate user = new(userId.AggregateId);
-
-    Assert.Equal(userId, user.Id);
-    Assert.Equal(userId.AggregateId, user.Id.AggregateId);
-    Assert.Null(user.TenantId);
-  }
-
   [Fact(DisplayName = "ctor: it should create a new user with parameters.")]
   public void ctor_it_should_create_a_new_user_with_parameters()
   {
@@ -725,7 +713,7 @@ public class UserAggregateTests
   [Fact(DisplayName = "UniqueName: it should throw InvalidOperationException when it has not been initialized yet.")]
   public void UniqueName_it_should_throw_InvalidOperationException_when_it_has_not_been_initialized_yet()
   {
-    UserAggregate user = new(AggregateId.NewId());
+    UserAggregate user = new();
     Assert.Throws<InvalidOperationException>(() => _ = user.UniqueName);
   }
 
