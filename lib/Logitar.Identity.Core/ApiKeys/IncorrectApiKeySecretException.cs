@@ -1,6 +1,4 @@
-﻿using Logitar.Identity.Domain.Shared;
-
-namespace Logitar.Identity.Domain.ApiKeys;
+﻿namespace Logitar.Identity.Core.ApiKeys;
 
 /// <summary>
 /// The exception raised when an API key secret check fails.
@@ -10,12 +8,12 @@ public class IncorrectApiKeySecretException : InvalidCredentialsException
   /// <summary>
   /// A generic error message for this exception.
   /// </summary>
-  public new const string ErrorMessage = "The specified secret did not match the API key.";
+  private const string ErrorMessage = "The specified secret did not match the API key.";
 
   /// <summary>
   /// Gets or sets the identifier of the API key.
   /// </summary>
-  public ApiKeyId ApiKeyId
+  public ApiKeyId ApiKeyId // TODO(fpion): do we really want this?
   {
     get => new((string)Data[nameof(ApiKeyId)]!);
     private set => Data[nameof(ApiKeyId)] = value.Value;
@@ -34,14 +32,20 @@ public class IncorrectApiKeySecretException : InvalidCredentialsException
   /// </summary>
   /// <param name="apiKey">The API key.</param>
   /// <param name="attemptedSecret">The attempted secret.</param>
-  public IncorrectApiKeySecretException(ApiKeyAggregate apiKey, string attemptedSecret)
+  public IncorrectApiKeySecretException(ApiKey apiKey, string attemptedSecret)
     : base(BuildMessage(apiKey, attemptedSecret))
   {
     ApiKeyId = apiKey.Id;
     AttemptedSecret = attemptedSecret;
   }
 
-  private static string BuildMessage(ApiKeyAggregate apiKey, string attemptedSecret) => new ErrorMessageBuilder(ErrorMessage)
+  /// <summary>
+  /// Builds the exception message.
+  /// </summary>
+  /// <param name="apiKey">The API key.</param>
+  /// <param name="attemptedSecret">The attempted secret.</param>
+  /// <returns>The exception message.</returns>
+  private static string BuildMessage(ApiKey apiKey, string attemptedSecret) => new ErrorMessageBuilder(ErrorMessage)
     .AddData(nameof(ApiKeyId), apiKey.Id.Value)
     .AddData(nameof(AttemptedSecret), attemptedSecret)
     .Build();

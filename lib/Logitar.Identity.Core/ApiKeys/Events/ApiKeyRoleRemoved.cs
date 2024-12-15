@@ -1,13 +1,13 @@
 ﻿using Logitar.EventSourcing;
-using Logitar.Identity.Domain.Roles;
+using Logitar.Identity.Core.Roles;
 using MediatR;
 
-namespace Logitar.Identity.Domain.ApiKeys.Events;
+namespace Logitar.Identity.Core.ApiKeys.Events;
 
 /// <summary>
 /// The event raised when a role is removed from an API key.
 /// </summary>
-public class ApiKeyRoleRemovedEvent : DomainEvent, INotification
+public record ApiKeyRoleRemoved : DomainEvent, INotification
 {
   /// <summary>
   /// Gets the role identifier.
@@ -15,10 +15,10 @@ public class ApiKeyRoleRemovedEvent : DomainEvent, INotification
   public RoleId RoleId { get; }
 
   /// <summary>
-  /// Initializes a new instance of the <see cref="ApiKeyRoleRemovedEvent"/> class.
+  /// Initializes a new instance of the <see cref="ApiKeyRoleRemoved"/> class.
   /// </summary>
   /// <param name="roleId">The role identifier.</param>
-  public ApiKeyRoleRemovedEvent(RoleId roleId)
+  public ApiKeyRoleRemoved(RoleId roleId)
   {
     RoleId = roleId;
   }

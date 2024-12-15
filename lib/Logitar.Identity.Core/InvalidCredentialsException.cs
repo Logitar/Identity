@@ -1,4 +1,4 @@
-﻿namespace Logitar.Identity.Domain.Shared;
+﻿namespace Logitar.Identity.Core;
 
 /// <summary>
 /// The exception raised when credential validation failed.
@@ -8,7 +8,7 @@ public class InvalidCredentialsException : Exception
   /// <summary>
   /// A generic error message for this exception.
   /// </summary>
-  public const string ErrorMessage = "The specified credentials did not match.";
+  private const string ErrorMessage = "The specified credentials did not match.";
 
   /// <summary>
   /// Initializes a new instance of the <see cref="InvalidCredentialsException"/> class.
