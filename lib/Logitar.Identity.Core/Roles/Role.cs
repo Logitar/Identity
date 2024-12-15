@@ -123,20 +123,20 @@ public class Role : AggregateRoot
   }
 
   /// <summary>
-  /// Sets the specified custom attribute on the role.
+  /// Sets the specified custom attribute on the role. If the value is null, empty or only white-space, the custom attribute will be removed.
   /// </summary>
   /// <param name="key">The key of the custom attribute.</param>
   /// <param name="value">The value of the custom attribute.</param>
   public void SetCustomAttribute(string key, string value)
   {
-    //if (string.IsNullOrWhiteSpace(key))
-    //{
-    //  RemoveCustomAttribute(key);
-    //}
+    if (string.IsNullOrWhiteSpace(key))
+    {
+      RemoveCustomAttribute(key);
+    }
 
-    //key = key.Trim();
-    //value = value.Trim();
-    // TODO(fpion): validate
+    key = key.Trim();
+    value = value.Trim();
+    // TODO(fpion): validate key
 
     if (!_customAttributes.TryGetValue(key, out string? existingValue) || existingValue != value)
     {
