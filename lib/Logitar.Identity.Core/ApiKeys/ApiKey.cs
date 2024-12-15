@@ -1,5 +1,6 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Core.ApiKeys.Events;
+using Logitar.Identity.Core.Passwords;
 using Logitar.Identity.Core.Roles;
 
 namespace Logitar.Identity.Core.ApiKeys;
@@ -14,6 +15,11 @@ public class ApiKey : AggregateRoot
   /// The updated event.
   /// </summary>
   private ApiKeyUpdated _updated = new();
+
+  /// <summary>
+  /// The API key secret.
+  /// </summary>
+  private Password? _secret = null;
 
   /// <summary>
   /// Gets the identifier of the API key.
@@ -112,6 +118,37 @@ public class ApiKey : AggregateRoot
   public IReadOnlyCollection<RoleId> Roles => _roles.ToList().AsReadOnly();
 
   /// <summary>
+  /// Initializes a new instance of the <see cref="ApiKey"/> class.
+  /// DO NOT use this constructor to create a new API key. It is only intended to be used for event sourcing.
+  /// </summary>
+  public ApiKey() : base()
+  {
+  }
+
+  /// <summary>
+  /// Initializes a new instance of the <see cref="ApiKey"/> class.
+  /// DO use this constructor to create a new API key.
+  /// </summary>
+  /// <param name="displayName">The unique name of the API key.</param>
+  /// <param name="secret">The secret of the API key.</param>
+  /// <param name="actorId">The actor identifier.</param>
+  /// <param name="id">The identifier of the API key.</param>
+  public ApiKey(DisplayName displayName, Password secret, ActorId? actorId = null, ApiKeyId? id = null) : base((id ?? ApiKeyId.NewId()).StreamId)
+  {
+    Raise(new ApiKeyCreated(displayName, secret), actorId);
+  }
+  /// <summary>
+  /// Handles the specified event.
+  /// </summary>
+  /// <param name="event">The event to apply.</param>
+  protected virtual void Handle(ApiKeyCreated @event)
+  {
+    _secret = @event.Secret;
+
+    _displayName = @event.DisplayName;
+  }
+
+  /// <summary>
   /// Adds the specified role to the API key, if the API key does not already have the specified role.
   /// </summary>
   /// <param name="role">The role to be added.</param>
@@ -130,10 +167,10 @@ public class ApiKey : AggregateRoot
     }
   }
   /// <summary>
-  /// Applies the specified event.
+  /// Handles the specified event.
   /// </summary>
   /// <param name="event">The event to apply.</param>
-  protected virtual void Apply(ApiKeyRoleAdded @event)
+  protected virtual void Handle(ApiKeyRoleAdded @event)
   {
     _roles.Add(@event.RoleId);
   }
@@ -151,19 +188,19 @@ public class ApiKey : AggregateRoot
     {
       throw new ApiKeyIsExpiredException(this);
     }
-    //else if (_secret == null || !_secret.IsMatch(secret))
-    //{
-    //  throw new IncorrectApiKeySecretException(this, secret);
-    //} // TODO(fpion): complete
+    else if (_secret == null || !_secret.IsMatch(secret))
+    {
+      throw new IncorrectApiKeySecretException(this, secret);
+    }
 
-    actorId ??= new(Id.Value); // TODO(fpion): do we really want this?
+    actorId ??= new(Id.Value);
     Raise(new ApiKeyAuthenticated(), actorId.Value);
   }
   /// <summary>
-  /// Applies the specified event.
+  /// Handles the specified event.
   /// </summary>
   /// <param name="event">The event to apply.</param>
-  protected virtual void Apply(ApiKeyAuthenticated @event)
+  protected virtual void Handle(ApiKeyAuthenticated @event)
   {
     AuthenticatedOn = @event.OccurredOn;
   }
@@ -207,10 +244,10 @@ public class ApiKey : AggregateRoot
     }
   }
   /// <summary>
-  /// Applies the specified event.
+  /// Handles the specified event.
   /// </summary>
   /// <param name="event">The event to apply.</param>
-  protected virtual void Apply(ApiKeyRoleRemoved @event)
+  protected virtual void Handle(ApiKeyRoleRemoved @event)
   {
     _roles.Remove(@event.RoleId);
   }
@@ -267,10 +304,10 @@ public class ApiKey : AggregateRoot
     }
   }
   /// <summary>
-  /// Applies the specified event.
+  /// Handles the specified event.
   /// </summary>
   /// <param name="event">The event to apply.</param>
-  protected virtual void Apply(ApiKeyUpdated @event)
+  protected virtual void Handle(ApiKeyUpdated @event)
   {
     if (@event.DisplayName != null)
     {

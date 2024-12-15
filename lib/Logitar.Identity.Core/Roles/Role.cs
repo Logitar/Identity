@@ -86,6 +86,15 @@ public class Role : AggregateRoot
 
   /// <summary>
   /// Initializes a new instance of the <see cref="Role"/> class.
+  /// DO NOT use this constructor to create a new role. It is only intended to be used for event sourcing.
+  /// </summary>
+  public Role() : base()
+  {
+  }
+
+  /// <summary>
+  /// Initializes a new instance of the <see cref="Role"/> class.
+  /// DO use this constructor to create a new role.
   /// </summary>
   /// <param name="uniqueName">The unique name of the role.</param>
   /// <param name="actorId">The actor identifier.</param>
