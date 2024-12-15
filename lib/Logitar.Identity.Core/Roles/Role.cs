@@ -23,7 +23,7 @@ public class Role : AggregateRoot
   /// </summary>
   public TenantId? TenantId => Id.TenantId;
   /// <summary>
-  /// Gets the entity identifier of the role. This identifier is unique with the tenant.
+  /// Gets the entity identifier of the role. This identifier is unique within the tenant.
   /// </summary>
   public EntityId? EntityId => Id.EntityId;
 
