@@ -1,4 +1,4 @@
-﻿namespace Logitar.Identity.Domain.Passwords;
+﻿namespace Logitar.Identity.Core.Passwords;
 
 /// <summary>
 /// Represents a password or a secret.
