@@ -1,7 +1,5 @@
 ﻿using Logitar.EventSourcing;
 using MediatR;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace Logitar.Identity.Core.Roles.Events;
 

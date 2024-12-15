@@ -1,6 +1,5 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Core.Roles.Events;
-using System.Collections.Generic;
 
 namespace Logitar.Identity.Core.Roles;
 
