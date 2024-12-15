@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Logitar.Identity.Core.Settings;
 
 namespace Logitar.Identity.Core;
 
@@ -21,18 +22,23 @@ public record UniqueName
   /// Initializes a new instance of the <see cref="UniqueName"/> class.
   /// </summary>
   /// <param name="value">The value of the unique name.</param>
-  public UniqueName(string value)
+  /// <param name="uniqueNameSettings">The unique name settings.</param>
+  public UniqueName(string value, IUniqueNameSettings uniqueNameSettings)
   {
     Value = value.Trim();
-    new Validator().ValidateAndThrow(this);
+    new Validator(uniqueNameSettings).ValidateAndThrow(this);
   }
 
   /// <summary>
   /// Returns a new instance of the <see cref="UniqueName"/> class, or null if the value is null, empty or only white-space.
   /// </summary>
   /// <param name="value">The string value.</param>
+  /// <param name="uniqueNameSettings">The unique name settings.</param>
   /// <returns>The new instance, or null.</returns>
-  public static UniqueName? TryCreate(string? value) => string.IsNullOrWhiteSpace(value) ? null : new(value);
+  public static UniqueName? TryCreate(string? value, IUniqueNameSettings uniqueNameSettings)
+  {
+    return string.IsNullOrWhiteSpace(value) ? null : new(value, uniqueNameSettings);
+  }
 
   /// <summary>
   /// Returns a string representation of the unique name.
@@ -48,9 +54,10 @@ public record UniqueName
     /// <summary>
     /// Initializes a new instance of the <see cref="Validator"/> class.
     /// </summary>
-    public Validator()
+    /// <param name="uniqueNameSettings">The unique name settings.</param>
+    public Validator(IUniqueNameSettings uniqueNameSettings)
     {
-      RuleFor(x => x.Value).UniqueName();
+      RuleFor(x => x.Value).UniqueName(uniqueNameSettings);
     }
   }
 }

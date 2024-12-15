@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using Logitar.Identity.Core.Settings;
+using Logitar.Identity.Core.Validators;
 
 namespace Logitar.Identity.Core;
 
@@ -7,6 +9,19 @@ namespace Logitar.Identity.Core;
 /// </summary>
 public static class ValidationExtensions
 {
+  /// <summary>
+  /// Defines a 'allowed characters' validator on the current rule builder.
+  /// Validation will fail if the property contains characters that is not allowed.
+  /// </summary>
+  /// <typeparam name="T">The type of the object being validated.</typeparam>
+  /// <param name="ruleBuilder">The rule builder.</param>
+  /// <param name="allowedCharacters">The allowed characters.</param>
+  /// <returns>The resulting rule builder options.</returns>
+  public static IRuleBuilderOptions<T, string> AllowedCharacters<T>(this IRuleBuilder<T, string> ruleBuilder, string? allowedCharacters)
+  {
+    return ruleBuilder.SetValidator(new AllowedCharactersValidator<T>(allowedCharacters));
+  }
+
   /// <summary>
   /// Defines a 'description' validator on the current rule builder.
   /// Validation will fail if the property is null, an empty string, or only white-space.
@@ -37,9 +52,10 @@ public static class ValidationExtensions
   /// </summary>
   /// <typeparam name="T">The type of the object being validated.</typeparam>
   /// <param name="ruleBuilder">The rule builder.</param>
+  /// <param name="uniqueNameSettings">The unique name settings.</param>
   /// <returns>The resulting rule builder options.</returns>
-  public static IRuleBuilderOptions<T, string> UniqueName<T>(this IRuleBuilder<T, string> ruleBuilder)
+  public static IRuleBuilderOptions<T, string> UniqueName<T>(this IRuleBuilder<T, string> ruleBuilder, IUniqueNameSettings uniqueNameSettings)
   {
-    return ruleBuilder.NotEmpty().MaximumLength(Core.UniqueName.MaximumLength); // TODO(fpion): AllowedCharacters
+    return ruleBuilder.NotEmpty().MaximumLength(Core.UniqueName.MaximumLength).AllowedCharacters(uniqueNameSettings.AllowedCharacters);
   }
 }

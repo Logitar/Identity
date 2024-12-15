@@ -1,5 +1,6 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Core.Roles.Events;
+using System.Collections.Generic;
 
 namespace Logitar.Identity.Core.Roles;
 
@@ -10,7 +11,6 @@ namespace Logitar.Identity.Core.Roles;
 public class Role : AggregateRoot
 {
   // TODO(fpion): TenantId
-  // TODO(fpion): CustomAttributes
 
   /// <summary>
   /// The updated event.
@@ -71,6 +71,15 @@ public class Role : AggregateRoot
   }
 
   /// <summary>
+  /// The custom attributes of the role.
+  /// </summary>
+  private readonly Dictionary<string, string> _customAttributes = [];
+  /// <summary>
+  /// Gets the custom attributes of the role.
+  /// </summary>
+  public IReadOnlyDictionary<string, string> CustomAttributes => _customAttributes.AsReadOnly();
+
+  /// <summary>
   /// Initializes a new instance of the <see cref="Role"/> class.
   /// </summary>
   /// <param name="uniqueName">The unique name of the role.</param>
@@ -102,6 +111,63 @@ public class Role : AggregateRoot
   }
 
   /// <summary>
+  /// Removes the specified custom attribute on the role.
+  /// </summary>
+  /// <param name="key">The key of the custom attribute.</param>
+  public void RemoveCustomAttribute(string key)
+  {
+    key = key.Trim();
+    if (_customAttributes.Remove(key))
+    {
+      _updated.CustomAttributes[key] = null;
+    }
+  }
+
+  /// <summary>
+  /// Sets the specified custom attribute on the role.
+  /// </summary>
+  /// <param name="key">The key of the custom attribute.</param>
+  /// <param name="value">The value of the custom attribute.</param>
+  public void SetCustomAttribute(string key, string value)
+  {
+    //if (string.IsNullOrWhiteSpace(key))
+    //{
+    //  RemoveCustomAttribute(key);
+    //}
+
+    //key = key.Trim();
+    //value = value.Trim();
+    // TODO(fpion): validate
+
+    if (!_customAttributes.TryGetValue(key, out string? existingValue) || existingValue != value)
+    {
+      _customAttributes[key] = value;
+      _updated.CustomAttributes[key] = value;
+    }
+  }
+
+  /// <summary>
+  /// Sets the unique name of the role.
+  /// </summary>
+  /// <param name="uniqueName">The unique name.</param>
+  /// <param name="actorId">The actor identifier.</param>
+  public void SetUniqueName(UniqueName uniqueName, ActorId? actorId)
+  {
+    if (_uniqueName != uniqueName)
+    {
+      Raise(new RoleUniqueNameChanged(uniqueName), actorId);
+    }
+  }
+  /// <summary>
+  /// Handles the specified event.
+  /// </summary>
+  /// <param name="event">The event to apply.</param>
+  protected virtual void Apply(RoleUniqueNameChanged @event)
+  {
+    _uniqueName = @event.UniqueName;
+  }
+
+  /// <summary>
   /// Applies updates on the role.
   /// </summary>
   /// <param name="actorId">The actor identifier.</param>
@@ -119,10 +185,6 @@ public class Role : AggregateRoot
   /// <param name="event">The event to apply.</param>
   protected virtual void Handle(RoleUpdated @event)
   {
-    if (@event.UniqueName != null)
-    {
-      _uniqueName = @event.UniqueName;
-    }
     if (@event.DisplayName != null)
     {
       _displayName = @event.DisplayName.Value;
@@ -130,6 +192,18 @@ public class Role : AggregateRoot
     if (@event.Description != null)
     {
       _description = @event.Description.Value;
+    }
+
+    foreach (KeyValuePair<string, string?> customAttribute in @event.CustomAttributes)
+    {
+      if (customAttribute.Value == null)
+      {
+        _customAttributes.Remove(customAttribute.Key);
+      }
+      else
+      {
+        _customAttributes[customAttribute.Key] = customAttribute.Value;
+      }
     }
   }
 

@@ -1,5 +1,7 @@
 ﻿using Logitar.EventSourcing;
 using MediatR;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Logitar.Identity.Core.Roles.Events;
 
@@ -9,10 +11,6 @@ namespace Logitar.Identity.Core.Roles.Events;
 public record RoleUpdated : DomainEvent, INotification
 {
   /// <summary>
-  /// Gets or sets the new unique name of the role.
-  /// </summary>
-  public UniqueName? UniqueName { get; set; }
-  /// <summary>
   /// Gets or sets the new display name of the role.
   /// </summary>
   public Change<DisplayName>? DisplayName { get; set; }
@@ -21,11 +19,14 @@ public record RoleUpdated : DomainEvent, INotification
   /// </summary>
   public Change<Description>? Description { get; set; }
 
-  // TODO(fpion): CustomAttributes
+  /// <summary>
+  /// Gets or sets the custom attribute modifications of the role.
+  /// </summary>
+  public Dictionary<string, string?> CustomAttributes { get; init; } = [];
 
   /// <summary>
   /// Gets a value indicating whether or not the role has been updated.
   /// </summary>
-  //[JsonIgnore] // TODO(fpion): implement
-  public bool HasChanges => UniqueName != null || DisplayName != null || Description != null;
+  [JsonIgnore]
+  public bool HasChanges => DisplayName != null || Description != null || CustomAttributes.Count > 0;
 }
