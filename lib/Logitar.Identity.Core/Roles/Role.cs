@@ -9,8 +9,6 @@ namespace Logitar.Identity.Core.Roles;
 /// </summary>
 public class Role : AggregateRoot
 {
-  // TODO(fpion): TenantId
-
   /// <summary>
   /// The updated event.
   /// </summary>

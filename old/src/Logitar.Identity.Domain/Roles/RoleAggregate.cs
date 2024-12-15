@@ -15,10 +15,4 @@ public class RoleAggregate : AggregateRoot
   public RoleAggregate() : base()
   {
   }
-
-  private readonly CustomAttributeValidator _customAttributeValidator = new();
-  public void SetCustomAttribute(string key, string value)
-  {
-    _customAttributeValidator.ValidateAndThrow(key, value);
-  }
 }
