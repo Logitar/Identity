@@ -18,6 +18,14 @@ public class Role : AggregateRoot
   /// Gets the identifier of the role.
   /// </summary>
   public new RoleId Id => new(base.Id);
+  /// <summary>
+  /// Gets the tenant identifier of the role.
+  /// </summary>
+  public TenantId? TenantId => Id.TenantId;
+  /// <summary>
+  /// Gets the entity identifier of the role.
+  /// </summary>
+  public EntityId? EntityId => Id.EntityId;
 
   /// <summary>
   /// The unique name of the role.

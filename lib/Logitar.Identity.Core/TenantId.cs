@@ -8,11 +8,6 @@ namespace Logitar.Identity.Core;
 public readonly struct TenantId
 {
   /// <summary>
-  /// The separator between tenant and entity identifier values.
-  /// </summary>
-  public const char Separator = ':';
-
-  /// <summary>
   /// Gets the identifier of the event stream.
   /// </summary>
   public StreamId StreamId { get; }
@@ -35,7 +30,7 @@ public readonly struct TenantId
   /// <param name="value">A string value.</param>
   public TenantId(string value)
   {
-    StreamId = new StreamId(value); // TODO(fpion): should not contain the separator.
+    StreamId = new StreamId(value);
   }
   /// <summary>
   /// Initializes a new instance of the <see cref="TenantId"/> struct.
@@ -43,7 +38,7 @@ public readonly struct TenantId
   /// <param name="streamId">A stream identifier.</param>
   public TenantId(StreamId streamId)
   {
-    StreamId = streamId; // TODO(fpion): should not contain the separator.
+    StreamId = streamId;
   }
 
   /// <summary>
