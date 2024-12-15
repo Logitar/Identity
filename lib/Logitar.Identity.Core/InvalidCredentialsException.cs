@@ -3,7 +3,7 @@
 /// <summary>
 /// The exception raised when credential validation failed.
 /// </summary>
-public class InvalidCredentialsException : Exception
+public class InvalidCredentialsException : IdentityException
 {
   /// <summary>
   /// A generic error message for this exception.

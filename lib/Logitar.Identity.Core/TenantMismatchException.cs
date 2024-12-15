@@ -3,7 +3,7 @@
 /// <summary>
 /// The exception raised when an association is made between two entities in different tenants.
 /// </summary>
-public class TenantMismatchException : Exception
+public class TenantMismatchException : IdentityException
 {
   /// <summary>
   /// A generic error message for this exception.
