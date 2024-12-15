@@ -4,28 +4,15 @@ using FluentValidation.Validators;
 namespace Logitar.Identity.Core.Validators;
 
 /// <summary>
-/// The validator used to enforce a strict list of characters.
+/// The validator used to enforce that a string is an identifier.
 /// </summary>
 /// <typeparam name="T">The type of the object being validated.</typeparam>
-public class AllowedCharactersValidator<T> : IPropertyValidator<T, string>
+public class IdentifierValidator<T> : IPropertyValidator<T, string>
 {
-  /// <summary>
-  /// Gets the allowed characters.
-  /// </summary>
-  public string? AllowedCharacters { get; }
   /// <summary>
   /// Gets the name of the validator.
   /// </summary>
-  public string Name { get; } = "AllowedCharactersValidator";
-
-  /// <summary>
-  /// Initializes a new instance of the <see cref="AllowedCharactersValidator{T}"/> class.
-  /// </summary>
-  /// <param name="allowedCharacters">The allowed characters.</param>
-  public AllowedCharactersValidator(string? allowedCharacters)
-  {
-    AllowedCharacters = allowedCharacters;
-  }
+  public string Name { get; } = "IdentifierValidator";
 
   /// <summary>
   /// Returns the default error message template for this validator, when not overridden.
@@ -34,7 +21,7 @@ public class AllowedCharactersValidator<T> : IPropertyValidator<T, string>
   /// <returns>The default error message template.</returns>
   public string GetDefaultMessageTemplate(string errorCode)
   {
-    return $"'{{PropertyName}}' may only include the following characters: {AllowedCharacters}";
+    return "'{PropertyName}' may only contain letters, digits and underscores (_), and must not start with a digit.";
   }
 
   /// <summary>
@@ -45,6 +32,6 @@ public class AllowedCharactersValidator<T> : IPropertyValidator<T, string>
   /// <returns>True if the value is valid, or false otherwise.</returns>
   public bool IsValid(ValidationContext<T> context, string value)
   {
-    return AllowedCharacters == null || value.All(AllowedCharacters.Contains);
+    return string.IsNullOrEmpty(value) || (!char.IsDigit(value.First()) && value.All(c => char.IsLetterOrDigit(c) || c == '_'));
   }
 }

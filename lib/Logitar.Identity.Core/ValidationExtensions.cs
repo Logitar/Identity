@@ -47,6 +47,17 @@ public static class ValidationExtensions
   }
 
   /// <summary>
+  /// Returns a value indicating whether or not the specified value is an identifier.
+  /// An identifier only contains letters, digits and underscores (_) and cannot start with a digit.
+  /// </summary>
+  /// <param name="value">The input string.</param>
+  /// <returns>True if the value is an identifier, or false otherwise.</returns>
+  public static bool IsIdentifier(this string value)
+  {
+    return !string.IsNullOrEmpty(value) && !char.IsDigit(value.First()) && value.All(c => char.IsLetterOrDigit(c) || c == '_');
+  }
+
+  /// <summary>
   /// Defines a 'unique name' validator on the current rule builder.
   /// Validation will fail if the property is null, an empty string, only white-space, or its length exceeds the maximum length.
   /// </summary>

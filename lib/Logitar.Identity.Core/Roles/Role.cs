@@ -129,14 +129,17 @@ public class Role : AggregateRoot
   /// <param name="value">The value of the custom attribute.</param>
   public void SetCustomAttribute(string key, string value)
   {
-    if (string.IsNullOrWhiteSpace(key))
+    if (string.IsNullOrWhiteSpace(value))
     {
       RemoveCustomAttribute(key);
     }
 
     key = key.Trim();
     value = value.Trim();
-    // TODO(fpion): validate key
+    if (!key.IsIdentifier())
+    {
+      throw new ArgumentException("The value must be an identifier.", nameof(key));
+    }
 
     if (!_customAttributes.TryGetValue(key, out string? existingValue) || existingValue != value)
     {
