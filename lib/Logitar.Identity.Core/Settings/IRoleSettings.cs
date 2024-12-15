@@ -1,4 +1,4 @@
-﻿namespace Logitar.Identity.Contracts.Settings;
+﻿namespace Logitar.Identity.Core.Settings;
 
 /// <summary>
 /// The settings applying to roles.
