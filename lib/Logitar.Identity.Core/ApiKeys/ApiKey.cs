@@ -19,6 +19,14 @@ public class ApiKey : AggregateRoot
   /// Gets the identifier of the API key.
   /// </summary>
   public new ApiKeyId Id => new(base.Id);
+  /// <summary>
+  /// Gets the tenant identifier of the API key.
+  /// </summary>
+  public TenantId? TenantId => Id.TenantId;
+  /// <summary>
+  /// Gets the entity identifier of the API key. This identifier is unique within the tenant.
+  /// </summary>
+  public EntityId? EntityId => Id.EntityId;
 
   /// <summary>
   /// The display name of the API key.
@@ -108,13 +116,13 @@ public class ApiKey : AggregateRoot
   /// </summary>
   /// <param name="role">The role to be added.</param>
   /// <param name="actorId">The actor identifier.</param>
+  /// <exception cref="TenantMismatchException">The role and API key tenant identifiers do not match.</exception>
   public void AddRole(Role role, ActorId actorId = default)
   {
-    //<exception cref="TenantMismatchException">The role and API key tenant identifiers do not match.</exception>
-    //if (role.TenantId != TenantId)
-    //{
-    //  throw new TenantMismatchException(TenantId, role.TenantId);
-    //} // TODO(fpion): implement
+    if (role.TenantId != TenantId)
+    {
+      throw new TenantMismatchException(TenantId, role.TenantId);
+    }
 
     if (!HasRole(role))
     {

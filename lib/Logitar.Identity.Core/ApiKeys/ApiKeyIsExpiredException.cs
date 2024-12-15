@@ -13,10 +13,10 @@ public class ApiKeyIsExpiredException : InvalidCredentialsException
   /// <summary>
   /// Gets the identifier of the expired API key.
   /// </summary>
-  public ApiKeyId ApiKeyId // TODO(fpion): do we really want this?
+  public string ApiKeyId
   {
-    get => new((string)Data[nameof(ApiKeyId)]!);
-    private set => Data[nameof(ApiKeyId)] = value.Value;
+    get => (string)Data[nameof(ApiKeyId)]!;
+    private set => Data[nameof(ApiKeyId)] = value;
   }
 
   /// <summary>
@@ -25,7 +25,7 @@ public class ApiKeyIsExpiredException : InvalidCredentialsException
   /// <param name="apiKey">The API key that is expired.</param>
   public ApiKeyIsExpiredException(ApiKey apiKey) : base(BuildMessage(apiKey))
   {
-    ApiKeyId = apiKey.Id;
+    ApiKeyId = apiKey.Id.Value;
   }
 
   /// <summary>
@@ -34,6 +34,6 @@ public class ApiKeyIsExpiredException : InvalidCredentialsException
   /// <param name="apiKey">The API key that is expired.</param>
   /// <returns>The exception message.</returns>
   private static string BuildMessage(ApiKey apiKey) => new ErrorMessageBuilder(ErrorMessage)
-    .AddData(nameof(ApiKeyId), apiKey.Id.Value)
+    .AddData(nameof(ApiKeyId), apiKey.Id)
     .Build();
 }

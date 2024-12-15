@@ -13,10 +13,10 @@ public class IncorrectApiKeySecretException : InvalidCredentialsException
   /// <summary>
   /// Gets or sets the identifier of the API key.
   /// </summary>
-  public ApiKeyId ApiKeyId // TODO(fpion): do we really want this?
+  public string ApiKeyId
   {
-    get => new((string)Data[nameof(ApiKeyId)]!);
-    private set => Data[nameof(ApiKeyId)] = value.Value;
+    get => (string)Data[nameof(ApiKeyId)]!;
+    private set => Data[nameof(ApiKeyId)] = value;
   }
   /// <summary>
   /// Gets or sets the attempted secret.
@@ -35,7 +35,7 @@ public class IncorrectApiKeySecretException : InvalidCredentialsException
   public IncorrectApiKeySecretException(ApiKey apiKey, string attemptedSecret)
     : base(BuildMessage(apiKey, attemptedSecret))
   {
-    ApiKeyId = apiKey.Id;
+    ApiKeyId = apiKey.Id.Value;
     AttemptedSecret = attemptedSecret;
   }
 
@@ -46,7 +46,7 @@ public class IncorrectApiKeySecretException : InvalidCredentialsException
   /// <param name="attemptedSecret">The attempted secret.</param>
   /// <returns>The exception message.</returns>
   private static string BuildMessage(ApiKey apiKey, string attemptedSecret) => new ErrorMessageBuilder(ErrorMessage)
-    .AddData(nameof(ApiKeyId), apiKey.Id.Value)
+    .AddData(nameof(ApiKeyId), apiKey.Id)
     .AddData(nameof(AttemptedSecret), attemptedSecret)
     .Build();
 }

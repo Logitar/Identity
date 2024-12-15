@@ -17,20 +17,32 @@ public readonly struct ApiKeyId
   public string Value => StreamId.Value;
 
   /// <summary>
+  /// Gets the tenant identifier.
+  /// </summary>
+  public TenantId? TenantId { get; }
+  /// <summary>
+  /// Gets the entity identifier.
+  /// </summary>
+  public EntityId EntityId { get; }
+
+  /// <summary>
   /// Initializes a new instance of the <see cref="ApiKeyId"/> struct.
   /// </summary>
-  /// <param name="value">A Guid value.</param>
-  public ApiKeyId(Guid value)
+  /// <param name="tenantId">The tenant identifier.</param>
+  /// <param name="entityId">The entity identifier.</param>
+  public ApiKeyId(TenantId? tenantId, Guid entityId) : this(tenantId, Convert.ToBase64String(entityId.ToByteArray()).ToUriSafeBase64())
   {
-    StreamId = new StreamId(value);
   }
   /// <summary>
   /// Initializes a new instance of the <see cref="ApiKeyId"/> struct.
   /// </summary>
-  /// <param name="value">A string value.</param>
-  public ApiKeyId(string value)
+  /// <param name="tenantId">The tenant identifier.</param>
+  /// <param name="entityId">The entity identifier.</param>
+  public ApiKeyId(TenantId? tenantId, string entityId)
   {
-    StreamId = new StreamId(value);
+    TenantId = tenantId;
+    EntityId = new(entityId);
+    StreamId = new(tenantId.HasValue ? $"{tenantId}:{entityId}" : entityId);
   }
   /// <summary>
   /// Initializes a new instance of the <see cref="ApiKeyId"/> struct.
@@ -44,14 +56,9 @@ public readonly struct ApiKeyId
   /// <summary>
   /// Randomly generates a new API key identifier.
   /// </summary>
+  /// <param name="tenantId">The tenant identifier.</param>
   /// <returns>The generated identifier.</returns>
-  public static ApiKeyId NewId() => new(StreamId.NewId());
-
-  /// <summary>
-  /// Converts the identifier to a <see cref="Guid"/>. The conversion will fail if the identifier has not been created from a <see cref="Guid"/>.
-  /// </summary>
-  /// <returns>The resulting Guid.</returns>
-  public Guid ToGuid() => StreamId.ToGuid();
+  public static ApiKeyId NewId(TenantId? tenantId = null) => new(tenantId, Guid.NewGuid());
 
   /// <summary>
   /// Returns a value indicating whether or not the specified identifiers are equal.
