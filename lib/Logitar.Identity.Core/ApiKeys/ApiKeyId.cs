@@ -35,7 +35,7 @@ public readonly struct ApiKeyId
   /// <summary>
   /// Initializes a new instance of the <see cref="ApiKeyId"/> struct.
   /// </summary>
-  /// <param name="streamId">A stream identifier..</param>
+  /// <param name="streamId">A stream identifier.</param>
   public ApiKeyId(StreamId streamId)
   {
     StreamId = streamId;

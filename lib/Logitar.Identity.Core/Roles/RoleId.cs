@@ -35,7 +35,7 @@ public readonly struct RoleId
   /// <summary>
   /// Initializes a new instance of the <see cref="RoleId"/> struct.
   /// </summary>
-  /// <param name="streamId">A stream identifier..</param>
+  /// <param name="streamId">A stream identifier.</param>
   public RoleId(StreamId streamId)
   {
     StreamId = streamId;
