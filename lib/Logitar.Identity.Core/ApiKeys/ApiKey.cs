@@ -41,6 +41,7 @@ public class ApiKey : AggregateRoot
   /// <summary>
   /// Gets or sets the display name of the API key.
   /// </summary>
+  /// <exception cref="InvalidOperationException">The display name has not been initialized yet.</exception>
   public DisplayName DisplayName
   {
     get => _displayName ?? throw new InvalidOperationException($"The {nameof(DisplayName)} has not been initialized yet.");
@@ -79,14 +80,20 @@ public class ApiKey : AggregateRoot
   /// <summary>
   /// Gets or sets the expiration date and time of the API key.
   /// </summary>
+  /// <exception cref="ArgumentException">The new expiration date and time was greater (more in the future) than the old expiration date and time.</exception>
+  /// <exception cref="ArgumentOutOfRangeException">The date and time was not set in the future.</exception>
   public DateTime? ExpiresOn
   {
     get => _expiresOn;
     set
     {
-      if (_expiresOn.HasValue && _expiresOn.Value.AsUniversalTime() <= DateTime.UtcNow)
+      if (value.HasValue && value.Value.AsUniversalTime() <= DateTime.UtcNow)
       {
         throw new ArgumentOutOfRangeException(nameof(ExpiresOn), "The expiration date and time must be set in the future.");
+      }
+      if (_expiresOn.HasValue && (!value.HasValue || value.Value.AsUniversalTime() > _expiresOn.Value.AsUniversalTime()))
+      {
+        throw new ArgumentException("The API key expiration cannot be extended.", nameof(ExpiresOn));
       }
 
       if (_expiresOn != value)
@@ -154,7 +161,7 @@ public class ApiKey : AggregateRoot
   /// <param name="role">The role to be added.</param>
   /// <param name="actorId">The actor identifier.</param>
   /// <exception cref="TenantMismatchException">The role and API key tenant identifiers do not match.</exception>
-  public void AddRole(Role role, ActorId actorId = default)
+  public void AddRole(Role role, ActorId? actorId = null)
   {
     if (role.TenantId != TenantId)
     {
@@ -236,7 +243,7 @@ public class ApiKey : AggregateRoot
   /// </summary>
   /// <param name="role">The role to be removed.</param>
   /// <param name="actorId">The actor identifier.</param>
-  public void RemoveRole(Role role, ActorId actorId = default)
+  public void RemoveRole(Role role, ActorId? actorId = null)
   {
     if (HasRole(role))
     {
@@ -270,6 +277,7 @@ public class ApiKey : AggregateRoot
   /// </summary>
   /// <param name="key">The key of the custom attribute.</param>
   /// <param name="value">The value of the custom attribute.</param>
+  /// <exception cref="ArgumentException">The key was not a valid identifier.</exception>
   public void SetCustomAttribute(string key, string value)
   {
     if (string.IsNullOrWhiteSpace(value))

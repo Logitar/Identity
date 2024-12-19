@@ -76,7 +76,7 @@ public class OneTimePassword : AggregateRoot
   /// <param name="maximumAttempts">The maximum number of attempts of the One-Time Password (OTP).</param>
   /// <param name="actorId">The actor identifier.</param>
   /// <param name="id">The identifier of the One-Time Password (OTP).</param>
-  /// <exception cref="ArgumentOutOfRangeException"></exception>
+  /// <exception cref="ArgumentOutOfRangeException">The expiration date time was not set in the future, or the maximum number of attempts was negative or zero.</exception>
   public OneTimePassword(Password password, DateTime? expiresOn = null, int? maximumAttempts = null, ActorId? actorId = null, OneTimePasswordId? id = null)
     : base((id ?? OneTimePasswordId.NewId()).StreamId)
   {
@@ -140,6 +140,7 @@ public class OneTimePassword : AggregateRoot
   /// </summary>
   /// <param name="key">The key of the custom attribute.</param>
   /// <param name="value">The value of the custom attribute.</param>
+  /// <exception cref="ArgumentException">The key was not a valid identifier.</exception>
   public void SetCustomAttribute(string key, string value)
   {
     if (string.IsNullOrWhiteSpace(value))
