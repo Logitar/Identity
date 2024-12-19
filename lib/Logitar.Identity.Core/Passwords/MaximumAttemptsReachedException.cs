@@ -39,8 +39,14 @@ public class MaximumAttemptsReachedException : InvalidCredentialsException
     OneTimePasswordId = oneTimePassword.Id.Value;
   }
 
+  /// <summary>
+  /// Builds the exception message.
+  /// </summary>
+  /// <param name="oneTimePassword">The One-Time Password (OTP).</param>
+  /// <param name="attemptCount">The number of attempts.</param>
+  /// <returns>The exception message.</returns>
   private static string BuildMessage(OneTimePassword oneTimePassword, int attemptCount) => new ErrorMessageBuilder(ErrorMessage)
-    .AddData(nameof(OneTimePasswordId), oneTimePassword.Id.Value)
+    .AddData(nameof(OneTimePasswordId), oneTimePassword.Id)
     .AddData(nameof(AttemptCount), attemptCount)
     .Build();
 }

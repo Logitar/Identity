@@ -9,6 +9,8 @@ namespace Logitar.Identity.Core;
 /// </summary>
 public static class ValidationExtensions
 {
+  // TODO(fpion): Address
+
   /// <summary>
   /// Defines a 'allowed characters' validator on the current rule builder.
   /// Validation will fail if the property contains characters that is not allowed.
@@ -21,6 +23,12 @@ public static class ValidationExtensions
   {
     return ruleBuilder.SetValidator(new AllowedCharactersValidator<T>(allowedCharacters));
   }
+
+  // TODO(fpion): Birthdate
+
+  // TODO(fpion): CustomAttributeKey
+
+  // TODO(fpion): CustomAttributeValue
 
   /// <summary>
   /// Defines a 'description' validator on the current rule builder.
@@ -46,6 +54,43 @@ public static class ValidationExtensions
     return ruleBuilder.NotEmpty().MaximumLength(Core.DisplayName.MaximumLength);
   }
 
+  // TODO(fpion): Email
+
+  /// <summary>
+  /// TODO(fpion): document
+  /// </summary>
+  /// <typeparam name="T">TODO(fpion): document</typeparam>
+  /// <param name="ruleBuilder">TODO(fpion): document</param>
+  /// <param name="now">TODO(fpion): document</param>
+  /// <returns>TODO(fpion): document</returns>
+  public static IRuleBuilderOptions<T, DateTime> Future<T>(this IRuleBuilder<T, DateTime> ruleBuilder, DateTime? now = null)
+  {
+    return ruleBuilder.SetValidator(new FutureValidator<T>(now));
+  }
+
+  /// <summary>
+  /// Defines a 'gender' validator on the current rule builder.
+  /// Validation will fail if the property is null, an empty string, only white-space, or its length exceeds the maximum length.
+  /// </summary>
+  /// <typeparam name="T">The type of the object being validated.</typeparam>
+  /// <param name="ruleBuilder">The rule builder.</param>
+  /// <returns>The resulting rule builder options.</returns>
+  public static IRuleBuilderOptions<T, string> Gender<T>(this IRuleBuilder<T, string> ruleBuilder)
+  {
+    return ruleBuilder.NotEmpty().MaximumLength(Users.Gender.MaximumLength);
+  }
+
+  /// <summary>
+  /// TODO(fpion): document
+  /// </summary>
+  /// <typeparam name="T">TODO(fpion): document</typeparam>
+  /// <param name="ruleBuilder">TODO(fpion): document</param>
+  /// <returns>TODO(fpion): document</returns>
+  public static IRuleBuilderOptions<T, string> Identifier<T>(this IRuleBuilder<T, string> ruleBuilder) // TODO(fpion): ValueObject?
+  {
+    return ruleBuilder.NotEmpty().MaximumLength(byte.MaxValue).SetValidator(new IdentifierValidator<T>());
+  }
+
   /// <summary>
   /// Returns a value indicating whether or not the specified value is an identifier.
   /// An identifier only contains letters, digits and underscores (_) and cannot start with a digit.
@@ -58,8 +103,60 @@ public static class ValidationExtensions
   }
 
   /// <summary>
-  /// Defines a 'unique name' validator on the current rule builder.
+  /// Defines a 'locale' validator on the current rule builder.
+  /// Validation will fail if the property is null, an empty string, only white-space, its length exceeds the maximum length, or is not a valid locale.
+  /// </summary>
+  /// <typeparam name="T">The type of the object being validated.</typeparam>
+  /// <param name="ruleBuilder">The rule builder.</param>
+  /// <returns>The resulting rule builder options.</returns>
+  public static IRuleBuilderOptions<T, string> Locale<T>(this IRuleBuilder<T, string> ruleBuilder)
+  {
+    return ruleBuilder.NotEmpty().MaximumLength(Core.Locale.MaximumLength).SetValidator(new LocaleValidator<T>());
+  }
+
+  // TODO(fpion): Password with Settings (such as UniqueName)
+
+  /// <summary>
+  /// TODO(fpion): document
+  /// </summary>
+  /// <typeparam name="T">TODO(fpion): document</typeparam>
+  /// <param name="ruleBuilder">TODO(fpion): document</param>
+  /// <param name="now">TODO(fpion): document</param>
+  /// <returns>TODO(fpion): document</returns>
+  public static IRuleBuilderOptions<T, DateTime> Past<T>(this IRuleBuilder<T, DateTime> ruleBuilder, DateTime? now = null)
+  {
+    return ruleBuilder.SetValidator(new PastValidator<T>(now));
+  }
+
+  /// <summary>
+  /// Defines a 'person name' validator on the current rule builder.
   /// Validation will fail if the property is null, an empty string, only white-space, or its length exceeds the maximum length.
+  /// </summary>
+  /// <typeparam name="T">The type of the object being validated.</typeparam>
+  /// <param name="ruleBuilder">The rule builder.</param>
+  /// <returns>The resulting rule builder options.</returns>
+  public static IRuleBuilderOptions<T, string> PersonName<T>(this IRuleBuilder<T, string> ruleBuilder)
+  {
+    return ruleBuilder.NotEmpty().MaximumLength(Users.PersonName.MaximumLength);
+  }
+
+  // TODO(fpion): Phone
+
+  /// <summary>
+  /// Defines a 'time zone' validator on the current rule builder.
+  /// Validation will fail if the property is null, an empty string, only white-space, its length exceeds the maximum length, or is not a valid tz database entry ID.
+  /// </summary>
+  /// <typeparam name="T">The type of the object being validated.</typeparam>
+  /// <param name="ruleBuilder">The rule builder.</param>
+  /// <returns>The resulting rule builder options.</returns>
+  public static IRuleBuilderOptions<T, string> TimeZone<T>(this IRuleBuilder<T, string> ruleBuilder)
+  {
+    return ruleBuilder.NotEmpty().MaximumLength(Core.TimeZone.MaximumLength).SetValidator(new TimeZoneValidator<T>());
+  }
+
+  /// <summary>
+  /// Defines a 'unique name' validator on the current rule builder.
+  /// Validation will fail if the property is null, an empty string, only white-space, its length exceeds the maximum length, or contains characters that are not allowed.
   /// </summary>
   /// <typeparam name="T">The type of the object being validated.</typeparam>
   /// <param name="ruleBuilder">The rule builder.</param>
@@ -68,5 +165,18 @@ public static class ValidationExtensions
   public static IRuleBuilderOptions<T, string> UniqueName<T>(this IRuleBuilder<T, string> ruleBuilder, IUniqueNameSettings uniqueNameSettings)
   {
     return ruleBuilder.NotEmpty().MaximumLength(Core.UniqueName.MaximumLength).AllowedCharacters(uniqueNameSettings.AllowedCharacters);
+  }
+
+  /// <summary>
+  /// Defines a 'url' validator on the current rule builder.
+  /// Validation will fail if the property is null, an empty string, only white-space, its length exceeds the maximum length, or is not a valid absolute Uniform Resource Locator (URL).
+  /// </summary>
+  /// <typeparam name="T">The type of the object being validated.</typeparam>
+  /// <param name="ruleBuilder">The rule builder.</param>
+  /// <param name="schemes">The allowed URL schemes. Defaults to 'http' and 'https'.</param>
+  /// <returns>The resulting rule builder options.</returns>
+  public static IRuleBuilderOptions<T, string> Url<T>(this IRuleBuilder<T, string> ruleBuilder, IEnumerable<string>? schemes = null)
+  {
+    return ruleBuilder.NotEmpty().MaximumLength(Core.Url.MaximumLength).SetValidator(new UrlValidator<T>(schemes));
   }
 }

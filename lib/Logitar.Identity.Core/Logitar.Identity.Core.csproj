@@ -18,7 +18,9 @@
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.11.0" />
     <PackageReference Include="Logitar.EventSourcing" Version="7.0.0" />
+    <PackageReference Include="Logitar.Security" Version="7.0.0" />
     <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
+    <PackageReference Include="NodaTime" Version="3.2.0" />
     <PackageReference Include="System.Text.Json" Version="9.0.0" />
   </ItemGroup>
 
@@ -26,7 +28,9 @@
     <Using Include="System" />
     <Using Include="System.Collections.Generic" />
     <Using Include="System.Diagnostics.CodeAnalysis" />
+    <Using Include="System.Globalization" />
     <Using Include="System.Linq" />
+    <Using Include="System.Text" />
     <Using Include="System.Text.Json.Serialization" />
   </ItemGroup>
 
