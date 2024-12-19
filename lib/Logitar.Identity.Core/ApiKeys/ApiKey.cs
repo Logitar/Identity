@@ -112,11 +112,11 @@ public class ApiKey : AggregateRoot
   /// <summary>
   /// The custom attributes of the API key.
   /// </summary>
-  private readonly Dictionary<string, string> _customAttributes = [];
+  private readonly Dictionary<Identifier, string> _customAttributes = [];
   /// <summary>
   /// Gets the custom attributes of the API key.
   /// </summary>
-  public IReadOnlyDictionary<string, string> CustomAttributes => _customAttributes.AsReadOnly();
+  public IReadOnlyDictionary<Identifier, string> CustomAttributes => _customAttributes.AsReadOnly();
 
   private readonly HashSet<RoleId> _roles = [];
   /// <summary>
@@ -263,9 +263,8 @@ public class ApiKey : AggregateRoot
   /// Removes the specified custom attribute on the API key.
   /// </summary>
   /// <param name="key">The key of the custom attribute.</param>
-  public void RemoveCustomAttribute(string key)
+  public void RemoveCustomAttribute(Identifier key)
   {
-    key = key.Trim();
     if (_customAttributes.Remove(key))
     {
       _updated.CustomAttributes[key] = null;
@@ -277,20 +276,13 @@ public class ApiKey : AggregateRoot
   /// </summary>
   /// <param name="key">The key of the custom attribute.</param>
   /// <param name="value">The value of the custom attribute.</param>
-  /// <exception cref="ArgumentException">The key was not a valid identifier.</exception>
-  public void SetCustomAttribute(string key, string value)
+  public void SetCustomAttribute(Identifier key, string value)
   {
     if (string.IsNullOrWhiteSpace(value))
     {
       RemoveCustomAttribute(key);
     }
-
-    key = key.Trim();
     value = value.Trim();
-    if (!key.IsIdentifier())
-    {
-      throw new ArgumentException("The value must be an identifier.", nameof(key));
-    }
 
     if (!_customAttributes.TryGetValue(key, out string? existingValue) || existingValue != value)
     {
@@ -330,7 +322,7 @@ public class ApiKey : AggregateRoot
       ExpiresOn = @event.ExpiresOn.Value;
     }
 
-    foreach (KeyValuePair<string, string?> customAttribute in @event.CustomAttributes)
+    foreach (KeyValuePair<Identifier, string?> customAttribute in @event.CustomAttributes)
     {
       if (customAttribute.Value == null)
       {

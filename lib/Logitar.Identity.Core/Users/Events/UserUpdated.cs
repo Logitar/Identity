@@ -62,7 +62,7 @@ public record UserUpdated : DomainEvent, INotification
   /// <summary>
   /// Gets or sets the custom attribute modifications of the user.
   /// </summary>
-  public Dictionary<string, string?> CustomAttributes { get; init; } = [];
+  public Dictionary<Identifier, string?> CustomAttributes { get; init; } = [];
 
   /// <summary>
   /// Gets a value indicating whether or not the user is being modified.

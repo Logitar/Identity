@@ -88,20 +88,9 @@ public static class ValidationExtensions
   /// <typeparam name="T">The type of the object being validated.</typeparam>
   /// <param name="ruleBuilder">The rule builder.</param>
   /// <returns>The resulting rule builder options.</returns>
-  public static IRuleBuilderOptions<T, string> Identifier<T>(this IRuleBuilder<T, string> ruleBuilder) // TODO(fpion): ValueObject?
+  public static IRuleBuilderOptions<T, string> Identifier<T>(this IRuleBuilder<T, string> ruleBuilder)
   {
-    return ruleBuilder.NotEmpty().MaximumLength(byte.MaxValue).SetValidator(new IdentifierValidator<T>());
-  }
-
-  /// <summary>
-  /// Returns a value indicating whether or not the specified value is an identifier.
-  /// An identifier only contains letters, digits and underscores (_) and cannot start with a digit.
-  /// </summary>
-  /// <param name="value">The input string.</param>
-  /// <returns>True if the value is an identifier, or false otherwise.</returns>
-  public static bool IsIdentifier(this string value)
-  {
-    return !string.IsNullOrEmpty(value) && !char.IsDigit(value.First()) && value.All(c => char.IsLetterOrDigit(c) || c == '_');
+    return ruleBuilder.NotEmpty().MaximumLength(Core.Identifier.MaximumLength).SetValidator(new IdentifierValidator<T>());
   }
 
   /// <summary>
