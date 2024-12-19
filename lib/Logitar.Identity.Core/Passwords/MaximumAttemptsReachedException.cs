@@ -1,6 +1,4 @@
-﻿using Logitar.Identity.Domain.Shared;
-
-namespace Logitar.Identity.Domain.Passwords;
+﻿namespace Logitar.Identity.Core.Passwords;
 
 /// <summary>
 /// The exception raised when the maximum number of attempts has been reached for a One-Time Password (OTP).
@@ -10,15 +8,15 @@ public class MaximumAttemptsReachedException : InvalidCredentialsException
   /// <summary>
   /// A generic error message for this exception.
   /// </summary>
-  public new const string ErrorMessage = "The maximum number of attempts has been reached for this One-Time Password (OTP).";
+  private const string ErrorMessage = "The maximum number of attempts has been reached for this One-Time Password (OTP).";
 
   /// <summary>
   /// Gets or sets the identifier of the One-Time Password (OTP).
   /// </summary>
-  public OneTimePasswordId OneTimePasswordId
+  public string OneTimePasswordId
   {
-    get => new((string)Data[nameof(OneTimePasswordId)]!);
-    private set => Data[nameof(OneTimePasswordId)] = value.Value;
+    get => (string)Data[nameof(OneTimePasswordId)]!;
+    private set => Data[nameof(OneTimePasswordId)] = value;
   }
   /// <summary>
   /// Gets or sets the number of attempts.
@@ -34,14 +32,14 @@ public class MaximumAttemptsReachedException : InvalidCredentialsException
   /// </summary>
   /// <param name="oneTimePassword">The One-Time Password (OTP).</param>
   /// <param name="attemptCount">The number of attempts.</param>
-  public MaximumAttemptsReachedException(OneTimePasswordAggregate oneTimePassword, int attemptCount)
+  public MaximumAttemptsReachedException(OneTimePassword oneTimePassword, int attemptCount)
     : base(BuildMessage(oneTimePassword, attemptCount))
   {
     AttemptCount = attemptCount;
-    OneTimePasswordId = oneTimePassword.Id;
+    OneTimePasswordId = oneTimePassword.Id.Value;
   }
 
-  private static string BuildMessage(OneTimePasswordAggregate oneTimePassword, int attemptCount) => new ErrorMessageBuilder(ErrorMessage)
+  private static string BuildMessage(OneTimePassword oneTimePassword, int attemptCount) => new ErrorMessageBuilder(ErrorMessage)
     .AddData(nameof(OneTimePasswordId), oneTimePassword.Id.Value)
     .AddData(nameof(AttemptCount), attemptCount)
     .Build();
