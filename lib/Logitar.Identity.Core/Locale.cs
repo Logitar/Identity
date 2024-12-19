@@ -29,9 +29,10 @@ public record Locale
   /// <param name="culture">The culture object.</param>
   public Locale(CultureInfo culture)
   {
-    Culture = culture;
     Code = culture.Name;
     new Validator().ValidateAndThrow(this);
+
+    Culture = culture;
   }
   /// <summary>
   /// Initializes a new instance of the <see cref="Locale"/> class.

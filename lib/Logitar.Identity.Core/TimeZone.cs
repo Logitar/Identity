@@ -28,8 +28,10 @@ public record TimeZone
   /// <param name="dateTimeZone">The date time zone entry object.</param>
   public TimeZone(DateTimeZone dateTimeZone)
   {
-    DateTimeZone = dateTimeZone;
     Id = dateTimeZone.Id;
+    new Validator().ValidateAndThrow(this);
+
+    DateTimeZone = dateTimeZone;
   }
 
   /// <summary>
