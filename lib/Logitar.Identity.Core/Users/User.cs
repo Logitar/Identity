@@ -307,13 +307,23 @@ public class User : AggregateRoot
   /// </summary>
   public DateTime? AuthenticatedOn { get; private set; }
 
+  /// <summary>
+  /// The custom attributes of the user.
+  /// </summary>
   private readonly Dictionary<Identifier, string> _customAttributes = [];
   /// <summary>
   /// Gets the custom attributes of the user.
   /// </summary>
   public IReadOnlyDictionary<Identifier, string> CustomAttributes => _customAttributes.AsReadOnly();
 
-  // TODO(fpion): CustomIdentifiers
+  /// <summary>
+  /// The custom identifiers of the user.
+  /// </summary>
+  private readonly Dictionary<Identifier, string> _customIdentifiers = [];
+  /// <summary>
+  /// Gets the custom identifiers of the user.
+  /// </summary>
+  public IReadOnlyDictionary<Identifier, string> CustomIdentifiers => _customIdentifiers.AsReadOnly();
 
   private readonly HashSet<RoleId> _roles = [];
   /// <summary>
@@ -525,6 +535,27 @@ public class User : AggregateRoot
   }
 
   /// <summary>
+  /// Removes the specified custom identifier on the user.
+  /// </summary>
+  /// <param name="key">The key of the custom identifier.</param>
+  /// <param name="actorId">The actor identifier.</param>
+  public void RemoveCustomIdentifier(Identifier key, ActorId? actorId = null)
+  {
+    if (_customIdentifiers.ContainsKey(key))
+    {
+      Raise(new UserIdentifierRemoved(key), actorId);
+    }
+  }
+  /// <summary>
+  /// Applies the specified event.
+  /// </summary>
+  /// <param name="event">The event to apply.</param>
+  protected virtual void Handle(UserIdentifierRemoved @event)
+  {
+    _customIdentifiers.Remove(@event.Key);
+  }
+
+  /// <summary>
   /// Removes the password of the user, if the user has a password.
   /// </summary>
   /// <param name="actorId">The actor identifier.</param>
@@ -629,6 +660,34 @@ public class User : AggregateRoot
       _customAttributes[key] = value;
       _updated.CustomAttributes[key] = value;
     }
+  }
+
+  /// <summary>
+  /// Sets the specified custom identifier on the user.
+  /// </summary>
+  /// <param name="key">The key of the custom identifier.</param>
+  /// <param name="value">The value of the custom identifier.</param>
+  /// <param name="actorId">The actor identifier.</param>
+  public void SetCustomIdentifier(Identifier key, string value, ActorId? actorId = null)
+  {
+    if (string.IsNullOrWhiteSpace(value))
+    {
+      RemoveCustomIdentifier(key, actorId);
+    }
+    value = value.Trim();
+
+    if (!_customIdentifiers.TryGetValue(key, out string? existingValue) || existingValue != value)
+    {
+      Raise(new UserIdentifierChanged(key, value), actorId);
+    }
+  }
+  /// <summary>
+  /// Applies the specified event.
+  /// </summary>
+  /// <param name="event">The event to apply.</param>
+  protected virtual void Apply(UserIdentifierChanged @event)
+  {
+    _customIdentifiers[@event.Key] = @event.Value;
   }
 
   /// <summary>

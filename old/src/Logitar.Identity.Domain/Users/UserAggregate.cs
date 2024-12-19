@@ -7,62 +7,6 @@ namespace Logitar.Identity.Domain.Users;
 
 public class UserAggregate : AggregateRoot
 {
-  private readonly Dictionary<string, string> _customIdentifiers = [];
-  /// <summary>
-  /// Gets the custom identifiers of the user.
-  /// </summary>
-  public IReadOnlyDictionary<string, string> CustomIdentifiers => _customIdentifiers.AsReadOnly();
-
-  /// <summary>
-  /// Removes the specified custom identifier on the user.
-  /// </summary>
-  /// <param name="key">The key of the custom identifier.</param>
-  /// <param name="actorId">The actor identifier.</param>
-  public void RemoveCustomIdentifier(string key, ActorId actorId = default)
-  {
-    key = key.Trim();
-
-    if (_customIdentifiers.ContainsKey(key))
-    {
-      Raise(new UserIdentifierRemovedEvent(key), actorId);
-    }
-  }
-  /// <summary>
-  /// Applies the specified event.
-  /// </summary>
-  /// <param name="event">The event to apply.</param>
-  protected virtual void Apply(UserIdentifierRemovedEvent @event)
-  {
-    _customIdentifiers.Remove(@event.Key);
-  }
-
-  private readonly CustomIdentifierValidator _customIdentifierValidator = new();
-  /// <summary>
-  /// Sets the specified custom identifier on the user.
-  /// </summary>
-  /// <param name="key">The key of the custom identifier.</param>
-  /// <param name="value">The value of the custom identifier.</param>
-  /// <param name="actorId">The actor identifier.</param>
-  public void SetCustomIdentifier(string key, string value, ActorId actorId = default)
-  {
-    key = key.Trim();
-    value = value.Trim();
-    _customIdentifierValidator.ValidateAndThrow(key, value);
-
-    if (!_customIdentifiers.TryGetValue(key, out string? existingValue) || existingValue != value)
-    {
-      Raise(new UserIdentifierChangedEvent(key, value), actorId);
-    }
-  }
-  /// <summary>
-  /// Applies the specified event.
-  /// </summary>
-  /// <param name="event">The event to apply.</param>
-  protected virtual void Apply(UserIdentifierChangedEvent @event)
-  {
-    _customIdentifiers[@event.Key] = @event.Value;
-  }
-
   /// <summary>
   /// Signs-in the user without a password check, opening a new session.
   /// </summary>

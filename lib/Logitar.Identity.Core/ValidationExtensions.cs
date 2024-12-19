@@ -30,6 +30,10 @@ public static class ValidationExtensions
 
   // TODO(fpion): CustomAttributeValue
 
+  // TODO(fpion): CustomIdentifierKey
+
+  // TODO(fpion): CustomIdentifierValue
+
   /// <summary>
   /// Defines a 'description' validator on the current rule builder.
   /// Validation will fail if the property is null, an empty string, or only white-space.
