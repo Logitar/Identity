@@ -1,30 +1,37 @@
-﻿using FluentValidation;
-using Logitar.EventSourcing;
-using Logitar.Identity.Domain.Passwords.Events;
-using Logitar.Identity.Domain.Passwords.Validators;
-using Logitar.Identity.Domain.Shared;
-using Logitar.Identity.Domain.Shared.Validators;
+﻿using Logitar.EventSourcing;
+using Logitar.Identity.Core.ApiKeys;
+using Logitar.Identity.Core.Passwords.Events;
 
-namespace Logitar.Identity.Domain.Passwords;
+namespace Logitar.Identity.Core.Passwords;
 
 /// <summary>
 /// Represents a One-Time Password (OTP) in the identity system. These passwords can be used for multiple purposes, such as Multi-Factor Authentication (MFA).
 /// Several attempts can be made for a single password. Passwords can expire, and once they have been successfully validated, then cannot be used again.
 /// </summary>
-public class OneTimePasswordAggregate : AggregateRoot
+public class OneTimePassword : AggregateRoot
 {
+  /// <summary>
+  /// The updated event.
+  /// </summary>
+  private OneTimePasswordUpdated _updated = new();
+
+  /// <summary>
+  /// The encoded value of the One-Time Password (OTP).
+  /// </summary>
   private Password? _password = null;
-  private OneTimePasswordUpdatedEvent _updatedEvent = new();
 
   /// <summary>
   /// Gets the identifier of the One-Time Password (OTP).
   /// </summary>
-  public new OneTimePasswordId Id => new(base.Id);
-
+  public new ApiKeyId Id => new(base.Id);
   /// <summary>
   /// Gets the tenant identifier of the One-Time Password (OTP).
   /// </summary>
-  public TenantId? TenantId { get; private set; }
+  public TenantId? TenantId => Id.TenantId;
+  /// <summary>
+  /// Gets the entity identifier of the One-Time Password (OTP). This identifier is unique within the tenant.
+  /// </summary>
+  public EntityId? EntityId => Id.EntityId;
 
   /// <summary>
   /// Gets or sets the expiration date and time of the One-Time Password (OTP).
@@ -44,6 +51,9 @@ public class OneTimePasswordAggregate : AggregateRoot
   /// </summary>
   public bool HasValidationSucceeded { get; private set; }
 
+  /// <summary>
+  /// The custom attributes of the One-Time Password (OTP).
+  /// </summary>
   private readonly Dictionary<string, string> _customAttributes = [];
   /// <summary>
   /// Gets the custom attributes of the One-Time Password (OTP).
@@ -51,45 +61,43 @@ public class OneTimePasswordAggregate : AggregateRoot
   public IReadOnlyDictionary<string, string> CustomAttributes => _customAttributes.AsReadOnly();
 
   /// <summary>
-  /// Initializes a new instance of the <see cref="OneTimePasswordAggregate"/> class.
+  /// Initializes a new instance of the <see cref="OneTimePassword"/> class.
   /// DO NOT use this constructor to create a new One-Time Password (OTP). It is only intended to be used by the event sourcing.
   /// </summary>
-  public OneTimePasswordAggregate() : base()
+  public OneTimePassword() : base()
   {
   }
 
   /// <summary>
-  /// Initializes a new instance of the <see cref="OneTimePasswordAggregate"/> class.
+  /// Initializes a new instance of the <see cref="OneTimePassword"/> class.
   /// </summary>
   /// <param name="password">The encoded value of the One-Time Password (OTP).</param>
-  /// <param name="tenantId">The tenant identifier of the One-Time Password (OTP).</param>
   /// <param name="expiresOn">The expiration date and time of the One-Time Password (OTP).</param>
   /// <param name="maximumAttempts">The maximum number of attempts of the One-Time Password (OTP).</param>
   /// <param name="actorId">The actor identifier.</param>
   /// <param name="id">The identifier of the One-Time Password (OTP).</param>
-  public OneTimePasswordAggregate(Password password, TenantId? tenantId = null, DateTime? expiresOn = null, int? maximumAttempts = null, ActorId actorId = default, OneTimePasswordId? id = null)
-    : base((id ?? OneTimePasswordId.NewId()).AggregateId)
+  /// <exception cref="ArgumentOutOfRangeException">The expiration date time was not set in the future, or the maximum number of attempts was negative or zero.</exception>
+  public OneTimePassword(Password password, DateTime? expiresOn = null, int? maximumAttempts = null, ActorId? actorId = null, OneTimePasswordId? id = null)
+    : base((id ?? OneTimePasswordId.NewId()).StreamId)
   {
-    if (expiresOn.HasValue)
+    if (expiresOn.HasValue && expiresOn.Value.AsUniversalTime() <= DateTime.UtcNow)
     {
-      new ExpirationValidator().ValidateAndThrow(expiresOn.Value);
+      throw new ArgumentOutOfRangeException(nameof(expiresOn), "The expiration date and time must be set in the future.");
     }
-    if (maximumAttempts.HasValue)
+    if (maximumAttempts.HasValue && maximumAttempts.Value < 1)
     {
-      new MaximumAttemptsValidator().ValidateAndThrow(maximumAttempts.Value);
+      throw new ArgumentOutOfRangeException(nameof(maximumAttempts), "There should be at least one attempt to validate the One-Time Password (OTP).");
     }
 
-    Raise(new OneTimePasswordCreatedEvent(expiresOn, maximumAttempts, password, tenantId), actorId);
+    Raise(new OneTimePasswordCreated(expiresOn, maximumAttempts, password), actorId);
   }
   /// <summary>
   /// Applies the specified event.
   /// </summary>
   /// <param name="event">The event to apply.</param>
-  protected virtual void Apply(OneTimePasswordCreatedEvent @event)
+  protected virtual void Handle(OneTimePasswordCreated @event)
   {
     _password = @event.Password;
-
-    TenantId = @event.TenantId;
 
     ExpiresOn = @event.ExpiresOn;
     MaximumAttempts = @event.MaximumAttempts;
@@ -99,11 +107,11 @@ public class OneTimePasswordAggregate : AggregateRoot
   /// Deletes the One-Time Password (OTP), if it is not already deleted.
   /// </summary>
   /// <param name="actorId">The actor identifier.</param>
-  public void Delete(ActorId actorId = default)
+  public void Delete(ActorId? actorId = null)
   {
     if (!IsDeleted)
     {
-      Raise(new OneTimePasswordDeletedEvent(), actorId);
+      Raise(new OneTimePasswordDeleted(), actorId);
     }
   }
 
@@ -121,30 +129,36 @@ public class OneTimePasswordAggregate : AggregateRoot
   public void RemoveCustomAttribute(string key)
   {
     key = key.Trim();
-
-    if (_customAttributes.ContainsKey(key))
+    if (_customAttributes.Remove(key))
     {
-      _updatedEvent.CustomAttributes[key] = null;
-      _customAttributes.Remove(key);
+      _updated.CustomAttributes[key] = null;
     }
   }
 
-  private readonly CustomAttributeValidator _customAttributeValidator = new();
   /// <summary>
   /// Sets the specified custom attribute on the One-Time Password (OTP).
   /// </summary>
   /// <param name="key">The key of the custom attribute.</param>
   /// <param name="value">The value of the custom attribute.</param>
+  /// <exception cref="ArgumentException">The key was not a valid identifier.</exception>
   public void SetCustomAttribute(string key, string value)
   {
+    if (string.IsNullOrWhiteSpace(value))
+    {
+      RemoveCustomAttribute(key);
+    }
+
     key = key.Trim();
     value = value.Trim();
-    _customAttributeValidator.ValidateAndThrow(key, value);
+    if (!key.IsIdentifier())
+    {
+      throw new ArgumentException("The value must be an identifier.", nameof(key));
+    }
 
     if (!_customAttributes.TryGetValue(key, out string? existingValue) || existingValue != value)
     {
-      _updatedEvent.CustomAttributes[key] = value;
       _customAttributes[key] = value;
+      _updated.CustomAttributes[key] = value;
     }
   }
 
@@ -152,19 +166,19 @@ public class OneTimePasswordAggregate : AggregateRoot
   /// Applies updates on the One-Time Password (OTP).
   /// </summary>
   /// <param name="actorId">The actor identifier.</param>
-  public void Update(ActorId actorId = default)
+  public void Update(ActorId? actorId = null)
   {
-    if (_updatedEvent.HasChanges)
+    if (_updated.HasChanges)
     {
-      Raise(_updatedEvent, actorId, DateTime.Now);
-      _updatedEvent = new();
+      Raise(_updated, actorId, DateTime.Now);
+      _updated = new();
     }
   }
   /// <summary>
   /// Applies the specified event.
   /// </summary>
   /// <param name="event">The event to apply.</param>
-  protected virtual void Apply(OneTimePasswordUpdatedEvent @event)
+  protected virtual void Handle(OneTimePasswordUpdated @event)
   {
     foreach (KeyValuePair<string, string?> customAttribute in @event.CustomAttributes)
     {
@@ -188,7 +202,7 @@ public class OneTimePasswordAggregate : AggregateRoot
   /// <exception cref="OneTimePasswordIsExpiredException">The One-Time Password (OTP) is expired.</exception>
   /// <exception cref="MaximumAttemptsReachedException">The maximum number of attempts of the One-Time Password (OTP) has been reached.</exception>
   /// <exception cref="IncorrectOneTimePasswordPasswordException">The specified password did not match.</exception>
-  public void Validate(string password, ActorId actorId = default)
+  public void Validate(string password, ActorId? actorId = null)
   {
     if (HasValidationSucceeded)
     {
@@ -204,17 +218,17 @@ public class OneTimePasswordAggregate : AggregateRoot
     }
     else if (_password == null || !_password.IsMatch(password))
     {
-      Raise(new OneTimePasswordValidationFailedEvent(), actorId);
+      Raise(new OneTimePasswordValidationFailed(), actorId);
       throw new IncorrectOneTimePasswordPasswordException(this, password);
     }
 
-    Raise(new OneTimePasswordValidationSucceededEvent(), actorId);
+    Raise(new OneTimePasswordValidationSucceeded(), actorId);
   }
   /// <summary>
   /// Applies the specified event.
   /// </summary>
   /// <param name="_">The event to apply.</param>
-  protected virtual void Apply(OneTimePasswordValidationFailedEvent _)
+  protected virtual void Handle(OneTimePasswordValidationFailed _)
   {
     AttemptCount++;
   }
@@ -222,7 +236,7 @@ public class OneTimePasswordAggregate : AggregateRoot
   /// Applies the specified event.
   /// </summary>
   /// <param name="_">The event to apply.</param>
-  protected virtual void Apply(OneTimePasswordValidationSucceededEvent _)
+  protected virtual void Handle(OneTimePasswordValidationSucceeded _)
   {
     AttemptCount++;
     HasValidationSucceeded = true;

@@ -142,6 +142,7 @@ public class Role : AggregateRoot
   /// </summary>
   /// <param name="key">The key of the custom attribute.</param>
   /// <param name="value">The value of the custom attribute.</param>
+  /// <exception cref="ArgumentException">The key was not a valid identifier.</exception>
   public void SetCustomAttribute(string key, string value)
   {
     if (string.IsNullOrWhiteSpace(value))
@@ -179,7 +180,7 @@ public class Role : AggregateRoot
   /// Handles the specified event.
   /// </summary>
   /// <param name="event">The event to apply.</param>
-  protected virtual void Apply(RoleUniqueNameChanged @event)
+  protected virtual void Handle(RoleUniqueNameChanged @event)
   {
     _uniqueName = @event.UniqueName;
   }

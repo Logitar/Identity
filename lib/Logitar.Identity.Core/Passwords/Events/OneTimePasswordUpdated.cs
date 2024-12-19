@@ -1,12 +1,12 @@
 ﻿using Logitar.EventSourcing;
 using MediatR;
 
-namespace Logitar.Identity.Domain.Passwords.Events;
+namespace Logitar.Identity.Core.Passwords.Events;
 
 /// <summary>
 /// The event raised when an existing One-Time Password (OTP) is modified.
 /// </summary>
-public class OneTimePasswordUpdatedEvent : DomainEvent, INotification
+public record OneTimePasswordUpdated : DomainEvent, INotification
 {
   /// <summary>
   /// Gets or sets the custom attribute modifications of the One-Time Password (OTP).
