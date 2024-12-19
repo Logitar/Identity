@@ -179,7 +179,7 @@ public class Role : AggregateRoot
   /// Handles the specified event.
   /// </summary>
   /// <param name="event">The event to apply.</param>
-  protected virtual void Apply(RoleUniqueNameChanged @event)
+  protected virtual void Handle(RoleUniqueNameChanged @event)
   {
     _uniqueName = @event.UniqueName;
   }
