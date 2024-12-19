@@ -4,44 +4,44 @@ using FluentValidation.Validators;
 namespace Logitar.Identity.Core.Validators;
 
 /// <summary>
-/// TODO(fpion): document
+/// The validator used to enforce that a date and time are set in the past.
 /// </summary>
-/// <typeparam name="T">TODO(fpion): document</typeparam>
+/// <typeparam name="T">The type of the object being validated.</typeparam>
 public class PastValidator<T> : IPropertyValidator<T, DateTime>
 {
   /// <summary>
-  /// TODO(fpion): document
+  /// Gets the name of the validator.
   /// </summary>
   public string Name { get; } = "PastValidator";
   /// <summary>
-  /// TODO(fpion): document
+  /// Gets the current moment (now) date and time reference.
   /// </summary>
   public DateTime Now { get; }
 
   /// <summary>
   /// Initializes a new instance of the <see cref="PastValidator{T}"/> class.
   /// </summary>
-  /// <param name="now">TODO(fpion): document</param>
+  /// <param name="now">The current moment (now) date and time reference.</param>
   public PastValidator(DateTime? now = null)
   {
     Now = (now ?? DateTime.Now).AsUniversalTime();
   }
 
   /// <summary>
-  /// TODO(fpion): document
+  /// Returns the default error message template for this validator, when not overridden.
   /// </summary>
-  /// <param name="errorCode">TODO(fpion): document</param>
-  /// <returns>TODO(fpion): document</returns>
+  /// <param name="errorCode">The error code.</param>
+  /// <returns>The default error message template.</returns>
   public string GetDefaultMessageTemplate(string errorCode)
   {
     return "'{PropertyName}' must be a date and time set in the past.";
   }
 
   /// <summary>
-  /// TODO(fpion): document
+  /// Validates a specific property value.
   /// </summary>
-  /// <param name="context">TODO(fpion): document</param>
-  /// <param name="value">TODO(fpion): document</param>
-  /// <returns>TODO(fpion): document</returns>
+  /// <param name="context">The validation context.</param>
+  /// <param name="value">The value to validate.</param>
+  /// <returns>True if the value is valid, or false otherwise.</returns>
   public bool IsValid(ValidationContext<T> context, DateTime value) => value.AsUniversalTime() < Now;
 }

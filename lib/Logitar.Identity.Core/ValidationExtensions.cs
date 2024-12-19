@@ -57,12 +57,13 @@ public static class ValidationExtensions
   // TODO(fpion): Email
 
   /// <summary>
-  /// TODO(fpion): document
+  /// Defines a 'future' validator on the current rule builder.
+  /// Validation will fail if the property is not a date and time set in the future.
   /// </summary>
-  /// <typeparam name="T">TODO(fpion): document</typeparam>
-  /// <param name="ruleBuilder">TODO(fpion): document</param>
-  /// <param name="now">TODO(fpion): document</param>
-  /// <returns>TODO(fpion): document</returns>
+  /// <typeparam name="T">The type of the object being validated.</typeparam>
+  /// <param name="ruleBuilder">The rule builder.</param>
+  /// <param name="now">The current moment (now) date and time reference.</param>
+  /// <returns>The resulting rule builder options.</returns>
   public static IRuleBuilderOptions<T, DateTime> Future<T>(this IRuleBuilder<T, DateTime> ruleBuilder, DateTime? now = null)
   {
     return ruleBuilder.SetValidator(new FutureValidator<T>(now));
@@ -81,11 +82,12 @@ public static class ValidationExtensions
   }
 
   /// <summary>
-  /// TODO(fpion): document
+  /// Defines a 'identifier' validator on the current rule builder.
+  /// Validation will fail if the property is null, an empty string, only white-space, its length exceeds the maximum length, or is not a valid identifier.
   /// </summary>
-  /// <typeparam name="T">TODO(fpion): document</typeparam>
-  /// <param name="ruleBuilder">TODO(fpion): document</param>
-  /// <returns>TODO(fpion): document</returns>
+  /// <typeparam name="T">The type of the object being validated.</typeparam>
+  /// <param name="ruleBuilder">The rule builder.</param>
+  /// <returns>The resulting rule builder options.</returns>
   public static IRuleBuilderOptions<T, string> Identifier<T>(this IRuleBuilder<T, string> ruleBuilder) // TODO(fpion): ValueObject?
   {
     return ruleBuilder.NotEmpty().MaximumLength(byte.MaxValue).SetValidator(new IdentifierValidator<T>());
@@ -117,12 +119,13 @@ public static class ValidationExtensions
   // TODO(fpion): Password with Settings (such as UniqueName)
 
   /// <summary>
-  /// TODO(fpion): document
+  /// Defines a 'past' validator on the current rule builder.
+  /// Validation will fail if the property is not a date and time set in the past.
   /// </summary>
-  /// <typeparam name="T">TODO(fpion): document</typeparam>
-  /// <param name="ruleBuilder">TODO(fpion): document</param>
-  /// <param name="now">TODO(fpion): document</param>
-  /// <returns>TODO(fpion): document</returns>
+  /// <typeparam name="T">The type of the object being validated.</typeparam>
+  /// <param name="ruleBuilder">The rule builder.</param>
+  /// <param name="now">The current moment (now) date and time reference.</param>
+  /// <returns>The resulting rule builder options.</returns>
   public static IRuleBuilderOptions<T, DateTime> Past<T>(this IRuleBuilder<T, DateTime> ruleBuilder, DateTime? now = null)
   {
     return ruleBuilder.SetValidator(new PastValidator<T>(now));
