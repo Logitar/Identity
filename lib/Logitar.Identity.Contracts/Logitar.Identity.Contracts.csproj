@@ -22,7 +22,7 @@
     <Version>0.0.0</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <PackageReleaseNotes>TODO(fpion): document</PackageReleaseNotes>
+    <PackageReleaseNotes>Rewrote the framework to include changes made to EventSourcing.</PackageReleaseNotes>
     <PackageTags>logitar;net;framework;identity;contracts</PackageTags>
     <PackageProjectUrl>https://github.com/Logitar/Identity/tree/main/lib/Logitar.Identity.Contracts</PackageProjectUrl>
   </PropertyGroup>
