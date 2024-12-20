@@ -1,9 +1,9 @@
-﻿namespace Logitar.Identity.Core.Settings;
+﻿namespace Logitar.Identity.Contracts.Settings;
 
 /// <summary>
 /// The settings applying to users.
 /// </summary>
-public interface IUserSettings // TODO(fpion): move to Contracts
+public interface IUserSettings
 {
   /// <summary>
   /// Gets the user unique name validation settings.

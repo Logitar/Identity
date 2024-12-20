@@ -1,9 +1,9 @@
-﻿namespace Logitar.Identity.Core.Settings;
+﻿namespace Logitar.Identity.Contracts.Settings;
 
 /// <summary>
 /// The settings applying to roles.
 /// </summary>
-public interface IRoleSettings // TODO(fpion): move to Contracts
+public interface IRoleSettings
 {
   /// <summary>
   /// Gets the role unique name validation settings.

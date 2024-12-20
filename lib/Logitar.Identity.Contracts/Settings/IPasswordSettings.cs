@@ -1,9 +1,9 @@
-﻿namespace Logitar.Identity.Core.Settings;
+﻿namespace Logitar.Identity.Contracts.Settings;
 
 /// <summary>
 /// The settings used to validate passwords.
 /// </summary>
-public interface IPasswordSettings // TODO(fpion): move to Contracts
+public interface IPasswordSettings
 {
   /// <summary>
   /// Gets the required length (number of characters) of passwords.

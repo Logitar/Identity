@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using Logitar.Identity.Core.Settings;
+using Logitar.Identity.Contracts.Settings;
 
 namespace Logitar.Identity.Core;
 

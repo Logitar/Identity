@@ -1,9 +1,9 @@
-﻿namespace Logitar.Identity.Core.Settings;
+﻿namespace Logitar.Identity.Contracts.Settings;
 
 /// <summary>
 /// The settings used to validate unique names.
 /// </summary>
-public interface IUniqueNameSettings // TODO(fpion): move to Contracts
+public interface IUniqueNameSettings
 {
   /// <summary>
   /// Gets the list of allowed characters.
