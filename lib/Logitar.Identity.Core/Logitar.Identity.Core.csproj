@@ -57,6 +57,8 @@
     <Using Include="System.Linq" />
     <Using Include="System.Text" />
     <Using Include="System.Text.Json.Serialization" />
+    <Using Include="System.Threading" />
+    <Using Include="System.Threading.Tasks" />
   </ItemGroup>
 
   <ItemGroup>
