@@ -39,8 +39,14 @@ public class IncorrectOneTimePasswordPasswordException : InvalidCredentialsExcep
     OneTimePasswordId = oneTimePassword.Id.Value;
   }
 
+  /// <summary>
+  /// Builds the exception message.
+  /// </summary>
+  /// <param name="oneTimePassword">The One-Time Password (OTP).</param>
+  /// <param name="attemptedPassword">The attempted password.</param>
+  /// <returns>The exception message.</returns>
   private static string BuildMessage(OneTimePassword oneTimePassword, string attemptedPassword) => new ErrorMessageBuilder(ErrorMessage)
-    .AddData(nameof(OneTimePasswordId), oneTimePassword.Id.Value)
+    .AddData(nameof(OneTimePasswordId), oneTimePassword.Id)
     .AddData(nameof(AttemptedPassword), attemptedPassword)
     .Build();
 }

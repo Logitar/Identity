@@ -28,6 +28,11 @@ public class OneTimePasswordIsExpiredException : InvalidCredentialsException
     OneTimePasswordId = oneTimePassword.Id.Value;
   }
 
+  /// <summary>
+  /// Builds the exception message.
+  /// </summary>
+  /// <param name="oneTimePassword">The One-Time Password (OTP).</param>
+  /// <returns>The exception message.</returns>
   private static string BuildMessage(OneTimePassword oneTimePassword) => new ErrorMessageBuilder(ErrorMessage)
     .AddData(nameof(OneTimePasswordId), oneTimePassword.Id)
     .Build();
