@@ -674,7 +674,7 @@ public class User : AggregateRoot
     {
       RemoveCustomIdentifier(key, actorId);
     }
-    value = value.Trim();
+    value = value.Trim(); // TODO(fpion): validate (max. 255 characters)
 
     if (!_customIdentifiers.TryGetValue(key, out string? existingValue) || existingValue != value)
     {
