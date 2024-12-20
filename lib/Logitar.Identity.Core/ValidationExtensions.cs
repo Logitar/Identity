@@ -22,7 +22,17 @@ public static class ValidationExtensions
     return ruleBuilder.SetValidator(new AllowedCharactersValidator<T>(allowedCharacters));
   }
 
-  // TODO(fpion): CustomIdentifierValue
+  /// <summary>
+  /// Defines a 'custom identifier' validator on the current rule builder.
+  /// Validation will fail if the property is null, an empty string, only white-space, or its length exceeds the maximum length.
+  /// </summary>
+  /// <typeparam name="T">The type of the object being validated.</typeparam>
+  /// <param name="ruleBuilder">The rule builder.</param>
+  /// <returns>The resulting rule builder options.</returns>
+  public static IRuleBuilderOptions<T, string> CustomIdentifier<T>(this IRuleBuilder<T, string> ruleBuilder)
+  {
+    return ruleBuilder.NotEmpty().MaximumLength(Core.CustomIdentifier.MaximumLength);
+  }
 
   /// <summary>
   /// Defines a 'description' validator on the current rule builder.

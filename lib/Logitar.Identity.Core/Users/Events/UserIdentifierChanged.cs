@@ -15,14 +15,14 @@ public record UserIdentifierChanged : DomainEvent, INotification
   /// <summary>
   /// Gets the value of the custom identifier.
   /// </summary>
-  public string Value { get; }
+  public CustomIdentifier Value { get; }
 
   /// <summary>
   /// Initializes a new instance of the <see cref="UserIdentifierChanged"/> class.
   /// </summary>
   /// <param name="key">The key of the custom identifier.</param>
   /// <param name="value">The value of the custom identifier.</param>
-  public UserIdentifierChanged(Identifier key, string value)
+  public UserIdentifierChanged(Identifier key, CustomIdentifier value)
   {
     Key = key;
     Value = value;

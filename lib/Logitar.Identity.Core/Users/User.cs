@@ -319,11 +319,11 @@ public class User : AggregateRoot
   /// <summary>
   /// The custom identifiers of the user.
   /// </summary>
-  private readonly Dictionary<Identifier, string> _customIdentifiers = [];
+  private readonly Dictionary<Identifier, CustomIdentifier> _customIdentifiers = [];
   /// <summary>
   /// Gets the custom identifiers of the user.
   /// </summary>
-  public IReadOnlyDictionary<Identifier, string> CustomIdentifiers => _customIdentifiers.AsReadOnly();
+  public IReadOnlyDictionary<Identifier, CustomIdentifier> CustomIdentifiers => _customIdentifiers.AsReadOnly();
 
   private readonly HashSet<RoleId> _roles = [];
   /// <summary>
@@ -668,15 +668,9 @@ public class User : AggregateRoot
   /// <param name="key">The key of the custom identifier.</param>
   /// <param name="value">The value of the custom identifier.</param>
   /// <param name="actorId">The actor identifier.</param>
-  public void SetCustomIdentifier(Identifier key, string value, ActorId? actorId = null)
+  public void SetCustomIdentifier(Identifier key, CustomIdentifier value, ActorId? actorId = null)
   {
-    if (string.IsNullOrWhiteSpace(value))
-    {
-      RemoveCustomIdentifier(key, actorId);
-    }
-    value = value.Trim(); // TODO(fpion): validate (max. 255 characters)
-
-    if (!_customIdentifiers.TryGetValue(key, out string? existingValue) || existingValue != value)
+    if (!_customIdentifiers.TryGetValue(key, out CustomIdentifier? existingValue) || existingValue != value)
     {
       Raise(new UserIdentifierChanged(key, value), actorId);
     }
