@@ -97,7 +97,55 @@ public static class ValidationExtensions
     return ruleBuilder.NotEmpty().MaximumLength(Core.Locale.MaximumLength).SetValidator(new LocaleValidator<T>());
   }
 
-  // TODO(fpion): Password with Settings (such as UniqueName)
+  /// <summary>
+  /// Defines a 'passwprd' validator on the current rule builder.
+  /// Validation will fail if the property is null, an empty string, only white-space, or does not fulfill the requirements.
+  /// </summary>
+  /// <typeparam name="T">The type of the object being validated.</typeparam>
+  /// <param name="ruleBuilder">The rule builder.</param>
+  /// <param name="passwordSettings">The password validation settings.</param>
+  /// <returns>The resulting rule builder options.</returns>
+  public static IRuleBuilderOptions<T, string> Password<T>(this IRuleBuilder<T, string> ruleBuilder, IPasswordSettings passwordSettings)
+  {
+    IRuleBuilderOptions<T, string> options = ruleBuilder.NotEmpty();
+    if (passwordSettings.RequiredLength > 0)
+    {
+      options = options.MinimumLength(passwordSettings.RequiredLength)
+        .WithErrorCode("PasswordTooShort")
+        .WithMessage($"Passwords must be at least {passwordSettings.RequiredLength} characters.");
+    }
+    if (passwordSettings.RequiredUniqueChars > 0)
+    {
+      options = options.Must(x => x.GroupBy(c => c).Count() >= passwordSettings.RequiredUniqueChars)
+        .WithErrorCode("PasswordRequiresUniqueChars")
+        .WithMessage($"Passwords must use at least {passwordSettings.RequiredUniqueChars} different characters.");
+    }
+    if (passwordSettings.RequireNonAlphanumeric)
+    {
+      options = options.Must(x => x.Any(c => !char.IsLetterOrDigit(c)))
+        .WithErrorCode("PasswordRequiresNonAlphanumeric")
+        .WithMessage("Passwords must have at least one non alphanumeric character.");
+    }
+    if (passwordSettings.RequireLowercase)
+    {
+      options = options.Must(x => x.Any(char.IsLower))
+        .WithErrorCode("PasswordRequiresLower")
+        .WithMessage("Passwords must have at least one lowercase ('a'-'z').");
+    }
+    if (passwordSettings.RequireUppercase)
+    {
+      options = options.Must(x => x.Any(char.IsUpper))
+        .WithErrorCode("PasswordRequiresUpper")
+        .WithMessage("Passwords must have at least one uppercase ('A'-'Z').");
+    }
+    if (passwordSettings.RequireDigit)
+    {
+      options = options.Must(x => x.Any(char.IsDigit))
+        .WithErrorCode("PasswordRequiresDigit")
+        .WithMessage("Passwords must have at least one digit ('0'-'9').");
+    }
+    return options;
+  }
 
   /// <summary>
   /// Defines a 'past' validator on the current rule builder.
@@ -142,7 +190,7 @@ public static class ValidationExtensions
   /// </summary>
   /// <typeparam name="T">The type of the object being validated.</typeparam>
   /// <param name="ruleBuilder">The rule builder.</param>
-  /// <param name="uniqueNameSettings">The unique name settings.</param>
+  /// <param name="uniqueNameSettings">The unique name validation settings.</param>
   /// <returns>The resulting rule builder options.</returns>
   public static IRuleBuilderOptions<T, string> UniqueName<T>(this IRuleBuilder<T, string> ruleBuilder, IUniqueNameSettings uniqueNameSettings)
   {
