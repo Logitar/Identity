@@ -1,8 +1,7 @@
 ﻿using Bogus;
-using Logitar.Identity.Domain.Settings;
-using Logitar.Identity.Domain.Shared;
+using Logitar.Identity.Core.Settings;
 
-namespace Logitar.Identity.Domain.Users;
+namespace Logitar.Identity.Core.Users;
 
 [Trait(Traits.Category, Categories.Unit)]
 public class FoundUsersTests
@@ -16,15 +15,15 @@ public class FoundUsersTests
     FoundUsers users = new();
     Assert.Empty(users.All);
 
-    UserAggregate byId = new(new UniqueNameUnit(_uniqueNameSettings, _faker.Person.UserName));
-    UserAggregate byEmail = new(new UniqueNameUnit(_uniqueNameSettings, _faker.Person.Email));
+    User byId = new(new UniqueName(_uniqueNameSettings, _faker.Person.UserName));
+    User byEmail = new(new UniqueName(_uniqueNameSettings, _faker.Person.Email));
     users = new()
     {
       ById = byId,
       ByEmail = byEmail
     };
 
-    IEnumerable<UserAggregate> all = users.All;
+    IEnumerable<User> all = users.All;
     Assert.Equal(2, all.Count());
     Assert.Contains(byId, all);
     Assert.Contains(byEmail, all);
@@ -36,8 +35,8 @@ public class FoundUsersTests
     FoundUsers users = new();
     Assert.Equal(0, users.Count);
 
-    UserAggregate byId = new(new UniqueNameUnit(_uniqueNameSettings, _faker.Person.UserName));
-    UserAggregate byEmail = new(new UniqueNameUnit(_uniqueNameSettings, _faker.Person.Email));
+    User byId = new(new UniqueName(_uniqueNameSettings, _faker.Person.UserName));
+    User byEmail = new(new UniqueName(_uniqueNameSettings, _faker.Person.Email));
     users = new()
     {
       ById = byId,
@@ -49,15 +48,15 @@ public class FoundUsersTests
   [Fact(DisplayName = "First: it should return the first user found.")]
   public void First_it_should_return_the_first_user_found()
   {
-    UserAggregate byUniqueName = new(new UniqueNameUnit(_uniqueNameSettings, _faker.Person.UserName));
-    UserAggregate byEmail = new(new UniqueNameUnit(_uniqueNameSettings, _faker.Person.Email));
+    User byUniqueName = new(new UniqueName(_uniqueNameSettings, _faker.Person.UserName));
+    User byEmail = new(new UniqueName(_uniqueNameSettings, _faker.Person.Email));
     FoundUsers users = new()
     {
       ByUniqueName = byUniqueName,
       ByEmail = byEmail
     };
 
-    UserAggregate first = users.First();
+    User first = users.First();
     Assert.Equal(byUniqueName, first);
   }
 
@@ -67,15 +66,15 @@ public class FoundUsersTests
     FoundUsers users = new();
     Assert.Null(users.FirstOrDefault());
 
-    UserAggregate byUniqueName = new(new UniqueNameUnit(_uniqueNameSettings, _faker.Person.UserName));
-    UserAggregate byEmail = new(new UniqueNameUnit(_uniqueNameSettings, _faker.Person.Email));
+    User byUniqueName = new(new UniqueName(_uniqueNameSettings, _faker.Person.UserName));
+    User byEmail = new(new UniqueName(_uniqueNameSettings, _faker.Person.Email));
     users = new()
     {
       ByUniqueName = byUniqueName,
       ByEmail = byEmail
     };
 
-    UserAggregate? first = users.FirstOrDefault();
+    User? first = users.FirstOrDefault();
     Assert.NotNull(first);
     Assert.Equal(byUniqueName, first);
   }
@@ -83,13 +82,13 @@ public class FoundUsersTests
   [Fact(DisplayName = "Single: it should return the only user found.")]
   public void Single_it_should_return_the_only_user_found()
   {
-    UserAggregate user = new(new UniqueNameUnit(_uniqueNameSettings, _faker.Person.UserName));
+    User user = new(new UniqueName(_uniqueNameSettings, _faker.Person.UserName));
     FoundUsers users = new()
     {
       ById = user
     };
 
-    UserAggregate single = users.Single();
+    User single = users.Single();
     Assert.Equal(user, single);
   }
 
@@ -99,13 +98,13 @@ public class FoundUsersTests
     FoundUsers users = new();
     Assert.Null(users.SingleOrDefault());
 
-    UserAggregate byId = new(new UniqueNameUnit(_uniqueNameSettings, _faker.Person.UserName));
+    User byId = new(new UniqueName(_uniqueNameSettings, _faker.Person.UserName));
     users = new()
     {
       ById = byId
     };
 
-    UserAggregate? single = users.SingleOrDefault();
+    User? single = users.SingleOrDefault();
     Assert.NotNull(single);
     Assert.Equal(byId, single);
   }

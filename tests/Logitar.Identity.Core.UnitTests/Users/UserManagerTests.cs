@@ -1,11 +1,10 @@
 ﻿using Bogus;
 using Logitar.EventSourcing;
-using Logitar.Identity.Domain.Sessions;
-using Logitar.Identity.Domain.Settings;
-using Logitar.Identity.Domain.Shared;
+using Logitar.Identity.Core.Sessions;
+using Logitar.Identity.Core.Settings;
 using Moq;
 
-namespace Logitar.Identity.Domain.Users;
+namespace Logitar.Identity.Core.Users;
 
 [Trait(Traits.Category, Categories.Unit)]
 public class UserManagerTests
@@ -14,7 +13,7 @@ public class UserManagerTests
   private static readonly CancellationToken _cancellationToken = default;
 
   private readonly UserSettings _userSettings = new();
-  private readonly UserAggregate _user;
+  private readonly User _user;
 
   private readonly Faker _faker = new();
   private readonly Mock<ISessionRepository> _sessionRepository = new();
@@ -24,7 +23,7 @@ public class UserManagerTests
 
   public UserManagerTests()
   {
-    UniqueNameUnit uniqueName = new(_userSettings.UniqueName, "admin");
+    UniqueName uniqueName = new(_userSettings.UniqueName, "admin");
     _user = new(uniqueName);
 
     _userSettingsResolver.Setup(x => x.Resolve()).Returns(_userSettings);
@@ -38,8 +37,8 @@ public class UserManagerTests
     _userSettings.RequireUniqueEmail = true;
 
     TenantId tenantId = new("tests");
-    UserAggregate user = new(new UniqueNameUnit(_userSettings.UniqueName, _faker.Person.UserName));
-    user.SetEmail(new EmailUnit(_faker.Person.Email));
+    User user = new(new UniqueName(_userSettings.UniqueName, _faker.Person.UserName));
+    user.SetEmail(new Email(_faker.Person.Email));
     Assert.NotNull(user.Email);
     _userRepository.Setup(x => x.LoadAsync(tenantId, user.Email, _cancellationToken)).ReturnsAsync([user]);
 
@@ -48,15 +47,15 @@ public class UserManagerTests
     Assert.Equal(user, users.ByEmail);
     Assert.Single(users.All);
 
-    _userRepository.Verify(x => x.LoadAsync(It.IsAny<UserId>(), _cancellationToken), Times.Never);
-    _userRepository.Verify(x => x.LoadAsync(tenantId, It.Is<UniqueNameUnit>(y => y.Value == user.Email.Address), _cancellationToken), Times.Once);
+    _userRepository.Verify(x => x.LoadAsync(It.Is<UserId>(y => y.TenantId == tenantId && y.EntityId.Value == user.Email.Address), _cancellationToken), Times.Once);
+    _userRepository.Verify(x => x.LoadAsync(tenantId, It.Is<UniqueName>(y => y.Value == user.Email.Address), _cancellationToken), Times.Once);
     _userRepository.Verify(x => x.LoadAsync(tenantId, user.Email, _cancellationToken), Times.Once);
   }
 
   [Fact(DisplayName = "FindAsync: it should find an user by ID.")]
   public async Task FindAsync_it_should_find_an_user_by_Id()
   {
-    UserAggregate user = new(new UniqueNameUnit(_userSettings.UniqueName, _faker.Person.UserName));
+    User user = new(new UniqueName(_userSettings.UniqueName, _faker.Person.UserName));
     _userRepository.Setup(x => x.LoadAsync(user.Id, _cancellationToken)).ReturnsAsync(user);
 
     FoundUsers users = await _userManager.FindAsync(tenantIdValue: null, user.Id.Value, _cancellationToken);
@@ -65,15 +64,15 @@ public class UserManagerTests
     Assert.Single(users.All);
 
     _userRepository.Verify(x => x.LoadAsync(user.Id, _cancellationToken), Times.Once);
-    _userRepository.Verify(x => x.LoadAsync(null, It.Is<UniqueNameUnit>(y => y.Value == user.Id.Value), _cancellationToken), Times.Once);
-    _userRepository.Verify(x => x.LoadAsync(It.IsAny<TenantId>(), It.IsAny<EmailUnit>(), _cancellationToken), Times.Never);
+    _userRepository.Verify(x => x.LoadAsync(null, It.Is<UniqueName>(y => y.Value == user.Id.Value), _cancellationToken), Times.Once);
+    _userRepository.Verify(x => x.LoadAsync(It.IsAny<TenantId>(), It.IsAny<Email>(), _cancellationToken), Times.Never);
   }
 
   [Fact(DisplayName = "FindAsync: it should find an user by unique name.")]
   public async Task FindAsync_it_should_find_an_user_by_unique_name()
   {
     TenantId tenantId = new("tests");
-    UserAggregate user = new(new UniqueNameUnit(_userSettings.UniqueName, _faker.Person.UserName), tenantId);
+    User user = new(new UniqueName(_userSettings.UniqueName, _faker.Person.UserName), actorId: null, UserId.NewId(tenantId));
     _userRepository.Setup(x => x.LoadAsync(tenantId, user.UniqueName, _cancellationToken)).ReturnsAsync(user);
 
     FoundUsers users = await _userManager.FindAsync(tenantId.Value, user.UniqueName.Value, _cancellationToken);
@@ -81,9 +80,9 @@ public class UserManagerTests
     Assert.Equal(user, users.ByUniqueName);
     Assert.Single(users.All);
 
-    _userRepository.Verify(x => x.LoadAsync(It.Is<UserId>(y => y.Value == user.UniqueName.Value), _cancellationToken), Times.Once);
+    _userRepository.Verify(x => x.LoadAsync(It.Is<UserId>(y => y.TenantId == tenantId && y.EntityId.Value == user.UniqueName.Value), _cancellationToken), Times.Once);
     _userRepository.Verify(x => x.LoadAsync(tenantId, user.UniqueName, _cancellationToken), Times.Once);
-    _userRepository.Verify(x => x.LoadAsync(It.IsAny<TenantId>(), It.IsAny<EmailUnit>(), _cancellationToken), Times.Never);
+    _userRepository.Verify(x => x.LoadAsync(It.IsAny<TenantId>(), It.IsAny<Email>(), _cancellationToken), Times.Never);
   }
 
   [Fact(DisplayName = "FindAsync: it should not find an user by email address when many are found.")]
@@ -91,18 +90,18 @@ public class UserManagerTests
   {
     _userSettings.RequireUniqueEmail = true;
 
-    EmailUnit email = new(_faker.Internet.Email());
-    UserAggregate user1 = new(new UniqueNameUnit(_userSettings.UniqueName, _faker.Internet.UserName()));
+    Email email = new(_faker.Internet.Email());
+    User user1 = new(new UniqueName(_userSettings.UniqueName, _faker.Internet.UserName()));
     user1.SetEmail(email);
-    UserAggregate user2 = new(new UniqueNameUnit(_userSettings.UniqueName, _faker.Internet.UserName()));
+    User user2 = new(new UniqueName(_userSettings.UniqueName, _faker.Internet.UserName()));
     user2.SetEmail(email);
     _userRepository.Setup(x => x.LoadAsync(null, email, _cancellationToken)).ReturnsAsync([user1, user2]);
 
     FoundUsers users = await _userManager.FindAsync(tenantIdValue: null, email.Address, _cancellationToken);
     Assert.Empty(users.All);
 
-    _userRepository.Verify(x => x.LoadAsync(It.IsAny<UserId>(), _cancellationToken), Times.Never);
-    _userRepository.Verify(x => x.LoadAsync(null, It.Is<UniqueNameUnit>(y => y.Value == email.Address), _cancellationToken), Times.Once);
+    _userRepository.Verify(x => x.LoadAsync(It.Is<UserId>(y => !y.TenantId.HasValue && y.EntityId.Value == email.Address), _cancellationToken), Times.Once);
+    _userRepository.Verify(x => x.LoadAsync(null, It.Is<UniqueName>(y => y.Value == email.Address), _cancellationToken), Times.Once);
     _userRepository.Verify(x => x.LoadAsync(null, email, _cancellationToken), Times.Once);
   }
 
@@ -113,9 +112,9 @@ public class UserManagerTests
     FoundUsers users = await _userManager.FindAsync(tenantIdValue: null, emailAddress, _cancellationToken);
     Assert.Empty(users.All);
 
-    _userRepository.Verify(x => x.LoadAsync(It.IsAny<UserId>(), _cancellationToken), Times.Never);
-    _userRepository.Verify(x => x.LoadAsync(null, It.Is<UniqueNameUnit>(y => y.Value == emailAddress), _cancellationToken), Times.Once);
-    _userRepository.Verify(x => x.LoadAsync(null, It.IsAny<EmailUnit>(), _cancellationToken), Times.Never);
+    _userRepository.Verify(x => x.LoadAsync(It.Is<UserId>(y => !y.TenantId.HasValue && y.EntityId.Value == emailAddress), _cancellationToken), Times.Once);
+    _userRepository.Verify(x => x.LoadAsync(null, It.Is<UniqueName>(y => y.Value == emailAddress), _cancellationToken), Times.Once);
+    _userRepository.Verify(x => x.LoadAsync(null, It.IsAny<Email>(), _cancellationToken), Times.Never);
   }
 
   [Fact(DisplayName = "FindAsync: it should not search by tenant id when it is not valid.")]
@@ -125,33 +124,33 @@ public class UserManagerTests
     FoundUsers users = await _userManager.FindAsync(emailAddress, emailAddress, _cancellationToken);
     Assert.Empty(users.All);
 
-    _userRepository.Verify(x => x.LoadAsync(It.IsAny<UserId>(), _cancellationToken), Times.Never);
-    _userRepository.Verify(x => x.LoadAsync(null, It.Is<UniqueNameUnit>(y => y.Value == emailAddress), _cancellationToken), Times.Once);
-    _userRepository.Verify(x => x.LoadAsync(null, It.IsAny<EmailUnit>(), _cancellationToken), Times.Never);
+    _userRepository.Verify(x => x.LoadAsync(It.Is<UserId>(y => y.TenantId.HasValue && y.TenantId.Value.Value == emailAddress && y.EntityId.Value == emailAddress), _cancellationToken), Times.Once);
+    _userRepository.Verify(x => x.LoadAsync(It.Is<TenantId>(y => y.Value == emailAddress), It.Is<UniqueName>(y => y.Value == emailAddress), _cancellationToken), Times.Once);
+    _userRepository.Verify(x => x.LoadAsync(It.IsAny<TenantId?>(), It.IsAny<Email>(), _cancellationToken), Times.Never);
   }
 
   [Fact(DisplayName = "SaveAsync: it should allow multiple email address when not unique.")]
   public async Task SaveAsync_it_should_allow_multiple_email_address_when_not_unique()
   {
-    _user.SetEmail(new EmailUnit(_faker.Person.Email));
+    _user.SetEmail(new Email(_faker.Person.Email));
 
     await _userManager.SaveAsync(_user, _actorId, _cancellationToken);
 
     _userRepository.Verify(x => x.SaveAsync(_user, _cancellationToken), Times.Once);
 
-    _userRepository.Verify(x => x.LoadAsync(It.IsAny<TenantId>(), It.IsAny<EmailUnit>(), It.IsAny<CancellationToken>()), Times.Never);
+    _userRepository.Verify(x => x.LoadAsync(It.IsAny<TenantId>(), It.IsAny<Email>(), It.IsAny<CancellationToken>()), Times.Never);
   }
 
   [Fact(DisplayName = "SaveAsync: it should delete sessions when it has been deleted.")]
   public async Task SaveAsync_it_should_delete_sessions_when_it_has_been_deleted()
   {
-    SessionAggregate session = new(_user);
+    Session session = new(_user);
     _sessionRepository.Setup(x => x.LoadAsync(_user, _cancellationToken)).ReturnsAsync([session]);
 
     _user.Delete();
     await _userManager.SaveAsync(_user, _actorId, _cancellationToken);
 
-    _sessionRepository.Verify(x => x.SaveAsync(It.Is<IEnumerable<SessionAggregate>>(y => y.Single().Equals(session)), _cancellationToken), Times.Once);
+    _sessionRepository.Verify(x => x.SaveAsync(It.Is<IEnumerable<Session>>(y => y.Single().Equals(session)), _cancellationToken), Times.Once);
     _userRepository.Verify(x => x.SaveAsync(_user, _cancellationToken), Times.Once);
 
     Assert.True(session.IsDeleted);
@@ -176,21 +175,21 @@ public class UserManagerTests
 
     _user.FirstName = new(_faker.Person.FirstName);
     _user.LastName = new(_faker.Person.LastName);
-    _user.SetCustomAttribute("HealthInsuranceNumber", "1234567890");
+    _user.SetCustomAttribute(new Identifier("HealthInsuranceNumber"), "1234567890");
     _user.Update();
 
     await _userManager.SaveAsync(_user, _actorId, _cancellationToken);
 
     _userRepository.Verify(x => x.SaveAsync(_user, _cancellationToken), Times.Once);
 
-    _userRepository.Verify(x => x.LoadAsync(It.IsAny<TenantId>(), It.IsAny<UniqueNameUnit>(), It.IsAny<CancellationToken>()), Times.Never);
+    _userRepository.Verify(x => x.LoadAsync(It.IsAny<TenantId>(), It.IsAny<UniqueName>(), It.IsAny<CancellationToken>()), Times.Never);
   }
 
   [Fact(DisplayName = "SaveAsync: it should save the user when no custom identifier conflict occurs.")]
   public async Task SaveAsync_it_should_save_the_user_when_no_custom_identifier_conflict_occurs()
   {
-    string identifierKey = "GoogleId";
-    string identifierValue = Guid.NewGuid().ToString();
+    Identifier identifierKey = new("GoogleId");
+    CustomIdentifier identifierValue = new(Guid.NewGuid().ToString());
 
     _user.SetCustomIdentifier(identifierKey, identifierValue);
     _userRepository.Setup(x => x.LoadAsync(_user.TenantId, identifierKey, identifierValue, _cancellationToken)).ReturnsAsync(_user);
@@ -204,21 +203,24 @@ public class UserManagerTests
   [Fact(DisplayName = "SaveAsync: it should throw CustomIdentifierAlreadyUsedException when a custom identifier conflict occurs.")]
   public async Task SaveAsync_it_should_throw_CustomIdentifierAlreadyUsedException_when_a_custom_identifier_conflict_occurs()
   {
-    string identifierKey = "GoogleId";
-    string identifierValue = Guid.NewGuid().ToString();
+    Identifier identifierKey = new("GoogleId");
+    CustomIdentifier identifierValue = new(Guid.NewGuid().ToString());
 
-    UserAggregate other = new(new UniqueNameUnit(_userSettings.UniqueName, "other"));
+    User other = new(new UniqueName(_userSettings.UniqueName, "other"));
     other.SetCustomIdentifier(identifierKey, identifierValue);
     _userRepository.Setup(x => x.LoadAsync(_user.TenantId, identifierKey, identifierValue, _cancellationToken)).ReturnsAsync(other);
 
     _user.SetCustomIdentifier(identifierKey, identifierValue);
 
-    var exception = await Assert.ThrowsAsync<CustomIdentifierAlreadyUsedException<UserAggregate>>(
+    var exception = await Assert.ThrowsAsync<CustomIdentifierAlreadyUsedException>(
       async () => await _userManager.SaveAsync(_user, _actorId, _cancellationToken)
     );
-    Assert.Equal(_user.TenantId, exception.TenantId);
-    Assert.Equal(identifierKey, exception.Key);
-    Assert.Equal(identifierValue, exception.Value);
+    Assert.Equal(typeof(User).GetNamespaceQualifiedName(), exception.TypeName);
+    Assert.Equal(_user.TenantId?.Value, exception.TenantId);
+    Assert.Equal(other.Id.EntityId.Value, exception.ConflictId);
+    Assert.Equal(_user.EntityId.Value, exception.EntityId);
+    Assert.Equal(identifierKey.Value, exception.Key);
+    Assert.Equal(identifierValue.Value, exception.Value);
   }
 
   [Fact(DisplayName = "SaveAsync: it should throw EmailAddressAlreadyUsedException when an email address conflict occurs.")]
@@ -226,9 +228,9 @@ public class UserManagerTests
   {
     _userSettings.RequireUniqueEmail = true;
 
-    EmailUnit email = new(_faker.Person.Email);
+    Email email = new(_faker.Person.Email);
 
-    UserAggregate other = new(new UniqueNameUnit(_userSettings.UniqueName, "other"));
+    User other = new(new UniqueName(_userSettings.UniqueName, "other"));
     other.SetEmail(email);
     _userRepository.Setup(x => x.LoadAsync(_user.TenantId, email, _cancellationToken)).ReturnsAsync([other]);
 
@@ -237,20 +239,23 @@ public class UserManagerTests
     var exception = await Assert.ThrowsAsync<EmailAddressAlreadyUsedException>(
       async () => await _userManager.SaveAsync(_user, _actorId, _cancellationToken)
     );
-    Assert.Equal(_user.TenantId, exception.TenantId);
-    Assert.Equal(email, exception.Email);
+    Assert.Equal(_user.TenantId?.Value, exception.TenantId);
+    Assert.Equal(email.Address, exception.EmailAddress);
   }
 
   [Fact(DisplayName = "SaveAsync: it should throw UniqueNameAlreadyUsedException when an unique name conflict occurs.")]
   public async Task SaveAsync_it_should_throw_UniqueNameAlreadyUsedException_when_an_unique_name_conflict_occurs()
   {
-    UserAggregate other = new(_user.UniqueName);
+    User other = new(_user.UniqueName);
     _userRepository.Setup(x => x.LoadAsync(_user.TenantId, _user.UniqueName, _cancellationToken)).ReturnsAsync(other);
 
-    var exception = await Assert.ThrowsAsync<UniqueNameAlreadyUsedException<UserAggregate>>(
+    var exception = await Assert.ThrowsAsync<UniqueNameAlreadyUsedException>(
       async () => await _userManager.SaveAsync(_user, _actorId, _cancellationToken)
     );
-    Assert.Equal(_user.TenantId, exception.TenantId);
-    Assert.Equal(_user.UniqueName, exception.UniqueName);
+    Assert.Equal(typeof(User).GetNamespaceQualifiedName(), exception.TypeName);
+    Assert.Equal(_user.TenantId?.Value, exception.TenantId);
+    Assert.Equal(other.EntityId.Value, exception.ConflictId);
+    Assert.Equal(_user.EntityId.Value, exception.EntityId);
+    Assert.Equal(_user.UniqueName.Value, exception.UniqueName);
   }
 }
