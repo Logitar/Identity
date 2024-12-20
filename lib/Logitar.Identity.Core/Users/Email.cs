@@ -1,11 +1,13 @@
 ﻿using FluentValidation;
+using Logitar.Identity.Contracts.Users;
+using Logitar.Identity.Core.Validators;
 
 namespace Logitar.Identity.Core.Users;
 
 /// <summary>
 /// Represents an email address.
 /// </summary>
-public record Email : Contact
+public record Email : Contact, IEmail
 {
   /// <summary>
   /// The maximum length of email addresses.
@@ -25,7 +27,7 @@ public record Email : Contact
   public Email(string address, bool isVerified = false) : base(isVerified)
   {
     Address = address.Trim();
-    new Validator().ValidateAndThrow(this);
+    new EmailValidator().ValidateAndThrow(this);
   }
 
   /// <summary>
@@ -33,18 +35,4 @@ public record Email : Contact
   /// </summary>
   /// <returns>The string representation.</returns>
   public override string ToString() => Address;
-
-  /// <summary>
-  /// Represents the validator for instances of <see cref="Email"/>.
-  /// </summary>
-  private class Validator : AbstractValidator<Email>
-  {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Validator"/> class.
-    /// </summary>
-    public Validator()
-    {
-      RuleFor(x => x.Address).NotEmpty().MaximumLength(MaximumLength).EmailAddress();
-    }
-  }
 }

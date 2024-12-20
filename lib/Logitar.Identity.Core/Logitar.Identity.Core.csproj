@@ -26,6 +26,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Logitar.Identity.Contracts\Logitar.Identity.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="System" />
     <Using Include="System.Collections.Generic" />
     <Using Include="System.Diagnostics.CodeAnalysis" />

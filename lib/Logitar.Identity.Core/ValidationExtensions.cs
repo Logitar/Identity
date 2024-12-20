@@ -9,8 +9,6 @@ namespace Logitar.Identity.Core;
 /// </summary>
 public static class ValidationExtensions
 {
-  // TODO(fpion): Address
-
   /// <summary>
   /// Defines a 'allowed characters' validator on the current rule builder.
   /// Validation will fail if the property contains characters that is not allowed.
@@ -49,8 +47,6 @@ public static class ValidationExtensions
   {
     return ruleBuilder.NotEmpty().MaximumLength(Core.DisplayName.MaximumLength);
   }
-
-  // TODO(fpion): Email
 
   /// <summary>
   /// Defines a 'future' validator on the current rule builder.
@@ -127,8 +123,6 @@ public static class ValidationExtensions
   {
     return ruleBuilder.NotEmpty().MaximumLength(Users.PersonName.MaximumLength);
   }
-
-  // TODO(fpion): Phone
 
   /// <summary>
   /// Defines a 'time zone' validator on the current rule builder.

@@ -1,11 +1,13 @@
 ﻿using FluentValidation;
+using Logitar.Identity.Contracts.Users;
+using Logitar.Identity.Core.Validators;
 
 namespace Logitar.Identity.Core.Users;
 
 /// <summary>
 /// Represents a phone number.
 /// </summary>
-public record Phone : Contact
+public record Phone : Contact, IPhone
 {
   /// <summary>
   /// The maximum length of phone country codes.
@@ -45,33 +47,12 @@ public record Phone : Contact
     CountryCode = countryCode?.CleanTrim();
     Number = number.Trim();
     Extension = extension?.CleanTrim();
-    new Validator().ValidateAndThrow(this);
+    new PhoneValidator().ValidateAndThrow(this);
   }
 
   /// <summary>
   /// Returns a string representation of the phone.
   /// </summary>
   /// <returns>The string representation.</returns>
-  public override string ToString()
-  {
-    throw new NotImplementedException(); // TODO(fpion): format with libphonenumber-csharp
-  }
-
-  /// <summary>
-  /// Represents the validator for instances of <see cref="Phone"/>.
-  /// </summary>
-  private class Validator : AbstractValidator<Phone>
-  {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Validator"/> class.
-    /// </summary>
-    public Validator()
-    {
-      When(x => x.CountryCode != null, () => RuleFor(x => x.CountryCode).NotEmpty().Length(CountryCodeMaximumLength));
-      RuleFor(x => x.Number).NotEmpty().MaximumLength(NumberMaximumLength);
-      When(x => x.Extension != null, () => RuleFor(x => x.Extension).NotEmpty().MaximumLength(ExtensionMaximumLength));
-
-      // TODO(fpion): validate with libphonenumber-csharp
-    }
-  }
+  public override string ToString() => this.FormatToE164();
 }

@@ -1,11 +1,13 @@
 ﻿using FluentValidation;
+using Logitar.Identity.Contracts.Users;
+using Logitar.Identity.Core.Validators;
 
 namespace Logitar.Identity.Core.Users;
 
 /// <summary>
 /// Represents a postal address.
 /// </summary>
-public record Address : Contact
+public record Address : Contact, IAddress
 {
   /// <summary>
   /// The maximum length of address components.
@@ -49,6 +51,7 @@ public record Address : Contact
     PostalCode = postalCode?.CleanTrim();
     Region = region?.CleanTrim();
     Country = country.Trim();
+    new AddressValidator().ValidateAndThrow(this);
   }
 
   /// <summary>
@@ -78,23 +81,5 @@ public record Address : Contact
     formatted.AppendLine();
     formatted.Append(Country);
     return formatted.ToString();
-  }
-
-  /// <summary>
-  /// Represents the validator for instances of <see cref="Address"/>.
-  /// </summary>
-  private class Validator : AbstractValidator<Address>
-  {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Validator"/> class.
-    /// </summary>
-    public Validator()
-    {
-      RuleFor(x => x.Street).NotEmpty().MaximumLength(MaximumLength);
-      RuleFor(x => x.Locality).NotEmpty().MaximumLength(MaximumLength);
-      When(x => x.PostalCode != null, () => RuleFor(x => x.PostalCode).NotEmpty().MaximumLength(MaximumLength)); // TODO(fpion): validate from CountrySettings
-      When(x => x.Region != null, () => RuleFor(x => x.PostalCode).NotEmpty().MaximumLength(MaximumLength)); // TODO(fpion): validate from CountrySettings
-      RuleFor(x => x.Country).NotEmpty().MaximumLength(MaximumLength); // TODO(fpion): validate from CountrySettings
-    }
   }
 }

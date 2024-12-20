@@ -1,9 +1,11 @@
-﻿namespace Logitar.Identity.Core.Users;
+﻿using Logitar.Identity.Contracts.Users;
+
+namespace Logitar.Identity.Core.Users;
 
 /// <summary>
 /// Represents a contact information of a person.
 /// </summary>
-public abstract record Contact
+public abstract record Contact : IContact
 {
   /// <summary>
   /// Gets a value indicating whether the contact is verified or not.

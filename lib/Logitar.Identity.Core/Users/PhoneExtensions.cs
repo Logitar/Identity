@@ -1,11 +1,11 @@
 ﻿using Logitar.Identity.Contracts.Users;
 using PhoneNumbers;
 
-namespace Logitar.Identity.Domain.Users;
+namespace Logitar.Identity.Core.Users;
 
 /// <summary>
 /// Defines extensions methods for phone numbers.
-/// See <see cref="PhoneUnit"/> for more information.
+/// See <see cref="Phone"/> for more information.
 /// </summary>
 public static class PhoneExtensions
 {
