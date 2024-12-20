@@ -1,7 +1,7 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Contracts.Settings;
 
-namespace Logitar.Identity.Domain.Users;
+namespace Logitar.Identity.Core.Users;
 
 /// <summary>
 /// Defines methods to manage users.
@@ -33,7 +33,7 @@ public interface IUserManager
   /// <param name="actorId">The actor identifier.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The asynchronous operation.</returns>
-  Task SaveAsync(UserAggregate user, ActorId actorId = default, CancellationToken cancellationToken = default);
+  Task SaveAsync(User user, ActorId? actorId = null, CancellationToken cancellationToken = default);
   /// <summary>
   /// Saves the specified user, performing model validation such as unique name and email address unicity.
   /// </summary>
@@ -42,5 +42,5 @@ public interface IUserManager
   /// <param name="actorId">The actor identifier.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The asynchronous operation.</returns>
-  Task SaveAsync(UserAggregate user, IUserSettings? userSettings, ActorId actorId = default, CancellationToken cancellationToken = default);
+  Task SaveAsync(User user, IUserSettings? userSettings, ActorId? actorId = null, CancellationToken cancellationToken = default);
 }

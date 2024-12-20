@@ -31,7 +31,7 @@ public class OneTimePassword : AggregateRoot
   /// <summary>
   /// Gets the entity identifier of the One-Time Password (OTP). This identifier is unique within the tenant.
   /// </summary>
-  public EntityId? EntityId => Id.EntityId;
+  public EntityId EntityId => Id.EntityId;
 
   /// <summary>
   /// Gets or sets the expiration date and time of the One-Time Password (OTP).

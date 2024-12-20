@@ -1,4 +1,6 @@
-﻿using Logitar.Identity.Core.Users;
+﻿using Logitar.Identity.Core.Roles;
+using Logitar.Identity.Core.Settings;
+using Logitar.Identity.Core.Users;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Logitar.Identity.Core;
@@ -15,6 +17,11 @@ public static class DependencyInjectionExtensions
   /// <returns>The service collection.</returns>
   public static IServiceCollection AddLogitarIdentityCore(this IServiceCollection services)
   {
-    return services.AddSingleton<IAddressHelper, AddressHelper>();
+    return services
+      .AddSingleton<IAddressHelper, AddressHelper>()
+      .AddSingleton<IRoleSettingsResolver, RoleSettingsResolver>()
+      .AddSingleton<IUserSettingsResolver, UserSettingsResolver>()
+      .AddTransient<IRoleManager, RoleManager>()
+      .AddTransient<IUserManager, UserManager>();
   }
 }

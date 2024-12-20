@@ -32,7 +32,7 @@ public class ApiKey : AggregateRoot
   /// <summary>
   /// Gets the entity identifier of the API key. This identifier is unique within the tenant.
   /// </summary>
-  public EntityId? EntityId => Id.EntityId;
+  public EntityId EntityId => Id.EntityId;
 
   /// <summary>
   /// The display name of the API key.

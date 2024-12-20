@@ -27,7 +27,7 @@ public class Session : AggregateRoot
   /// <summary>
   /// Gets the entity identifier of the session. This identifier is unique within the tenant.
   /// </summary>
-  public EntityId? EntityId => Id.EntityId;
+  public EntityId EntityId => Id.EntityId;
 
   /// <summary>
   /// The identifier of the user owning the session.
