@@ -24,14 +24,6 @@ public static class ValidationExtensions
     return ruleBuilder.SetValidator(new AllowedCharactersValidator<T>(allowedCharacters));
   }
 
-  // TODO(fpion): Birthdate
-
-  // TODO(fpion): CustomAttributeKey
-
-  // TODO(fpion): CustomAttributeValue
-
-  // TODO(fpion): CustomIdentifierKey
-
   // TODO(fpion): CustomIdentifierValue
 
   /// <summary>
