@@ -37,7 +37,7 @@ public class RoleSettingsResolver : IRoleSettingsResolver
   /// <returns>The role settings.</returns>
   public virtual IRoleSettings Resolve()
   {
-    RoleSettings ??= Configuration.GetSection("Identity").GetSection(SectionKey).Get<RoleSettings>() ?? new();
+    RoleSettings ??= Configuration.GetSection("Identity").GetSection(SectionKey).Get<RoleSettings>() ?? new(); // TODO(fpion): constant
     return RoleSettings;
   }
 }

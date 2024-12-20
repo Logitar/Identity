@@ -37,7 +37,7 @@ public class UserSettingsResolver : IUserSettingsResolver
   /// <returns>The user settings.</returns>
   public virtual IUserSettings Resolve()
   {
-    UserSettings ??= Configuration.GetSection("Identity").GetSection(SectionKey).Get<UserSettings>() ?? new();
+    UserSettings ??= Configuration.GetSection("Identity").GetSection(SectionKey).Get<UserSettings>() ?? new(); // TODO(fpion): constant
     return UserSettings;
   }
 }
