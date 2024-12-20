@@ -21,9 +21,9 @@ public record UniqueName
   /// <summary>
   /// Initializes a new instance of the <see cref="UniqueName"/> class.
   /// </summary>
-  /// <param name="value">The value of the unique name.</param>
   /// <param name="uniqueNameSettings">The unique name settings.</param>
-  public UniqueName(string value, IUniqueNameSettings uniqueNameSettings)
+  /// <param name="value">The value of the unique name.</param>
+  public UniqueName(IUniqueNameSettings uniqueNameSettings, string value)
   {
     Value = value.Trim();
     new Validator(uniqueNameSettings).ValidateAndThrow(this);
@@ -32,12 +32,12 @@ public record UniqueName
   /// <summary>
   /// Returns a new instance of the <see cref="UniqueName"/> class, or null if the value is null, empty or only white-space.
   /// </summary>
-  /// <param name="value">The string value.</param>
   /// <param name="uniqueNameSettings">The unique name settings.</param>
+  /// <param name="value">The string value.</param>
   /// <returns>The new instance, or null.</returns>
   public static UniqueName? TryCreate(string? value, IUniqueNameSettings uniqueNameSettings)
   {
-    return string.IsNullOrWhiteSpace(value) ? null : new(value, uniqueNameSettings);
+    return string.IsNullOrWhiteSpace(value) ? null : new(uniqueNameSettings, value);
   }
 
   /// <summary>

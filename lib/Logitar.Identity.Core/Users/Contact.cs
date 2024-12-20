@@ -8,14 +8,14 @@ namespace Logitar.Identity.Core.Users;
 public abstract record Contact : IContact
 {
   /// <summary>
-  /// Gets a value indicating whether the contact is verified or not.
+  /// Gets a value indicating whether or not the contact is verified.
   /// </summary>
   public bool IsVerified { get; }
 
   /// <summary>
   /// Initializes a new instance of the <see cref="Contact"/> class.
   /// </summary>
-  /// <param name="isVerified">A value indicating whether the contact is verified or not.</param>
+  /// <param name="isVerified">A value indicating whether or not the contact is verified.</param>
   protected Contact(bool isVerified)
   {
     IsVerified = isVerified;

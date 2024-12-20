@@ -1,4 +1,4 @@
-﻿namespace Logitar.Identity.Domain.Users;
+﻿namespace Logitar.Identity.Core.Users;
 
 /// <summary>
 /// Represents validation settings for a country.

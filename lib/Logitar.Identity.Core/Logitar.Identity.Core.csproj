@@ -32,6 +32,7 @@
   <ItemGroup>
     <Using Include="System" />
     <Using Include="System.Collections.Generic" />
+    <Using Include="System.Collections.Immutable" />
     <Using Include="System.Diagnostics.CodeAnalysis" />
     <Using Include="System.Globalization" />
     <Using Include="System.Linq" />

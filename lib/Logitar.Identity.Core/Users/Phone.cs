@@ -41,7 +41,7 @@ public record Phone : Contact, IPhone
   /// <param name="number">The phone number.</param>
   /// <param name="countryCode">The phone country code.</param>
   /// <param name="extension">The phone extension.</param>
-  /// <param name="isVerified">A value indicating whether the contact is verified or not.</param>
+  /// <param name="isVerified">A value indicating whether or not the contact is verified.</param>
   public Phone(string number, string? countryCode = null, string? extension = null, bool isVerified = false) : base(isVerified)
   {
     CountryCode = countryCode?.CleanTrim();

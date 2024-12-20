@@ -38,20 +38,21 @@ public record Address : Contact, IAddress
   /// <summary>
   /// Initializes a new instance of the <see cref="Address"/> class.
   /// </summary>
+  /// <param name="helper">The address helper.</param>
   /// <param name="street">The street address.</param>
   /// <param name="locality">The locality (city) of the address.</param>
   /// <param name="country">The country of the address.</param>
   /// <param name="postalCode">The postal code of the address.</param>
   /// <param name="region">The region of the address.</param>
-  /// <param name="isVerified">A value indicating whether the contact is verified or not.</param>
-  public Address(string street, string locality, string country, string? postalCode = null, string? region = null, bool isVerified = false) : base(isVerified)
+  /// <param name="isVerified">A value indicating whether or not the contact is verified.</param>
+  public Address(IAddressHelper helper, string street, string locality, string country, string? postalCode = null, string? region = null, bool isVerified = false) : base(isVerified)
   {
     Street = street.Trim();
     Locality = locality.Trim();
     PostalCode = postalCode?.CleanTrim();
     Region = region?.CleanTrim();
     Country = country.Trim();
-    new AddressValidator().ValidateAndThrow(this);
+    new AddressValidator(helper).ValidateAndThrow(this);
   }
 
   /// <summary>

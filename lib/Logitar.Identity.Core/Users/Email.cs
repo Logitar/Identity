@@ -23,7 +23,7 @@ public record Email : Contact, IEmail
   /// Initializes a new instance of the <see cref="Email"/> class.
   /// </summary>
   /// <param name="address">The email address.</param>
-  /// <param name="isVerified">A value indicating whether the contact is verified or not.</param>
+  /// <param name="isVerified">A value indicating whether or not the contact is verified.</param>
   public Email(string address, bool isVerified = false) : base(isVerified)
   {
     Address = address.Trim();
