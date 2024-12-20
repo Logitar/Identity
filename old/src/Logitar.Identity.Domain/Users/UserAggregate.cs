@@ -1,7 +1,5 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Sessions;
-using Logitar.Identity.Domain.Shared;
-using Logitar.Identity.Domain.Users.Events;
 
 namespace Logitar.Identity.Domain.Users;
 
