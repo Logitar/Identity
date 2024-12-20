@@ -1,6 +1,6 @@
-﻿using Logitar.Identity.Domain.Passwords;
+﻿using Logitar.Identity.Core.Passwords;
 
-namespace Logitar.Identity;
+namespace Logitar.Identity.Core;
 
 public record Base64Password : Password
 {

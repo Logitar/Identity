@@ -8,6 +8,11 @@ namespace Logitar.Identity.Core.Users;
 public readonly struct UserId
 {
   /// <summary>
+  /// The separator between the tenant ID and the entity ID.
+  /// </summary>
+  private const char Separator = ':';
+
+  /// <summary>
   /// Gets the identifier of the event stream.
   /// </summary>
   public StreamId StreamId { get; }
@@ -42,7 +47,7 @@ public readonly struct UserId
   {
     TenantId = tenantId;
     EntityId = new(entityId);
-    StreamId = new(tenantId.HasValue ? $"{tenantId}:{entityId}" : entityId);
+    StreamId = new(tenantId.HasValue ? string.Join(Separator, tenantId, entityId) : entityId);
   }
   /// <summary>
   /// Initializes a new instance of the <see cref="UserId"/> struct.
@@ -51,6 +56,10 @@ public readonly struct UserId
   public UserId(StreamId streamId)
   {
     StreamId = streamId;
+
+    string[] values = streamId.Value.Split(Separator);
+    TenantId = values.Length == 2 ? new(values[0]) : null;
+    EntityId = new(values.Last());
   }
 
   /// <summary>

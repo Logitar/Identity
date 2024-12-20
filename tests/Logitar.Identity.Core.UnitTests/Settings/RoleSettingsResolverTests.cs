@@ -1,7 +1,7 @@
 ﻿using Logitar.Identity.Contracts.Settings;
 using Microsoft.Extensions.Configuration;
 
-namespace Logitar.Identity.Domain.Settings;
+namespace Logitar.Identity.Core.Settings;
 
 [Trait(Traits.Category, Categories.Unit)]
 public class RoleSettingsResolverTests
@@ -35,3 +35,4 @@ public class RoleSettingsResolverTests
     Assert.Equal(_settings["Identity:Role:UniqueName:AllowedCharacters"], settings.UniqueName.AllowedCharacters);
   }
 }
+

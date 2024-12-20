@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace Logitar.Identity.Domain.Settings;
+namespace Logitar.Identity.Core.Settings;
 
 internal class UserSettingsResolverMock : UserSettingsResolver
 {

@@ -1,20 +1,20 @@
 ﻿using Logitar.EventSourcing;
-using Logitar.Identity.Domain.ApiKeys;
-using Logitar.Identity.Domain.Settings;
-using Logitar.Identity.Domain.Shared;
-using Logitar.Identity.Domain.Users;
+using Logitar.Identity.Core.ApiKeys;
+using Logitar.Identity.Core.Settings;
+using Logitar.Identity.Core.Users;
 using Moq;
 
-namespace Logitar.Identity.Domain.Roles;
+namespace Logitar.Identity.Core.Roles;
 
 [Trait(Traits.Category, Categories.Unit)]
 public class RoleManagerTests
 {
   private static readonly ActorId _actorId = default;
   private static readonly CancellationToken _cancellationToken = default;
+  private readonly TenantId _tenantId = TenantId.NewId();
 
   private readonly UniqueNameSettings _uniqueNameSettings = new();
-  private readonly RoleAggregate _role;
+  private readonly Role _role;
 
   private readonly Mock<IApiKeyRepository> _apiKeyRepository = new();
   private readonly Mock<IRoleRepository> _roleRepository = new();
@@ -23,8 +23,8 @@ public class RoleManagerTests
 
   public RoleManagerTests()
   {
-    UniqueNameUnit uniqueName = new(_uniqueNameSettings, "admin");
-    _role = new(uniqueName);
+    UniqueName uniqueName = new(_uniqueNameSettings, "admin");
+    _role = new(uniqueName, actorId: null, new RoleId(_tenantId, Guid.NewGuid()));
 
     _roleManager = new(_apiKeyRepository.Object, _roleRepository.Object, _userRepository.Object);
   }
@@ -47,30 +47,30 @@ public class RoleManagerTests
   {
     _role.ClearChanges();
 
-    _role.DisplayName = new DisplayNameUnit("Administrator");
-    _role.SetCustomAttribute("manage_users", bool.TrueString);
+    _role.DisplayName = new DisplayName("Administrator");
+    _role.SetCustomAttribute(new Identifier("manage_users"), bool.TrueString);
     _role.Update();
 
     await _roleManager.SaveAsync(_role, _actorId, _cancellationToken);
 
     _roleRepository.Verify(x => x.SaveAsync(_role, _cancellationToken), Times.Once);
 
-    _roleRepository.Verify(x => x.LoadAsync(It.IsAny<TenantId>(), It.IsAny<UniqueNameUnit>(), It.IsAny<CancellationToken>()), Times.Never);
+    _roleRepository.Verify(x => x.LoadAsync(It.IsAny<TenantId>(), It.IsAny<UniqueName>(), It.IsAny<CancellationToken>()), Times.Never);
   }
 
   [Fact(DisplayName = "SaveAsync: it should remove associations when it has been deleted.")]
   public async Task SaveAsync_it_should_remove_associations_when_it_has_been_deleted()
   {
-    RoleAggregate guest = new(new UniqueNameUnit(_uniqueNameSettings, "guest"));
+    Role guest = new(new UniqueName(_uniqueNameSettings, "guest"), actorId: null, new RoleId(_tenantId, Guid.NewGuid()));
 
-    DisplayNameUnit displayName = new("Test");
+    DisplayName displayName = new("Test");
     Base64Password secret = new("S3cr3+!*");
-    ApiKeyAggregate apiKey = new(displayName, secret);
+    ApiKey apiKey = new(displayName, secret, actorId: null, new ApiKeyId(_tenantId, Guid.NewGuid()));
     apiKey.AddRole(_role);
     apiKey.AddRole(guest);
     _apiKeyRepository.Setup(x => x.LoadAsync(_role, _cancellationToken)).ReturnsAsync([apiKey]);
 
-    UserAggregate user = new(new UniqueNameUnit(_uniqueNameSettings, "test"));
+    User user = new(new UniqueName(_uniqueNameSettings, "test"), actorId: null, new UserId(_tenantId, Guid.NewGuid()));
     user.AddRole(_role);
     user.AddRole(guest);
     _userRepository.Setup(x => x.LoadAsync(_role, _cancellationToken)).ReturnsAsync([user]);
@@ -78,9 +78,9 @@ public class RoleManagerTests
     _role.Delete();
     await _roleManager.SaveAsync(_role, _actorId, _cancellationToken);
 
-    _apiKeyRepository.Verify(x => x.SaveAsync(It.Is<IEnumerable<ApiKeyAggregate>>(y => y.Single().Equals(apiKey)), _cancellationToken), Times.Once);
+    _apiKeyRepository.Verify(x => x.SaveAsync(It.Is<IEnumerable<ApiKey>>(y => y.Single().Equals(apiKey)), _cancellationToken), Times.Once);
     _roleRepository.Verify(x => x.SaveAsync(_role, _cancellationToken), Times.Once);
-    _userRepository.Verify(x => x.SaveAsync(It.Is<IEnumerable<UserAggregate>>(y => y.Single().Equals(user)), _cancellationToken), Times.Once);
+    _userRepository.Verify(x => x.SaveAsync(It.Is<IEnumerable<User>>(y => y.Single().Equals(user)), _cancellationToken), Times.Once);
 
     Assert.Equal(guest.Id, apiKey.Roles.Single());
     Assert.Equal(guest.Id, user.Roles.Single());
@@ -89,13 +89,16 @@ public class RoleManagerTests
   [Fact(DisplayName = "SaveAsync: it should throw UniqueNameAlreadyUsedException when an unique name conflict occurs.")]
   public async Task SaveAsync_it_should_throw_UniqueNameAlreadyUsedException_when_an_unique_name_conflict_occurs()
   {
-    RoleAggregate other = new(_role.UniqueName);
+    Role other = new(_role.UniqueName);
     _roleRepository.Setup(x => x.LoadAsync(_role.TenantId, _role.UniqueName, _cancellationToken)).ReturnsAsync(other);
 
-    var exception = await Assert.ThrowsAsync<UniqueNameAlreadyUsedException<RoleAggregate>>(
+    var exception = await Assert.ThrowsAsync<UniqueNameAlreadyUsedException>(
       async () => await _roleManager.SaveAsync(_role, _actorId, _cancellationToken)
     );
-    Assert.Equal(_role.TenantId, exception.TenantId);
-    Assert.Equal(_role.UniqueName, exception.UniqueName);
+    Assert.Equal(typeof(Role).GetNamespaceQualifiedName(), exception.TypeName);
+    Assert.Equal(_role.TenantId?.Value, exception.TenantId);
+    Assert.Equal(other.EntityId.Value, exception.ConflictId);
+    Assert.Equal(_role.EntityId.Value, exception.EntityId);
+    Assert.Equal(_role.UniqueName.Value, exception.UniqueName);
   }
 }
