@@ -12,7 +12,7 @@ public record UserSignedIn : DomainEvent, INotification
   /// Initializes a new instance of the <see cref="UserSignedIn"/> class.
   /// </summary>
   /// <param name="occurredOn">The date and time when the authentication occurred.</param>
-  public UserSignedIn(DateTime occurredOn) // TODO(fpion): remove?
+  public UserSignedIn(DateTime occurredOn)
   {
     OccurredOn = occurredOn;
   }

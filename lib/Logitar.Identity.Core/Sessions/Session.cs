@@ -1,24 +1,37 @@
 ﻿using Logitar.EventSourcing;
-using Logitar.Identity.Domain.Passwords;
-using Logitar.Identity.Domain.Sessions.Events;
-using Logitar.Identity.Domain.Shared;
-using Logitar.Identity.Domain.Users;
+using Logitar.Identity.Core.Passwords;
+using Logitar.Identity.Core.Sessions.Events;
+using Logitar.Identity.Core.Users;
 
-namespace Logitar.Identity.Domain.Sessions;
+namespace Logitar.Identity.Core.Sessions;
 
 /// <summary>
 /// Represents a session in the identity system. A session allows an user to perform actions in a timeframe.
 /// It can be signed-out to close the timeframe, or renewed to extend the timeframe.
 /// </summary>
-public class SessionAggregate : AggregateRoot
+public class Session : AggregateRoot
 {
-  private SessionUpdatedEvent _updatedEvent = new();
+  /// <summary>
+  /// The updated event.
+  /// </summary>
+  private SessionUpdated _updated = new();
 
   /// <summary>
   /// Gets the identifier of the session.
   /// </summary>
-  public new SessionId Id => new(base.Id);
+  public new UserId Id => new(base.Id);
+  /// <summary>
+  /// Gets the tenant identifier of the session.
+  /// </summary>
+  public TenantId? TenantId => Id.TenantId;
+  /// <summary>
+  /// Gets the entity identifier of the session. This identifier is unique within the tenant.
+  /// </summary>
+  public EntityId? EntityId => Id.EntityId;
 
+  /// <summary>
+  /// The identifier of the user owning the session.
+  /// </summary>
   private UserId? _userId = null;
   /// <summary>
   /// Gets the identifier of the user owning the session.
@@ -26,6 +39,9 @@ public class SessionAggregate : AggregateRoot
   /// <exception cref="InvalidOperationException">The user identifier has not been initialized yet.</exception>
   public UserId UserId => _userId ?? throw new InvalidOperationException($"The {nameof(UserId)} has not been initialized yet.");
 
+  /// <summary>
+  /// The secret of the session.
+  /// </summary>
   private Password? _secret = null;
   /// <summary>
   /// Gets a value indicating whether or not the session is persistent.
@@ -39,39 +55,47 @@ public class SessionAggregate : AggregateRoot
   /// </summary>
   public bool IsActive { get; private set; }
 
-  private readonly Dictionary<string, string> _customAttributes = [];
+  /// <summary>
+  /// The custom attributes of the session.
+  /// </summary>
+  private readonly Dictionary<Identifier, string> _customAttributes = [];
   /// <summary>
   /// Gets the custom attributes of the session.
   /// </summary>
-  public IReadOnlyDictionary<string, string> CustomAttributes => _customAttributes.AsReadOnly();
+  public IReadOnlyDictionary<Identifier, string> CustomAttributes => _customAttributes.AsReadOnly();
 
   /// <summary>
-  /// Initializes a new instance of the <see cref="SessionAggregate"/> class.
+  /// Initializes a new instance of the <see cref="Session"/> class.
   /// DO NOT use this constructor to create a new session. It is only intended to be used by the event sourcing.
   /// </summary>
-  public SessionAggregate() : base()
+  public Session() : base()
   {
   }
 
   /// <summary>
-  /// Initializes a new instance of the <see cref="SessionAggregate"/> class.
+  /// Initializes a new instance of the <see cref="Session"/> class.
   /// DO use this constructor to create a new user.
   /// </summary>
   /// <param name="user">The user owning the session.</param>
   /// <param name="secret">The secret of the session.</param>
   /// <param name="actorId">(Optional) The actor identifier. This parameter should be left null so that it defaults to the user's identifier.</param>
   /// <param name="id">The identifier of the session.</param>
-  public SessionAggregate(UserAggregate user, Password? secret = null, ActorId? actorId = null, SessionId? id = null)
-    : base((id ?? SessionId.NewId()).AggregateId)
+  /// <exception cref="TenantMismatchException">The user and session tenant identifiers do not match.</exception>
+  public Session(User user, Password? secret = null, ActorId? actorId = null, SessionId? id = null) : base((id ?? SessionId.NewId()).StreamId)
   {
+    if (id.HasValue && id.Value.TenantId != user.TenantId)
+    {
+      throw new TenantMismatchException(id.Value.TenantId, user.TenantId);
+    }
+
     actorId ??= new(user.Id.Value);
-    Raise(new SessionCreatedEvent(secret, user.Id), actorId.Value);
+    Raise(new SessionCreated(secret, user.Id), actorId.Value);
   }
   /// <summary>
   /// Applies the specified event.
   /// </summary>
   /// <param name="event">The event to apply.</param>
-  protected virtual void Apply(SessionCreatedEvent @event)
+  protected virtual void Handle(SessionCreated @event)
   {
     _userId = @event.UserId;
 
@@ -84,11 +108,11 @@ public class SessionAggregate : AggregateRoot
   /// Deletes the session, if it is not already deleted.
   /// </summary>
   /// <param name="actorId">The actor identifier.</param>
-  public void Delete(ActorId actorId = default)
+  public void Delete(ActorId? actorId = null)
   {
     if (!IsDeleted)
     {
-      Raise(new SessionDeletedEvent(), actorId);
+      Raise(new SessionDeleted(), actorId);
     }
   }
 
@@ -96,14 +120,11 @@ public class SessionAggregate : AggregateRoot
   /// Removes the specified custom attribute on the session.
   /// </summary>
   /// <param name="key">The key of the custom attribute.</param>
-  public void RemoveCustomAttribute(string key)
+  public void RemoveCustomAttribute(Identifier key)
   {
-    key = key.Trim();
-
-    if (_customAttributes.ContainsKey(key))
+    if (_customAttributes.Remove(key))
     {
-      _updatedEvent.CustomAttributes[key] = null;
-      _customAttributes.Remove(key);
+      _updated.CustomAttributes[key] = null;
     }
   }
 
@@ -132,33 +153,34 @@ public class SessionAggregate : AggregateRoot
     }
 
     actorId ??= new(UserId.Value);
-    Raise(new SessionRenewedEvent(newSecret), actorId.Value);
+    Raise(new SessionRenewed(newSecret), actorId.Value);
   }
   /// <summary>
   /// Applies the specified event.
   /// </summary>
   /// <param name="event">The event to apply.</param>
-  protected virtual void Apply(SessionRenewedEvent @event)
+  protected virtual void Handle(SessionRenewed @event)
   {
     _secret = @event.Secret;
   }
 
-  private readonly CustomAttributeValidator _customAttributeValidator = new();
   /// <summary>
   /// Sets the specified custom attribute on the session.
   /// </summary>
   /// <param name="key">The key of the custom attribute.</param>
   /// <param name="value">The value of the custom attribute.</param>
-  public void SetCustomAttribute(string key, string value)
+  public void SetCustomAttribute(Identifier key, string value)
   {
-    key = key.Trim();
+    if (string.IsNullOrWhiteSpace(value))
+    {
+      RemoveCustomAttribute(key);
+    }
     value = value.Trim();
-    _customAttributeValidator.ValidateAndThrow(key, value);
 
     if (!_customAttributes.TryGetValue(key, out string? existingValue) || existingValue != value)
     {
-      _updatedEvent.CustomAttributes[key] = value;
       _customAttributes[key] = value;
+      _updated.CustomAttributes[key] = value;
     }
   }
 
@@ -171,14 +193,14 @@ public class SessionAggregate : AggregateRoot
     if (IsActive)
     {
       actorId ??= new(UserId.Value);
-      Raise(new SessionSignedOutEvent(), actorId.Value);
+      Raise(new SessionSignedOut(), actorId.Value);
     }
   }
   /// <summary>
   /// Applies the specified event.
   /// </summary>
   /// <param name="_">The event to apply.</param>
-  protected virtual void Apply(SessionSignedOutEvent _)
+  protected virtual void Handle(SessionSignedOut _)
   {
     IsActive = false;
   }
@@ -187,21 +209,21 @@ public class SessionAggregate : AggregateRoot
   /// Applies updates on the session.
   /// </summary>
   /// <param name="actorId">The actor identifier.</param>
-  public void Update(ActorId actorId = default)
+  public void Update(ActorId? actorId = null)
   {
-    if (_updatedEvent.HasChanges)
+    if (_updated.HasChanges)
     {
-      Raise(_updatedEvent, actorId, DateTime.Now);
-      _updatedEvent = new();
+      Raise(_updated, actorId, DateTime.Now);
+      _updated = new();
     }
   }
   /// <summary>
   /// Applies the specified event.
   /// </summary>
   /// <param name="event">The event to apply.</param>
-  protected virtual void Apply(SessionUpdatedEvent @event)
+  protected virtual void Handle(SessionUpdated @event)
   {
-    foreach (KeyValuePair<string, string?> customAttribute in @event.CustomAttributes)
+    foreach (KeyValuePair<Identifier, string?> customAttribute in @event.CustomAttributes)
     {
       if (customAttribute.Value == null)
       {

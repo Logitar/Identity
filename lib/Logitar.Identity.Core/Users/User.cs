@@ -1,6 +1,7 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Core.Passwords;
 using Logitar.Identity.Core.Roles;
+using Logitar.Identity.Core.Sessions;
 using Logitar.Identity.Core.Users.Events;
 
 namespace Logitar.Identity.Core.Users;
@@ -679,7 +680,7 @@ public class User : AggregateRoot
   /// Applies the specified event.
   /// </summary>
   /// <param name="event">The event to apply.</param>
-  protected virtual void Apply(UserIdentifierChanged @event)
+  protected virtual void Handle(UserIdentifierChanged @event)
   {
     _customIdentifiers[@event.Key] = @event.Value;
   }
@@ -763,6 +764,64 @@ public class User : AggregateRoot
   protected virtual void Handle(UserUniqueNameChanged @event)
   {
     _uniqueName = @event.UniqueName;
+  }
+
+  /// <summary>
+  /// Signs-in the user without a password check, opening a new session.
+  /// </summary>
+  /// <param name="secret">The secret of the session.</param>
+  /// <param name="actorId">(Optional) The actor identifier. This parameter should be left null so that it defaults to the user's identifier.</param>
+  /// <param name="sessionId">The identifier of the session.</param>
+  /// <returns>The newly opened session.</returns>
+  /// <exception cref="IncorrectUserPasswordException">The password is incorrect.</exception>
+  /// <exception cref="UserHasNoPasswordException">The user has no password.</exception>
+  /// <exception cref="UserIsDisabledException">The user is disabled.</exception>
+  public Session SignIn(Password? secret = null, ActorId? actorId = null, SessionId? sessionId = null)
+  {
+    return SignIn(password: null, secret, actorId, sessionId);
+  }
+  /// <summary>
+  /// Signs-in the user, opening a new session.
+  /// </summary>
+  /// <param name="password">The password to check.</param>
+  /// <param name="secret">The secret of the session.</param>
+  /// <param name="actorId">(Optional) The actor identifier. This parameter should be left null so that it defaults to the user's identifier.</param>
+  /// <param name="sessionId">The identifier of the session.</param>
+  /// <returns>The newly opened session.</returns>
+  /// <exception cref="IncorrectUserPasswordException">The password is incorrect.</exception>
+  /// <exception cref="UserHasNoPasswordException">The user has no password.</exception>
+  /// <exception cref="UserIsDisabledException">The user is disabled.</exception>
+  public Session SignIn(string? password, Password? secret = null, ActorId? actorId = null, SessionId? sessionId = null)
+  {
+    if (IsDisabled)
+    {
+      throw new UserIsDisabledException(this);
+    }
+    else if (password != null)
+    {
+      if (_password == null)
+      {
+        throw new UserHasNoPasswordException(this);
+      }
+      else if (!_password.IsMatch(password))
+      {
+        throw new IncorrectUserPasswordException(this, password);
+      }
+    }
+
+    actorId ??= new(Id.Value);
+    Session session = new(this, secret, actorId, sessionId);
+    Raise(new UserSignedIn(session.CreatedOn), actorId.Value);
+
+    return session;
+  }
+  /// <summary>
+  /// Applies the specified event.
+  /// </summary>
+  /// <param name="event">The event to apply.</param>
+  protected virtual void Handle(UserSignedIn @event)
+  {
+    AuthenticatedOn = @event.OccurredOn;
   }
 
   /// <summary>
