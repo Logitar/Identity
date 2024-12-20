@@ -1,6 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 
-namespace Logitar.Identity.Domain.Tokens;
+namespace Logitar.Identity.Core.Tokens;
 
 /// <summary>
 /// Represents token creation options.

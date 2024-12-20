@@ -1,4 +1,4 @@
-﻿namespace Logitar.Identity.Domain.Tokens;
+﻿namespace Logitar.Identity.Core.Tokens;
 
 /// <summary>
 /// Defines methods to manage tokens.
