@@ -1,13 +1,18 @@
 ﻿using Logitar.Identity.Contracts.Settings;
 using Microsoft.Extensions.Configuration;
 
-namespace Logitar.Identity.Domain.Settings;
+namespace Logitar.Identity.Core.Settings;
 
 /// <summary>
 /// An implementation of a role settings resolver using the application configuration.
 /// </summary>
 public class UserSettingsResolver : IUserSettingsResolver
 {
+  /// <summary>
+  /// The key of the user settings configuration section.
+  /// </summary>
+  public const string SectionKey = "User";
+
   /// <summary>
   /// Gets or sets the configuration of the application.
   /// </summary>
@@ -32,7 +37,7 @@ public class UserSettingsResolver : IUserSettingsResolver
   /// <returns>The user settings.</returns>
   public virtual IUserSettings Resolve()
   {
-    UserSettings ??= Configuration.GetSection("Identity").GetSection("User").Get<UserSettings>() ?? new();
+    UserSettings ??= Configuration.GetSection("Identity").GetSection(SectionKey).Get<UserSettings>() ?? new();
     return UserSettings;
   }
 }

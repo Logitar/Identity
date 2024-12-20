@@ -1,6 +1,6 @@
 ﻿using Logitar.Identity.Contracts.Settings;
 
-namespace Logitar.Identity.Domain.Settings;
+namespace Logitar.Identity.Core.Settings;
 
 /// <summary>
 /// The settings applying to users.

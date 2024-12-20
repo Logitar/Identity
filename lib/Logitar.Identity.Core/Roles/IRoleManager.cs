@@ -1,6 +1,6 @@
 ﻿using Logitar.EventSourcing;
 
-namespace Logitar.Identity.Domain.Roles;
+namespace Logitar.Identity.Core.Roles;
 
 /// <summary>
 /// Defines methods to manage roles.
@@ -14,5 +14,5 @@ public interface IRoleManager
   /// <param name="actorId">The actor identifier.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The asynchronous operation.</returns>
-  Task SaveAsync(RoleAggregate role, ActorId actorId = default, CancellationToken cancellationToken = default);
+  Task SaveAsync(Role role, ActorId? actorId = null, CancellationToken cancellationToken = default);
 }

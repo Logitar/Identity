@@ -1,12 +1,10 @@
-﻿using FluentValidation;
-using Logitar.EventSourcing;
+﻿using Logitar.EventSourcing;
 using Logitar.Identity.Contracts.Settings;
-using Logitar.Identity.Domain.Sessions;
-using Logitar.Identity.Domain.Settings;
-using Logitar.Identity.Domain.Shared;
-using Logitar.Identity.Domain.Users.Events;
+using Logitar.Identity.Core.Sessions;
+using Logitar.Identity.Core.Settings;
+using Logitar.Identity.Core.Users.Events;
 
-namespace Logitar.Identity.Domain.Users;
+namespace Logitar.Identity.Core.Users;
 
 /// <summary>
 /// Implements methods to manage users.
@@ -63,46 +61,53 @@ public class UserManager : IUserManager
     userSettings ??= UserSettingsResolver.Resolve();
 
     TenantId? tenantId = null;
-    try
+    if (!string.IsNullOrWhiteSpace(tenantIdValue))
     {
-      tenantId = TenantId.TryCreate(tenantIdValue);
-    }
-    catch (ValidationException)
-    {
+      try
+      {
+        tenantId = new(tenantIdValue);
+      }
+      catch (Exception)
+      {
+      }
     }
 
     UserId? userId = null;
     try
     {
-      userId = UserId.TryCreate(id);
+      userId = new(tenantId, id);
     }
-    catch (ValidationException)
+    catch (Exception)
     {
     }
 
-    UniqueNameUnit? uniqueName = null;
+    UniqueName? uniqueName = null;
     try
     {
-      uniqueName = new(userSettings.UniqueName, id);
+      UniqueNameSettings uniqueNameSettings = new()
+      {
+        AllowedCharacters = null
+      };
+      uniqueName = new(uniqueNameSettings, id);
     }
-    catch (ValidationException)
+    catch (Exception)
     {
     }
 
-    EmailUnit? email = null;
+    Email? email = null;
     try
     {
       email = new(id);
     }
-    catch (ValidationException)
+    catch (Exception)
     {
     }
 
     FoundUsers found = new();
 
-    if (userId != null)
+    if (userId.HasValue)
     {
-      found.ById = await UserRepository.LoadAsync(userId, cancellationToken);
+      found.ById = await UserRepository.LoadAsync(userId.Value, cancellationToken);
     }
     if (uniqueName != null)
     {
@@ -110,8 +115,8 @@ public class UserManager : IUserManager
     }
     if (email != null && userSettings.RequireUniqueEmail)
     {
-      IEnumerable<UserAggregate> users = await UserRepository.LoadAsync(tenantId, email, cancellationToken);
-      if (users.Count() == 1)
+      IReadOnlyCollection<User> users = await UserRepository.LoadAsync(tenantId, email, cancellationToken);
+      if (users.Count == 1)
       {
         found.ByEmail = users.Single();
       }
@@ -127,7 +132,7 @@ public class UserManager : IUserManager
   /// <param name="actorId">The actor identifier.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The asynchronous operation.</returns>
-  public virtual async Task SaveAsync(UserAggregate user, ActorId actorId, CancellationToken cancellationToken)
+  public virtual async Task SaveAsync(User user, ActorId? actorId, CancellationToken cancellationToken)
   {
     await SaveAsync(user, userSettings: null, actorId, cancellationToken);
   }
@@ -139,22 +144,22 @@ public class UserManager : IUserManager
   /// <param name="actorId">The actor identifier.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The asynchronous operation.</returns>
-  public virtual async Task SaveAsync(UserAggregate user, IUserSettings? userSettings, ActorId actorId, CancellationToken cancellationToken)
+  public virtual async Task SaveAsync(User user, IUserSettings? userSettings, ActorId? actorId, CancellationToken cancellationToken)
   {
     bool hasBeenDeleted = false;
     bool hasEmailChanged = false;
     bool hasUniqueNameChanged = false;
-    foreach (DomainEvent change in user.Changes)
+    foreach (IEvent change in user.Changes)
     {
-      if (change is UserCreatedEvent || change is UserUniqueNameChangedEvent)
+      if (change is UserCreated || change is UserUniqueNameChanged)
       {
         hasUniqueNameChanged = true;
       }
-      else if (change is UserEmailChangedEvent)
+      else if (change is UserEmailChanged)
       {
         hasEmailChanged = true;
       }
-      else if (change is UserDeletedEvent)
+      else if (change is UserDeleted)
       {
         hasBeenDeleted = true;
       }
@@ -162,10 +167,10 @@ public class UserManager : IUserManager
 
     if (hasUniqueNameChanged)
     {
-      UserAggregate? other = await UserRepository.LoadAsync(user.TenantId, user.UniqueName, cancellationToken);
-      if (other?.Equals(user) == false)
+      User? conflict = await UserRepository.LoadAsync(user.TenantId, user.UniqueName, cancellationToken);
+      if (conflict != null && !conflict.Equals(user))
       {
-        throw new UniqueNameAlreadyUsedException<UserAggregate>(user.TenantId, user.UniqueName);
+        throw new UniqueNameAlreadyUsedException(user, conflict);
       }
     }
 
@@ -174,30 +179,31 @@ public class UserManager : IUserManager
       userSettings ??= UserSettingsResolver.Resolve();
       if (userSettings.RequireUniqueEmail)
       {
-        IEnumerable<UserAggregate> users = await UserRepository.LoadAsync(user.TenantId, user.Email, cancellationToken);
-        if (users.Any(other => !other.Equals(user)))
+        IReadOnlyCollection<User> users = await UserRepository.LoadAsync(user.TenantId, user.Email, cancellationToken);
+        User? conflict = users.FirstOrDefault(other => !other.Equals(user));
+        if (conflict != null)
         {
-          throw new EmailAddressAlreadyUsedException(user.TenantId, user.Email);
+          throw new EmailAddressAlreadyUsedException(user, conflict);
         }
       }
     }
 
-    foreach (DomainEvent change in user.Changes)
+    foreach (IEvent change in user.Changes)
     {
-      if (change is UserIdentifierChangedEvent identifier)
+      if (change is UserIdentifierChanged identifier)
       {
-        UserAggregate? other = await UserRepository.LoadAsync(user.TenantId, identifier.Key, identifier.Value, cancellationToken);
-        if (other?.Equals(user) == false)
+        User? conflict = await UserRepository.LoadAsync(user.TenantId, identifier.Key, identifier.Value, cancellationToken);
+        if (conflict != null && !conflict.Equals(user))
         {
-          throw new CustomIdentifierAlreadyUsedException<UserAggregate>(user.TenantId, identifier.Key, identifier.Value);
+          throw new CustomIdentifierAlreadyUsedException(user, conflict, identifier.Key, identifier.Value);
         }
       }
     }
 
     if (hasBeenDeleted)
     {
-      IEnumerable<SessionAggregate> sessions = await SessionRepository.LoadAsync(user, cancellationToken);
-      foreach (SessionAggregate session in sessions)
+      IEnumerable<Session> sessions = await SessionRepository.LoadAsync(user, cancellationToken);
+      foreach (Session session in sessions)
       {
         session.Delete(actorId);
       }
