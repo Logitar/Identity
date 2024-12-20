@@ -1,17 +1,17 @@
 ﻿using Logitar.EventSourcing;
 using MediatR;
 
-namespace Logitar.Identity.Domain.Sessions.Events;
+namespace Logitar.Identity.Core.Sessions.Events;
 
 /// <summary>
 /// The event raised when an existing session is modified.
 /// </summary>
-public class SessionUpdatedEvent : DomainEvent, INotification
+public record SessionUpdated : DomainEvent, INotification
 {
   /// <summary>
   /// Gets or sets the custom attribute modifications of the session.
   /// </summary>
-  public Dictionary<string, string?> CustomAttributes { get; init; } = [];
+  public Dictionary<Identifier, string?> CustomAttributes { get; init; } = [];
 
   /// <summary>
   /// Gets a value indicating whether or not the session is being modified.

@@ -1,14 +1,14 @@
 ﻿using Logitar.EventSourcing;
-using Logitar.Identity.Domain.Passwords;
-using Logitar.Identity.Domain.Users;
+using Logitar.Identity.Core.Passwords;
+using Logitar.Identity.Core.Users;
 using MediatR;
 
-namespace Logitar.Identity.Domain.Sessions.Events;
+namespace Logitar.Identity.Core.Sessions.Events;
 
 /// <summary>
 /// The event raised when a new session is created.
 /// </summary>
-public class SessionCreatedEvent : DomainEvent, INotification
+public record SessionCreated : DomainEvent, INotification
 {
   /// <summary>
   /// Gets the identifier of the user owning the session.
@@ -20,11 +20,11 @@ public class SessionCreatedEvent : DomainEvent, INotification
   public Password? Secret { get; }
 
   /// <summary>
-  /// Initializes a new instance of the <see cref="SessionCreatedEvent"/> class.
+  /// Initializes a new instance of the <see cref="SessionCreated"/> class.
   /// </summary>
   /// <param name="secret">The secret of the session.</param>
   /// <param name="userId">The identifier of the user owning the session.</param>
-  public SessionCreatedEvent(Password? secret, UserId userId)
+  public SessionCreated(Password? secret, UserId userId)
   {
     Secret = secret;
     UserId = userId;
