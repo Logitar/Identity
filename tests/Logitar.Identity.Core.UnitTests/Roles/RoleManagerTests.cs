@@ -24,7 +24,7 @@ public class RoleManagerTests
   public RoleManagerTests()
   {
     UniqueName uniqueName = new(_uniqueNameSettings, "admin");
-    _role = new(uniqueName, actorId: null, new RoleId(_tenantId, Guid.NewGuid()));
+    _role = new(uniqueName, actorId: null, new RoleId(_tenantId, EntityId.NewId()));
 
     _roleManager = new(_apiKeyRepository.Object, _roleRepository.Object, _userRepository.Object);
   }
@@ -61,16 +61,16 @@ public class RoleManagerTests
   [Fact(DisplayName = "SaveAsync: it should remove associations when it has been deleted.")]
   public async Task SaveAsync_it_should_remove_associations_when_it_has_been_deleted()
   {
-    Role guest = new(new UniqueName(_uniqueNameSettings, "guest"), actorId: null, new RoleId(_tenantId, Guid.NewGuid()));
+    Role guest = new(new UniqueName(_uniqueNameSettings, "guest"), actorId: null, new RoleId(_tenantId, EntityId.NewId()));
 
     DisplayName displayName = new("Test");
     Base64Password secret = new("S3cr3+!*");
-    ApiKey apiKey = new(displayName, secret, actorId: null, new ApiKeyId(_tenantId, Guid.NewGuid()));
+    ApiKey apiKey = new(displayName, secret, actorId: null, new ApiKeyId(_tenantId, EntityId.NewId()));
     apiKey.AddRole(_role);
     apiKey.AddRole(guest);
     _apiKeyRepository.Setup(x => x.LoadAsync(_role, _cancellationToken)).ReturnsAsync([apiKey]);
 
-    User user = new(new UniqueName(_uniqueNameSettings, "test"), actorId: null, new UserId(_tenantId, Guid.NewGuid()));
+    User user = new(new UniqueName(_uniqueNameSettings, "test"), actorId: null, UserId.NewId(_tenantId));
     user.AddRole(_role);
     user.AddRole(guest);
     _userRepository.Setup(x => x.LoadAsync(_role, _cancellationToken)).ReturnsAsync([user]);

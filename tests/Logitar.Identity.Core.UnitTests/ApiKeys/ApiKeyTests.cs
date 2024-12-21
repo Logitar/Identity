@@ -37,7 +37,7 @@ public class ApiKeyTests
   [Fact(DisplayName = "AddRole: it should throw TenantMismatchException when the role is in another tenant.")]
   public void Given_DifferentTenants_When_AddRole_Then_TenantMismatchException()
   {
-    Role role = new(new UniqueName(new UniqueNameSettings(), "manage_api"), actorId: null, new RoleId(TenantId.NewId(), Guid.NewGuid()));
+    Role role = new(new UniqueName(new UniqueNameSettings(), "manage_api"), actorId: null, new RoleId(TenantId.NewId(), EntityId.NewId()));
 
     var exception = Assert.Throws<TenantMismatchException>(() => _apiKey.AddRole(role));
     Assert.Equal(_apiKey.TenantId?.Value, exception.ExpectedTenantId);
@@ -201,7 +201,7 @@ public class ApiKeyTests
   [Fact(DisplayName = "It should have the correct IDs.")]
   public void Given_ApiKey_When_getIds_Then_CorrectIds()
   {
-    ApiKeyId id = new(TenantId.NewId(), Guid.NewGuid());
+    ApiKeyId id = new(TenantId.NewId(), EntityId.NewId());
     ApiKey apiKey = new(_apiKey.DisplayName, _secret, actorId: null, id);
     Assert.Equal(id, apiKey.Id);
     Assert.Equal(id.TenantId, apiKey.TenantId);

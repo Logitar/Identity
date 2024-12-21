@@ -1,9 +1,9 @@
 ﻿using Logitar.EventSourcing;
 
-namespace Logitar.Identity.Core.Roles;
+namespace Logitar.Identity.Core.Sessions;
 
 [Trait(Traits.Category, Categories.Unit)]
-public class RoleIdTests
+public class SessionIdTests
 {
   [Theory(DisplayName = "ctor: it should construct the correct ID from a stream ID.")]
   [InlineData(null)]
@@ -14,7 +14,7 @@ public class RoleIdTests
     EntityId entityId = EntityId.NewId();
     StreamId streamId = new(tenantId.HasValue ? string.Join(':', tenantId, entityId) : entityId.Value);
 
-    RoleId id = new(streamId);
+    SessionId id = new(streamId);
 
     Assert.Equal(tenantId, id.TenantId);
     Assert.Equal(entityId, id.EntityId);
@@ -28,7 +28,7 @@ public class RoleIdTests
     TenantId? tenantId = tenantIdValue == null ? null : new(tenantIdValue);
     EntityId entityId = EntityId.NewId();
 
-    RoleId id = new(tenantId, entityId);
+    SessionId id = new(tenantId, entityId);
 
     Assert.Equal(tenantId, id.TenantId);
     Assert.Equal(entityId, id.EntityId);
@@ -37,8 +37,8 @@ public class RoleIdTests
   [Fact(DisplayName = "Equals: it should return false when the IDs are different.")]
   public void Given_DifferentIds_When_Equals_Then_FalseReturned()
   {
-    RoleId id1 = new(TenantId.NewId(), EntityId.NewId());
-    RoleId id2 = new(tenantId: null, id1.EntityId);
+    SessionId id1 = new(TenantId.NewId(), EntityId.NewId());
+    SessionId id2 = new(tenantId: null, id1.EntityId);
     Assert.False(id1.Equals(id2));
   }
 
@@ -47,15 +47,15 @@ public class RoleIdTests
   [InlineData(123)]
   public void Given_DifferentTypes_When_Equals_Then_FalseReturned(object? value)
   {
-    RoleId id = RoleId.NewId();
+    SessionId id = SessionId.NewId();
     Assert.False(id.Equals(value));
   }
 
   [Fact(DisplayName = "Equals: it should return true when the IDs are the same.")]
   public void Given_SameIds_When_Equals_Then_TrueReturned()
   {
-    RoleId id1 = new(TenantId.NewId(), EntityId.NewId());
-    RoleId id2 = new(id1.StreamId);
+    SessionId id1 = new(TenantId.NewId(), EntityId.NewId());
+    SessionId id2 = new(id1.StreamId);
     Assert.True(id1.Equals(id1));
     Assert.True(id1.Equals(id2));
   }
@@ -63,16 +63,16 @@ public class RoleIdTests
   [Fact(DisplayName = "EqualOperator: it should return false when the IDs are different.")]
   public void Given_DifferentIds_When_EqualOperator_Then_FalseReturned()
   {
-    RoleId id1 = new(TenantId.NewId(), EntityId.NewId());
-    RoleId id2 = new(tenantId: null, id1.EntityId);
+    SessionId id1 = new(TenantId.NewId(), EntityId.NewId());
+    SessionId id2 = new(tenantId: null, id1.EntityId);
     Assert.False(id1 == id2);
   }
 
   [Fact(DisplayName = "EqualOperator: it should return true when the IDs are the same.")]
   public void Given_SameIds_When_EqualOperator_Then_TrueReturned()
   {
-    RoleId id1 = new(TenantId.NewId(), EntityId.NewId());
-    RoleId id2 = new(id1.StreamId);
+    SessionId id1 = new(TenantId.NewId(), EntityId.NewId());
+    SessionId id2 = new(id1.StreamId);
     Assert.True(id1 == id2);
   }
 
@@ -83,7 +83,7 @@ public class RoleIdTests
   {
     TenantId? tenantId = tenantIdValue == null ? null : new(tenantIdValue);
 
-    RoleId id = RoleId.NewId(tenantId);
+    SessionId id = SessionId.NewId(tenantId);
 
     Assert.Equal(tenantId, id.TenantId);
     Assert.NotEqual(Guid.Empty, id.EntityId.ToGuid());
@@ -97,7 +97,7 @@ public class RoleIdTests
     TenantId? tenantId = tenantIdValue == null ? null : new(tenantIdValue);
     EntityId entityId = EntityId.NewId();
 
-    RoleId id = new(tenantId, entityId);
+    SessionId id = new(tenantId, entityId);
 
     Assert.Equal(id.Value.GetHashCode(), id.GetHashCode());
   }
@@ -105,16 +105,16 @@ public class RoleIdTests
   [Fact(DisplayName = "NotEqualOperator: it should return false when the IDs are the same.")]
   public void Given_SameIds_When_NotEqualOperator_Then_TrueReturned()
   {
-    RoleId id1 = new(TenantId.NewId(), EntityId.NewId());
-    RoleId id2 = new(id1.StreamId);
+    SessionId id1 = new(TenantId.NewId(), EntityId.NewId());
+    SessionId id2 = new(id1.StreamId);
     Assert.False(id1 != id2);
   }
 
   [Fact(DisplayName = "NotEqualOperator: it should return true when the IDs are different.")]
   public void Given_DifferentIds_When_NotEqualOperator_Then_TrueReturned()
   {
-    RoleId id1 = new(TenantId.NewId(), EntityId.NewId());
-    RoleId id2 = new(tenantId: null, id1.EntityId);
+    SessionId id1 = new(TenantId.NewId(), EntityId.NewId());
+    SessionId id2 = new(tenantId: null, id1.EntityId);
     Assert.True(id1 != id2);
   }
 
@@ -126,7 +126,7 @@ public class RoleIdTests
     TenantId? tenantId = tenantIdValue == null ? null : new(tenantIdValue);
     EntityId entityId = EntityId.NewId();
 
-    RoleId id = new(tenantId, entityId);
+    SessionId id = new(tenantId, entityId);
 
     Assert.Equal(id.Value, id.ToString());
   }

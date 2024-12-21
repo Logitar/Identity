@@ -31,34 +31,34 @@ public readonly struct RoleId
   public EntityId EntityId { get; }
 
   /// <summary>
-  /// Initializes a new instance of the <see cref="RoleId"/> struct.
+  /// Initializes a new instance of the <see cref="RoleId"/> class.
   /// </summary>
   /// <param name="tenantId">The tenant identifier.</param>
   /// <param name="entityId">The entity identifier.</param>
-  public RoleId(TenantId? tenantId, Guid entityId) : this(tenantId, Convert.ToBase64String(entityId.ToByteArray()).ToUriSafeBase64())
+  public RoleId(TenantId? tenantId, EntityId entityId)
   {
-  }
-  /// <summary>
-  /// Initializes a new instance of the <see cref="RoleId"/> struct.
-  /// </summary>
-  /// <param name="tenantId">The tenant identifier.</param>
-  /// <param name="entityId">The entity identifier.</param>
-  public RoleId(TenantId? tenantId, string entityId)
-  {
+    StreamId = new(tenantId == null ? entityId.Value : string.Join(Separator, tenantId, entityId));
     TenantId = tenantId;
-    EntityId = new(entityId);
-    StreamId = new(tenantId.HasValue ? string.Join(Separator, tenantId, entityId) : entityId);
+    EntityId = entityId;
   }
+
   /// <summary>
-  /// Initializes a new instance of the <see cref="RoleId"/> struct.
+  /// Initializes a new instance of the <see cref="RoleId"/> class.
   /// </summary>
-  /// <param name="streamId">A stream identifier.</param>
+  /// <param name="streamId">The identifier of the event stream.</param>
   public RoleId(StreamId streamId)
   {
     StreamId = streamId;
 
     string[] values = streamId.Value.Split(Separator);
-    TenantId = values.Length == 2 ? new(values[0]) : null;
+    if (values.Length > 2)
+    {
+      throw new ArgumentException($"The value '{streamId}' is not a valid role ID.", nameof(streamId));
+    }
+    else if (values.Length == 2)
+    {
+      TenantId = new(values.First());
+    }
     EntityId = new(values.Last());
   }
 
@@ -67,7 +67,7 @@ public readonly struct RoleId
   /// </summary>
   /// <param name="tenantId">The tenant identifier.</param>
   /// <returns>The generated identifier.</returns>
-  public static RoleId NewId(TenantId? tenantId = null) => new(tenantId, Guid.NewGuid());
+  public static RoleId NewId(TenantId? tenantId = null) => new(tenantId, EntityId.NewId());
 
   /// <summary>
   /// Returns a value indicating whether or not the specified identifiers are equal.

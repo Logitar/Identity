@@ -85,7 +85,7 @@ public class RoleTests
   [Fact(DisplayName = "It should have the correct IDs.")]
   public void Given_Role_When_getIds_Then_CorrectIds()
   {
-    RoleId id = new(TenantId.NewId(), Guid.NewGuid());
+    RoleId id = new(TenantId.NewId(), EntityId.NewId());
     Role role = new(_role.UniqueName, actorId: null, id);
     Assert.Equal(id, role.Id);
     Assert.Equal(id.TenantId, role.TenantId);

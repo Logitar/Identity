@@ -3,7 +3,7 @@
 namespace Logitar.Identity.Core.Users;
 
 /// <summary>
-/// Represents the identifier of an user.
+/// Represents the identifier of a user.
 /// </summary>
 public readonly struct UserId
 {
@@ -31,34 +31,34 @@ public readonly struct UserId
   public EntityId EntityId { get; }
 
   /// <summary>
-  /// Initializes a new instance of the <see cref="UserId"/> struct.
+  /// Initializes a new instance of the <see cref="UserId"/> class.
   /// </summary>
   /// <param name="tenantId">The tenant identifier.</param>
   /// <param name="entityId">The entity identifier.</param>
-  public UserId(TenantId? tenantId, Guid entityId) : this(tenantId, Convert.ToBase64String(entityId.ToByteArray()).ToUriSafeBase64())
+  public UserId(TenantId? tenantId, EntityId entityId)
   {
-  }
-  /// <summary>
-  /// Initializes a new instance of the <see cref="UserId"/> struct.
-  /// </summary>
-  /// <param name="tenantId">The tenant identifier.</param>
-  /// <param name="entityId">The entity identifier.</param>
-  public UserId(TenantId? tenantId, string entityId)
-  {
+    StreamId = new(tenantId == null ? entityId.Value : string.Join(Separator, tenantId, entityId));
     TenantId = tenantId;
-    EntityId = new(entityId);
-    StreamId = new(tenantId.HasValue ? string.Join(Separator, tenantId, entityId) : entityId);
+    EntityId = entityId;
   }
+
   /// <summary>
-  /// Initializes a new instance of the <see cref="UserId"/> struct.
+  /// Initializes a new instance of the <see cref="UserId"/> class.
   /// </summary>
-  /// <param name="streamId">A stream identifier.</param>
+  /// <param name="streamId">The identifier of the event stream.</param>
   public UserId(StreamId streamId)
   {
     StreamId = streamId;
 
     string[] values = streamId.Value.Split(Separator);
-    TenantId = values.Length == 2 ? new(values[0]) : null;
+    if (values.Length > 2)
+    {
+      throw new ArgumentException($"The value '{streamId}' is not a valid user ID.", nameof(streamId));
+    }
+    else if (values.Length == 2)
+    {
+      TenantId = new(values.First());
+    }
     EntityId = new(values.Last());
   }
 
@@ -67,7 +67,7 @@ public readonly struct UserId
   /// </summary>
   /// <param name="tenantId">The tenant identifier.</param>
   /// <returns>The generated identifier.</returns>
-  public static UserId NewId(TenantId? tenantId = null) => new(tenantId, Guid.NewGuid());
+  public static UserId NewId(TenantId? tenantId = null) => new(tenantId, EntityId.NewId());
 
   /// <summary>
   /// Returns a value indicating whether or not the specified identifiers are equal.

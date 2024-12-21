@@ -1,5 +1,4 @@
 ﻿using Logitar.EventSourcing;
-using Logitar.Identity.Core.ApiKeys;
 using Logitar.Identity.Core.Passwords.Events;
 
 namespace Logitar.Identity.Core.Passwords;
@@ -23,7 +22,7 @@ public class OneTimePassword : AggregateRoot
   /// <summary>
   /// Gets the identifier of the One-Time Password (OTP).
   /// </summary>
-  public new ApiKeyId Id => new(base.Id);
+  public new OneTimePasswordId Id => new(base.Id);
   /// <summary>
   /// Gets the tenant identifier of the One-Time Password (OTP).
   /// </summary>

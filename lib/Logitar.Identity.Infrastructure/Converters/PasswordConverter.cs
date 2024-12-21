@@ -1,4 +1,4 @@
-﻿using Logitar.Identity.Domain.Passwords;
+﻿using Logitar.Identity.Core.Passwords;
 
 namespace Logitar.Identity.Infrastructure.Converters;
 
