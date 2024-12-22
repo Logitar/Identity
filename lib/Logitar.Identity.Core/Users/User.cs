@@ -7,7 +7,7 @@ using Logitar.Identity.Core.Users.Events;
 namespace Logitar.Identity.Core.Users;
 
 /// <summary>
-/// Represents an user in the identity system. An user generally represents the account of a person.
+/// Represents a user in the identity system. A user generally represents the account of a person.
 /// It contains personal information about that person as well as authentication information that could be used to authenticate that person.
 /// </summary>
 public class User : AggregateRoot

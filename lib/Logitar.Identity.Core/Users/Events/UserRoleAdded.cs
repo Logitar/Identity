@@ -5,7 +5,7 @@ using MediatR;
 namespace Logitar.Identity.Core.Users.Events;
 
 /// <summary>
-/// The event raised when a role is added to an user.
+/// The event raised when a role is added to a user.
 /// </summary>
 public record UserRoleAdded : DomainEvent, INotification
 {

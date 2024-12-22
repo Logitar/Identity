@@ -3,7 +3,7 @@
 namespace Logitar.Identity.Core.Users;
 
 /// <summary>
-/// Represents the identifier of an user.
+/// Represents the identifier of a user.
 /// </summary>
 public readonly struct UserId
 {

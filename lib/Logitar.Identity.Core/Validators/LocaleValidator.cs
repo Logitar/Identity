@@ -26,7 +26,7 @@ public class LocaleValidator<T> : IPropertyValidator<T, string>
   /// <returns>The default error message template.</returns>
   public string GetDefaultMessageTemplate(string errorCode)
   {
-    return "'{PropertyName}' must be a valid locale code. It cannot be the invariant culture, nor an user-defined culture.";
+    return "'{PropertyName}' must be a valid locale code. It cannot be the invariant culture, nor a user-defined culture.";
   }
 
   /// <summary>

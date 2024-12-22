@@ -31,7 +31,7 @@ public class UserManagerTests
     _userManager = new(_sessionRepository.Object, _userRepository.Object, _userSettingsResolver.Object);
   }
 
-  [Fact(DisplayName = "FindAsync: it should find an user by email address.")]
+  [Fact(DisplayName = "FindAsync: it should find a user by email address.")]
   public async Task FindAsync_it_should_find_an_user_by_email_address()
   {
     _userSettings.RequireUniqueEmail = true;
@@ -52,7 +52,7 @@ public class UserManagerTests
     _userRepository.Verify(x => x.LoadAsync(tenantId, user.Email, _cancellationToken), Times.Once);
   }
 
-  [Fact(DisplayName = "FindAsync: it should find an user by ID.")]
+  [Fact(DisplayName = "FindAsync: it should find a user by ID.")]
   public async Task FindAsync_it_should_find_an_user_by_Id()
   {
     User user = new(new UniqueName(_userSettings.UniqueName, _faker.Person.UserName));
@@ -68,7 +68,7 @@ public class UserManagerTests
     _userRepository.Verify(x => x.LoadAsync(It.IsAny<TenantId>(), It.IsAny<Email>(), _cancellationToken), Times.Never);
   }
 
-  [Fact(DisplayName = "FindAsync: it should find an user by unique name.")]
+  [Fact(DisplayName = "FindAsync: it should find a user by unique name.")]
   public async Task FindAsync_it_should_find_an_user_by_unique_name()
   {
     TenantId tenantId = new("tests");
@@ -85,7 +85,7 @@ public class UserManagerTests
     _userRepository.Verify(x => x.LoadAsync(It.IsAny<TenantId>(), It.IsAny<Email>(), _cancellationToken), Times.Never);
   }
 
-  [Fact(DisplayName = "FindAsync: it should not find an user by email address when many are found.")]
+  [Fact(DisplayName = "FindAsync: it should not find a user by email address when many are found.")]
   public async Task FindAsync_it_should_not_find_an_user_by_email_address_when_many_are_found()
   {
     _userSettings.RequireUniqueEmail = true;

@@ -9,7 +9,7 @@ namespace Logitar.Identity.Core.Users;
 public interface IUserManager
 {
   /// <summary>
-  /// Tries finding an user by its unique identifier, unique name, or email address if they are unique.
+  /// Tries finding a user by its unique identifier, unique name, or email address if they are unique.
   /// </summary>
   /// <param name="tenantId">The identifier of the tenant in which to search.</param>
   /// <param name="id">The identifier of the user to find.</param>
@@ -17,7 +17,7 @@ public interface IUserManager
   /// <returns>The found users.</returns>
   Task<FoundUsers> FindAsync(string? tenantId, string id, CancellationToken cancellationToken = default);
   /// <summary>
-  /// Tries finding an user by its unique identifier, unique name, or email address if they are unique.
+  /// Tries finding a user by its unique identifier, unique name, or email address if they are unique.
   /// </summary>
   /// <param name="tenantId">The identifier of the tenant in which to search.</param>
   /// <param name="id">The identifier of the user to find.</param>

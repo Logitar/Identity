@@ -1,7 +1,7 @@
 ﻿namespace Logitar.Identity.Core.Users;
 
 /// <summary>
-/// The results of an user search.
+/// The results of a user search.
 /// </summary>
 public record FoundUsers
 {

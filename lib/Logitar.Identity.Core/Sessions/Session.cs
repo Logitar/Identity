@@ -6,7 +6,7 @@ using Logitar.Identity.Core.Users;
 namespace Logitar.Identity.Core.Sessions;
 
 /// <summary>
-/// Represents a session in the identity system. A session allows an user to perform actions in a timeframe.
+/// Represents a session in the identity system. A session allows a user to perform actions in a timeframe.
 /// It can be signed-out to close the timeframe, or renewed to extend the timeframe.
 /// </summary>
 public class Session : AggregateRoot

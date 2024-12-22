@@ -4,7 +4,7 @@ using MediatR;
 namespace Logitar.Identity.Core.Users.Events;
 
 /// <summary>
-/// The event raised when the password of an user is modified.
+/// The event raised when the password of a user is modified.
 /// </summary>
 public record UserPasswordUpdated : UserPasswordEvent, INotification
 {

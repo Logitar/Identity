@@ -9,14 +9,14 @@ namespace Logitar.Identity.Core.Users;
 public interface IUserRepository
 {
   /// <summary>
-  /// Loads an user by the specified unique identifier.
+  /// Loads a user by the specified unique identifier.
   /// </summary>
   /// <param name="id">The unique identifier.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The user, if found.</returns>
   Task<User?> LoadAsync(UserId id, CancellationToken cancellationToken = default);
   /// <summary>
-  /// Loads an user by the specified unique identifier.
+  /// Loads a user by the specified unique identifier.
   /// </summary>
   /// <param name="id">The unique identifier.</param>
   /// <param name="version">The version at which to load the user.</param>
@@ -24,7 +24,7 @@ public interface IUserRepository
   /// <returns>The user, if found.</returns>
   Task<User?> LoadAsync(UserId id, long? version, CancellationToken cancellationToken = default);
   /// <summary>
-  /// Loads an user by the specified unique identifier.
+  /// Loads a user by the specified unique identifier.
   /// </summary>
   /// <param name="id">The unique identifier.</param>
   /// <param name="isDeleted">A value indicating whether or not to load the user if it is deleted.</param>
@@ -32,7 +32,7 @@ public interface IUserRepository
   /// <returns>The user, if found.</returns>
   Task<User?> LoadAsync(UserId id, bool? isDeleted, CancellationToken cancellationToken = default);
   /// <summary>
-  /// Loads an user by the specified unique identifier.
+  /// Loads a user by the specified unique identifier.
   /// </summary>
   /// <param name="id">The unique identifier.</param>
   /// <param name="version">The version at which to load the user.</param>
@@ -80,7 +80,7 @@ public interface IUserRepository
   Task<IReadOnlyCollection<User>> LoadAsync(TenantId? tenantId, CancellationToken cancellationToken = default);
 
   /// <summary>
-  /// Loads an user by the specified unique name.
+  /// Loads a user by the specified unique name.
   /// </summary>
   /// <param name="tenantId">The identifier of the tenant.</param>
   /// <param name="uniqueName">The unique name.</param>
@@ -96,7 +96,7 @@ public interface IUserRepository
   /// <returns>The found users.</returns>
   Task<IReadOnlyCollection<User>> LoadAsync(TenantId? tenantId, Email email, CancellationToken cancellationToken = default);
   /// <summary>
-  /// Loads an user by the specified custom identifier.
+  /// Loads a user by the specified custom identifier.
   /// </summary>
   /// <param name="tenantId">The identifier of the tenant.</param>
   /// <param name="identifierKey">The key of the custom identifier.</param>
