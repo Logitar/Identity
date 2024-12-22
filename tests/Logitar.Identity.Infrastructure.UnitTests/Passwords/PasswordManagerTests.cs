@@ -155,7 +155,7 @@ public class PasswordManagerTests
     _passwordManager.Validate(StrongPassword);
   }
 
-  [Fact(Skip = "TODO(fpion): implement", DisplayName = "Validate: it should throw ValidationException when the password is too weak.")]
+  [Fact(DisplayName = "Validate: it should throw ValidationException when the password is too weak.")]
   public void Validate_it_should_throw_ValidationException_when_the_password_is_too_weak()
   {
     var exception = Assert.Throws<FluentValidation.ValidationException>(() => _passwordManager.Validate(WeakPassword));
@@ -180,7 +180,7 @@ public class PasswordManagerTests
     Assert.Throws<PasswordStrategyNotSupportedException>(() => _passwordManager.ValidateAndCreate(StrongPassword));
   }
 
-  [Fact(Skip = "TODO(fpion): implement", DisplayName = "ValidateAndCreate: it should throw ValidationException when the password is too weak.")]
+  [Fact(DisplayName = "ValidateAndCreate: it should throw ValidationException when the password is too weak.")]
   public void ValidateAndCreate_it_should_throw_ValidationException_when_the_password_is_too_weak()
   {
     var exception = Assert.Throws<FluentValidation.ValidationException>(() => _passwordManager.ValidateAndCreate(WeakPassword));

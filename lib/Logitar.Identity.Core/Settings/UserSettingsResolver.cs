@@ -11,7 +11,7 @@ public class UserSettingsResolver : IUserSettingsResolver
   /// <summary>
   /// The key of the user settings configuration section.
   /// </summary>
-  public const string SectionKey = "User";
+  public const string SectionKey = "Identity:User";
 
   /// <summary>
   /// Gets or sets the configuration of the application.
@@ -37,7 +37,7 @@ public class UserSettingsResolver : IUserSettingsResolver
   /// <returns>The user settings.</returns>
   public virtual IUserSettings Resolve()
   {
-    UserSettings ??= Configuration.GetSection("Identity").GetSection(SectionKey).Get<UserSettings>() ?? new(); // TODO(fpion): constant
+    UserSettings ??= Configuration.GetSection(SectionKey).Get<UserSettings>() ?? new();
     return UserSettings;
   }
 }

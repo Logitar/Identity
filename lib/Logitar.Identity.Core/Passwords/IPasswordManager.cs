@@ -57,13 +57,13 @@ public interface IPasswordManager
   /// Validates the specified password string.
   /// </summary>
   /// <param name="password">The password string.</param>
-  void Validate(string password); // TODO(fpion): still required?
+  void Validate(string password);
   /// <summary>
   /// Validates the specified password string.
   /// </summary>
   /// <param name="password">The password string.</param>
   /// <param name="passwordSettings">The password settings.</param>
-  void Validate(string password, IPasswordSettings? passwordSettings); // TODO(fpion): still required?
+  void Validate(string password, IPasswordSettings? passwordSettings);
 
   /// <summary>
   /// Validates the specified password string, then creates a password if it is valid, or throws an exception otherwise.
@@ -71,7 +71,7 @@ public interface IPasswordManager
   /// <param name="password">The password string.</param>
   /// <returns>The password instance.</returns>
   /// <exception cref="FluentValidation.ValidationException">The password is too weak.</exception>
-  Password ValidateAndCreate(string password); // TODO(fpion): still required?
+  Password ValidateAndCreate(string password);
   /// <summary>
   /// Validates the specified password string, then creates a password if it is valid, or throws an exception otherwise.
   /// </summary>
@@ -79,5 +79,5 @@ public interface IPasswordManager
   /// <param name="passwordSettings">The password settings.</param>
   /// <returns>The password instance.</returns>
   /// <exception cref="FluentValidation.ValidationException">The password is too weak.</exception>
-  Password ValidateAndCreate(string password, IPasswordSettings? passwordSettings); // TODO(fpion): still required?
+  Password ValidateAndCreate(string password, IPasswordSettings? passwordSettings);
 }
