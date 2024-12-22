@@ -1,3 +1,0 @@
-﻿# TODO
-
-All converter tests.
