@@ -38,9 +38,9 @@ public class PhoneTests
   [Fact(DisplayName = "ctor: it should throw ValidationException when a value is too long.")]
   public void ctor_it_should_throw_ValidationException_when_a_value_is_too_long()
   {
-    string countryCode = "CAD";
-    string number = _faker.Random.String(Phone.NumberMaximumLength + 1, minChar: '0', maxChar: '9');
-    string extension = _faker.Random.String(Phone.ExtensionMaximumLength + 1, minChar: '0', maxChar: '9');
+    var countryCode = "CAD";
+    var number = _faker.Random.String(Phone.NumberMaximumLength + 1, minChar: '0', maxChar: '9');
+    var extension = _faker.Random.String(Phone.ExtensionMaximumLength + 1, minChar: '0', maxChar: '9');
 
     var exception = Assert.Throws<FluentValidation.ValidationException>(() => new Phone(number, countryCode, extension));
     Assert.Contains(exception.Errors, e => e.ErrorCode == "ExactLengthValidator" && e.PropertyName == "CountryCode");

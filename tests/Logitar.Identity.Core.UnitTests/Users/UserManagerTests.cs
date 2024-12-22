@@ -42,7 +42,7 @@ public class UserManagerTests
     Assert.NotNull(user.Email);
     _userRepository.Setup(x => x.LoadAsync(tenantId, user.Email, _cancellationToken)).ReturnsAsync([user]);
 
-    FoundUsers users = await _userManager.FindAsync(tenantId.Value, user.Email.Address, _cancellationToken);
+    var users = await _userManager.FindAsync(tenantId.Value, user.Email.Address, _cancellationToken);
     Assert.NotNull(users.ByEmail);
     Assert.Equal(user, users.ByEmail);
     Assert.Single(users.All);
@@ -58,7 +58,7 @@ public class UserManagerTests
     User user = new(new UniqueName(_userSettings.UniqueName, _faker.Person.UserName));
     _userRepository.Setup(x => x.LoadAsync(user.Id, _cancellationToken)).ReturnsAsync(user);
 
-    FoundUsers users = await _userManager.FindAsync(tenantIdValue: null, user.Id.Value, _cancellationToken);
+    var users = await _userManager.FindAsync(tenantIdValue: null, user.Id.Value, _cancellationToken);
     Assert.NotNull(users.ById);
     Assert.Equal(user, users.ById);
     Assert.Single(users.All);
@@ -75,7 +75,7 @@ public class UserManagerTests
     User user = new(new UniqueName(_userSettings.UniqueName, _faker.Person.UserName), actorId: null, UserId.NewId(tenantId));
     _userRepository.Setup(x => x.LoadAsync(tenantId, user.UniqueName, _cancellationToken)).ReturnsAsync(user);
 
-    FoundUsers users = await _userManager.FindAsync(tenantId.Value, user.UniqueName.Value, _cancellationToken);
+    var users = await _userManager.FindAsync(tenantId.Value, user.UniqueName.Value, _cancellationToken);
     Assert.NotNull(users.ByUniqueName);
     Assert.Equal(user, users.ByUniqueName);
     Assert.Single(users.All);
@@ -97,7 +97,7 @@ public class UserManagerTests
     user2.SetEmail(email);
     _userRepository.Setup(x => x.LoadAsync(null, email, _cancellationToken)).ReturnsAsync([user1, user2]);
 
-    FoundUsers users = await _userManager.FindAsync(tenantIdValue: null, email.Address, _cancellationToken);
+    var users = await _userManager.FindAsync(tenantIdValue: null, email.Address, _cancellationToken);
     Assert.Empty(users.All);
 
     _userRepository.Verify(x => x.LoadAsync(It.Is<UserId>(y => !y.TenantId.HasValue && y.EntityId.Value == email.Address), _cancellationToken), Times.Once);
@@ -108,8 +108,8 @@ public class UserManagerTests
   [Fact(DisplayName = "FindAsync: it should not search by email address when email addresses are not unique.")]
   public async Task FindAsync_it_should_not_search_by_email_address_when_email_addresses_are_not_unique()
   {
-    string emailAddress = _faker.Person.Email;
-    FoundUsers users = await _userManager.FindAsync(tenantIdValue: null, emailAddress, _cancellationToken);
+    var emailAddress = _faker.Person.Email;
+    var users = await _userManager.FindAsync(tenantIdValue: null, emailAddress, _cancellationToken);
     Assert.Empty(users.All);
 
     _userRepository.Verify(x => x.LoadAsync(It.Is<UserId>(y => !y.TenantId.HasValue && y.EntityId.Value == emailAddress), _cancellationToken), Times.Once);
@@ -120,8 +120,8 @@ public class UserManagerTests
   [Fact(DisplayName = "FindAsync: it should not search by tenant id when it is not valid.")]
   public async Task FindAsync_it_should_not_search_by_tenant_id_when_it_is_not_valid()
   {
-    string emailAddress = _faker.Person.Email;
-    FoundUsers users = await _userManager.FindAsync(emailAddress, emailAddress, _cancellationToken);
+    var emailAddress = _faker.Person.Email;
+    var users = await _userManager.FindAsync(emailAddress, emailAddress, _cancellationToken);
     Assert.Empty(users.All);
 
     _userRepository.Verify(x => x.LoadAsync(It.Is<UserId>(y => y.TenantId.HasValue && y.TenantId.Value.Value == emailAddress && y.EntityId.Value == emailAddress), _cancellationToken), Times.Once);

@@ -1,5 +1,4 @@
 ﻿using Logitar.Identity.Core;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Logitar.Identity.Infrastructure.Converters;
 

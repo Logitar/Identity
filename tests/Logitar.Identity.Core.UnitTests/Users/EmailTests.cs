@@ -44,7 +44,7 @@ public class EmailTests
   [Fact(DisplayName = "ctor: it should throw ValidationException when the address is too long.")]
   public void ctor_it_should_throw_ValidationException_when_the_address_is_too_long()
   {
-    string address = string.Concat(_faker.Random.String(Email.MaximumLength, minChar: 'a', maxChar: 'z'), '@', _faker.Internet.DomainName());
+    var address = string.Concat(_faker.Random.String(Email.MaximumLength, minChar: 'a', maxChar: 'z'), '@', _faker.Internet.DomainName());
 
     var exception = Assert.Throws<FluentValidation.ValidationException>(() => new Email(address));
     Assert.All(exception.Errors, e =>

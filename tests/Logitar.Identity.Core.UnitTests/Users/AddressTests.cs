@@ -36,7 +36,7 @@ public class AddressTests
   [Fact(DisplayName = "ctor: it should throw ValidationException when a component is too long.")]
   public void ctor_it_should_throw_ValidationException_when_a_component_is_too_long()
   {
-    string value = _faker.Random.String(Address.MaximumLength + 1, minChar: 'A', maxChar: 'Z');
+    var value = _faker.Random.String(Address.MaximumLength + 1, minChar: 'A', maxChar: 'Z');
 
     var exception = Assert.Throws<FluentValidation.ValidationException>(() => new Address(_addressHelper, value, value, value, value, value));
     Assert.Contains(exception.Errors, e => e.ErrorCode == "MaximumLengthValidator" && e.PropertyName == "Street");
@@ -71,7 +71,7 @@ public class AddressTests
   public void Format_it_should_format_a_postal_address()
   {
     Address address = new(_addressHelper, " Jean Du Pays\r\n \r\n150 Saint-Catherine St W ", " Montreal ", " CA ", " QC ", " H2X 3Y2 ");
-    string expected = string.Join(Environment.NewLine, ["Jean Du Pays", "150 Saint-Catherine St W", "Montreal QC H2X 3Y2", "CA"]);
+    var expected = string.Join(Environment.NewLine, ["Jean Du Pays", "150 Saint-Catherine St W", "Montreal QC H2X 3Y2", "CA"]);
     Assert.Equal(expected, address.ToString());
   }
 }

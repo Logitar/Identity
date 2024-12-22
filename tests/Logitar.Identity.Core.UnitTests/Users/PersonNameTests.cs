@@ -23,7 +23,7 @@ public class PersonNameTests
   public void BuildFullNameString_it_should_build_the_full_name_of_a_person()
   {
     string[] names = [_faker.Name.FirstName(), $"  {_faker.Name.FirstName()}  ", _faker.Name.LastName()];
-    string expected = string.Join(' ', names.Select(name => name.Trim()));
+    var expected = string.Join(' ', names.Select(name => name.Trim()));
     Assert.Equal(expected, PersonName.BuildFullName(names));
   }
 
@@ -37,7 +37,7 @@ public class PersonNameTests
   public void BuildFullNameUnit_it_should_build_the_full_name_of_a_person()
   {
     string[] names = [_faker.Name.FirstName(), $"  {_faker.Name.FirstName()}  ", _faker.Name.LastName()];
-    string expected = string.Join(' ', names.Select(name => name.Trim()));
+    var expected = string.Join(' ', names.Select(name => name.Trim()));
     Assert.Equal(expected, PersonName.BuildFullName(names.Select(name => new PersonName(name)).ToArray()));
   }
 
@@ -66,7 +66,7 @@ public class PersonNameTests
   [Fact(DisplayName = "ctor: it should throw ValidationException when the value is too long.")]
   public void ctor_it_should_throw_ValidationException_when_the_value_is_too_long()
   {
-    string value = _faker.Random.String(PersonName.MaximumLength + 1);
+    var value = _faker.Random.String(PersonName.MaximumLength + 1);
 
     var exception = Assert.Throws<FluentValidation.ValidationException>(() => new PersonName(value));
     Assert.All(exception.Errors, e =>
@@ -81,7 +81,7 @@ public class PersonNameTests
   [InlineData("  This is a person name.  ")]
   public void TryCreate_it_should_return_a_person_name_when_the_value_is_not_empty(string value)
   {
-    PersonName? personName = PersonName.TryCreate(value);
+    var personName = PersonName.TryCreate(value);
     Assert.NotNull(personName);
     Assert.Equal(value.Trim(), personName.Value);
   }

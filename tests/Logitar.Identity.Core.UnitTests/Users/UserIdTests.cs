@@ -11,7 +11,7 @@ public class UserIdTests
   public void Given_StreamId_When_ctor_Then_CorrectIdConstructed(string? tenantIdValue)
   {
     TenantId? tenantId = tenantIdValue == null ? null : new(tenantIdValue);
-    EntityId entityId = EntityId.NewId();
+    var entityId = EntityId.NewId();
     StreamId streamId = new(tenantId.HasValue ? string.Join(':', tenantId, entityId) : entityId.Value);
 
     UserId id = new(streamId);
@@ -26,7 +26,7 @@ public class UserIdTests
   public void Given_TenantAndEntityId_When_ctor_Then_CorrectIdConstructed(string? tenantIdValue)
   {
     TenantId? tenantId = tenantIdValue == null ? null : new(tenantIdValue);
-    EntityId entityId = EntityId.NewId();
+    var entityId = EntityId.NewId();
 
     UserId id = new(tenantId, entityId);
 
@@ -47,7 +47,7 @@ public class UserIdTests
   [InlineData(123)]
   public void Given_DifferentTypes_When_Equals_Then_FalseReturned(object? value)
   {
-    UserId id = UserId.NewId();
+    var id = UserId.NewId();
     Assert.False(id.Equals(value));
   }
 
@@ -83,7 +83,7 @@ public class UserIdTests
   {
     TenantId? tenantId = tenantIdValue == null ? null : new(tenantIdValue);
 
-    UserId id = UserId.NewId(tenantId);
+    var id = UserId.NewId(tenantId);
 
     Assert.Equal(tenantId, id.TenantId);
     Assert.NotEqual(Guid.Empty, id.EntityId.ToGuid());
@@ -95,7 +95,7 @@ public class UserIdTests
   public void Given_Id_When_GetHashCode_Then_CorrectHashCodeReturned(string? tenantIdValue)
   {
     TenantId? tenantId = tenantIdValue == null ? null : new(tenantIdValue);
-    EntityId entityId = EntityId.NewId();
+    var entityId = EntityId.NewId();
 
     UserId id = new(tenantId, entityId);
 
@@ -124,7 +124,7 @@ public class UserIdTests
   public void Given_Id_When_ToString_Then_CorrectStringReturned(string? tenantIdValue)
   {
     TenantId? tenantId = tenantIdValue == null ? null : new(tenantIdValue);
-    EntityId entityId = EntityId.NewId();
+    var entityId = EntityId.NewId();
 
     UserId id = new(tenantId, entityId);
 

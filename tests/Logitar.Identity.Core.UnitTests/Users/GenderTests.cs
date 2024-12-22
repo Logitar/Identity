@@ -41,7 +41,7 @@ public class GenderTests
   [Fact(DisplayName = "ctor: it should throw ValidationException when the value is too long.")]
   public void ctor_it_should_throw_ValidationException_when_the_value_is_too_long()
   {
-    string value = _faker.Random.String(Gender.MaximumLength + 1, minChar: 'a', maxChar: 'z');
+    var value = _faker.Random.String(Gender.MaximumLength + 1, minChar: 'a', maxChar: 'z');
     var exception = Assert.Throws<FluentValidation.ValidationException>(() => new Gender(value));
     Assert.All(exception.Errors, e => Assert.Equal("MaximumLengthValidator", e.ErrorCode));
   }
@@ -67,7 +67,7 @@ public class GenderTests
   [InlineData(" Other ")]
   public void TryCreate_it_should_return_a_gender_when_the_value_is_not_empty(string value)
   {
-    Gender? gender = Gender.TryCreate(value);
+    var gender = Gender.TryCreate(value);
     Assert.NotNull(gender);
     Assert.Equal(value.Trim(), gender.Value);
   }

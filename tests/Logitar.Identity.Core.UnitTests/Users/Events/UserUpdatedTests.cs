@@ -18,8 +18,8 @@ public class UserUpdatedTests
     UserUpdated updated = new();
     updated.CustomAttributes[new Identifier("HealthInsuranceNumber")] = "1234567890";
 
-    string json = JsonSerializer.Serialize(updated, _serializerOptions);
-    UserUpdated? deserialized = JsonSerializer.Deserialize<UserUpdated>(json, _serializerOptions);
+    var json = JsonSerializer.Serialize(updated, _serializerOptions);
+    var deserialized = JsonSerializer.Deserialize<UserUpdated>(json, _serializerOptions);
 
     Assert.NotNull(deserialized);
     Assert.Equal(updated.CustomAttributes, deserialized.CustomAttributes);

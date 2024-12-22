@@ -56,7 +56,7 @@ public class FoundUsersTests
       ByEmail = byEmail
     };
 
-    User first = users.First();
+    var first = users.First();
     Assert.Equal(byUniqueName, first);
   }
 
@@ -74,7 +74,7 @@ public class FoundUsersTests
       ByEmail = byEmail
     };
 
-    User? first = users.FirstOrDefault();
+    var first = users.FirstOrDefault();
     Assert.NotNull(first);
     Assert.Equal(byUniqueName, first);
   }
@@ -88,7 +88,7 @@ public class FoundUsersTests
       ById = user
     };
 
-    User single = users.Single();
+    var single = users.Single();
     Assert.Equal(user, single);
   }
 
@@ -104,7 +104,7 @@ public class FoundUsersTests
       ById = byId
     };
 
-    User? single = users.SingleOrDefault();
+    var single = users.SingleOrDefault();
     Assert.NotNull(single);
     Assert.Equal(byId, single);
   }

@@ -1,5 +1,6 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Core.ApiKeys.Events;
+using Logitar.Identity.Core.Passwords;
 using Logitar.Identity.Core.Roles;
 using Logitar.Identity.Core.Settings;
 using Logitar.Identity.Core.Users;
