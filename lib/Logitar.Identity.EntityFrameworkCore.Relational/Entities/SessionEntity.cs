@@ -2,7 +2,6 @@
 using Logitar.Identity.Core;
 using Logitar.Identity.Core.Sessions;
 using Logitar.Identity.Core.Sessions.Events;
-using System.Text.Json;
 
 namespace Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 

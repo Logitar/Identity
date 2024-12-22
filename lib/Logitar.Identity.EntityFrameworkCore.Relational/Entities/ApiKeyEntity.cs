@@ -2,7 +2,6 @@
 using Logitar.Identity.Core;
 using Logitar.Identity.Core.ApiKeys;
 using Logitar.Identity.Core.ApiKeys.Events;
-using System.Text.Json;
 
 namespace Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 

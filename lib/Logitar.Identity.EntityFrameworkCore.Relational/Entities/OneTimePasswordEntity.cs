@@ -1,7 +1,6 @@
 ﻿using Logitar.Identity.Core;
 using Logitar.Identity.Core.Passwords;
 using Logitar.Identity.Core.Passwords.Events;
-using System.Text.Json;
 
 namespace Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 

@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace Logitar.Identity.EntityFrameworkCore.Relational.Entities;
+﻿namespace Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 
 public sealed class ActorEntity
 {
