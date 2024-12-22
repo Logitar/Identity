@@ -3,7 +3,7 @@
 namespace Logitar.Identity.Core.Users;
 
 /// <summary>
-/// Represents the identifier of a user.
+/// Represents the identifier of an user.
 /// </summary>
 public readonly struct UserId
 {
@@ -31,7 +31,7 @@ public readonly struct UserId
   public EntityId EntityId { get; }
 
   /// <summary>
-  /// Initializes a new instance of the <see cref="UserId"/> class.
+  /// Initializes a new instance of the <see cref="UserId"/> struct.
   /// </summary>
   /// <param name="tenantId">The tenant identifier.</param>
   /// <param name="entityId">The entity identifier.</param>
@@ -43,7 +43,7 @@ public readonly struct UserId
   }
 
   /// <summary>
-  /// Initializes a new instance of the <see cref="UserId"/> class.
+  /// Initializes a new instance of the <see cref="UserId"/> struct.
   /// </summary>
   /// <param name="streamId">The identifier of the event stream.</param>
   public UserId(StreamId streamId)

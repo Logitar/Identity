@@ -31,7 +31,7 @@ public readonly struct SessionId
   public EntityId EntityId { get; }
 
   /// <summary>
-  /// Initializes a new instance of the <see cref="SessionId"/> class.
+  /// Initializes a new instance of the <see cref="SessionId"/> struct.
   /// </summary>
   /// <param name="tenantId">The tenant identifier.</param>
   /// <param name="entityId">The entity identifier.</param>
@@ -43,7 +43,7 @@ public readonly struct SessionId
   }
 
   /// <summary>
-  /// Initializes a new instance of the <see cref="SessionId"/> class.
+  /// Initializes a new instance of the <see cref="SessionId"/> struct.
   /// </summary>
   /// <param name="streamId">The identifier of the event stream.</param>
   public SessionId(StreamId streamId)

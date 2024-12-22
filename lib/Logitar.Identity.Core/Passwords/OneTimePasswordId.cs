@@ -31,7 +31,7 @@ public readonly struct OneTimePasswordId
   public EntityId EntityId { get; }
 
   /// <summary>
-  /// Initializes a new instance of the <see cref="OneTimePasswordId"/> class.
+  /// Initializes a new instance of the <see cref="OneTimePasswordId"/> struct.
   /// </summary>
   /// <param name="tenantId">The tenant identifier.</param>
   /// <param name="entityId">The entity identifier.</param>
@@ -43,7 +43,7 @@ public readonly struct OneTimePasswordId
   }
 
   /// <summary>
-  /// Initializes a new instance of the <see cref="OneTimePasswordId"/> class.
+  /// Initializes a new instance of the <see cref="OneTimePasswordId"/> struct.
   /// </summary>
   /// <param name="streamId">The identifier of the event stream.</param>
   public OneTimePasswordId(StreamId streamId)
