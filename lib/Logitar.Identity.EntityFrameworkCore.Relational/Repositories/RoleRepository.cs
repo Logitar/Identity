@@ -3,13 +3,17 @@ using Logitar.Identity.Core;
 using Logitar.Identity.Core.ApiKeys;
 using Logitar.Identity.Core.Roles;
 using Logitar.Identity.Core.Users;
+using Microsoft.EntityFrameworkCore;
 
 namespace Logitar.Identity.EntityFrameworkCore.Relational.Repositories;
 
 public class RoleRepository : Repository, IRoleRepository
 {
-  public RoleRepository(IEventStore eventStore) : base(eventStore)
+  private readonly IdentityContext _context;
+
+  public RoleRepository(IdentityContext context, IEventStore eventStore) : base(eventStore)
   {
+    _context = context;
   }
 
   public async Task<Role?> LoadAsync(RoleId id, CancellationToken cancellationToken)
@@ -48,23 +52,58 @@ public class RoleRepository : Repository, IRoleRepository
     return await LoadAsync<Role>(streamIds, isDeleted, cancellationToken);
   }
 
-  public Task<IReadOnlyCollection<Role>> LoadAsync(TenantId? tenantId, CancellationToken cancellationToken)
+  public async Task<IReadOnlyCollection<Role>> LoadAsync(TenantId? tenantId, CancellationToken cancellationToken)
   {
-    throw new NotImplementedException(); // TODO(fpion): implement
+    string? tenantIdValue = tenantId?.Value;
+
+    IEnumerable<StreamId> streamIds = (await _context.Roles.AsNoTracking()
+      .Where(x => x.TenantId == tenantIdValue)
+      .Select(x => x.StreamId)
+      .ToArrayAsync(cancellationToken)).Select(value => new StreamId(value));
+
+    return await LoadAsync<Role>(streamIds, cancellationToken);
   }
 
-  public Task<Role?> LoadAsync(TenantId? tenantId, UniqueName uniqueName, CancellationToken cancellationToken)
+  public async Task<Role?> LoadAsync(TenantId? tenantId, UniqueName uniqueName, CancellationToken cancellationToken)
   {
-    throw new NotImplementedException(); // TODO(fpion): implement
+    string? tenantIdValue = tenantId?.Value;
+    string uniqueNameNormalized = IdentityDb.Helper.Normalize(uniqueName.Value);
+
+    string? streamId = await _context.Roles.AsNoTracking()
+      .Where(x => x.TenantId == tenantIdValue && x.UniqueNameNormalized == uniqueNameNormalized)
+      .Select(x => x.StreamId)
+      .SingleOrDefaultAsync(cancellationToken);
+    if (streamId == null)
+    {
+      return null;
+    }
+
+    return await LoadAsync<Role>(new StreamId(streamId), cancellationToken);
   }
 
-  public Task<IReadOnlyCollection<Role>> LoadAsync(ApiKey apiKey, CancellationToken cancellationToken)
+  public async Task<IReadOnlyCollection<Role>> LoadAsync(ApiKey apiKey, CancellationToken cancellationToken)
   {
-    throw new NotImplementedException(); // TODO(fpion): implement
+    string streamId = apiKey.Id.Value;
+
+    IEnumerable<StreamId> streamIds = (await _context.ApiKeys.AsNoTracking()
+      .Include(x => x.Roles)
+      .Where(x => x.StreamId == streamId)
+      .SelectMany(x => x.Roles.Select(role => role.StreamId))
+      .ToArrayAsync(cancellationToken)).Select(value => new StreamId(value));
+
+    return await LoadAsync<Role>(streamIds, cancellationToken);
   }
-  public Task<IReadOnlyCollection<Role>> LoadAsync(User user, CancellationToken cancellationToken)
+  public async Task<IReadOnlyCollection<Role>> LoadAsync(User user, CancellationToken cancellationToken)
   {
-    throw new NotImplementedException(); // TODO(fpion): implement
+    string streamId = user.Id.Value;
+
+    IEnumerable<StreamId> streamIds = (await _context.Users.AsNoTracking()
+      .Include(x => x.Roles)
+      .Where(x => x.StreamId == streamId)
+      .SelectMany(x => x.Roles.Select(role => role.StreamId))
+      .ToArrayAsync(cancellationToken)).Select(value => new StreamId(value));
+
+    return await LoadAsync<Role>(streamIds, cancellationToken);
   }
 
   public async Task SaveAsync(Role role, CancellationToken cancellationToken)

@@ -2,13 +2,17 @@
 using Logitar.Identity.Core;
 using Logitar.Identity.Core.ApiKeys;
 using Logitar.Identity.Core.Roles;
+using Microsoft.EntityFrameworkCore;
 
 namespace Logitar.Identity.EntityFrameworkCore.Relational.Repositories;
 
 public class ApiKeyRepository : Repository, IApiKeyRepository
 {
-  public ApiKeyRepository(IEventStore eventStore) : base(eventStore)
+  private readonly IdentityContext _context;
+
+  public ApiKeyRepository(IdentityContext context, IEventStore eventStore) : base(eventStore)
   {
+    _context = context;
   }
 
   public async Task<ApiKey?> LoadAsync(ApiKeyId id, CancellationToken cancellationToken)
@@ -47,14 +51,29 @@ public class ApiKeyRepository : Repository, IApiKeyRepository
     return await LoadAsync<ApiKey>(streamIds, isDeleted, cancellationToken);
   }
 
-  public Task<IReadOnlyCollection<ApiKey>> LoadAsync(TenantId? tenantId, CancellationToken cancellationToken)
+  public async Task<IReadOnlyCollection<ApiKey>> LoadAsync(TenantId? tenantId, CancellationToken cancellationToken)
   {
-    throw new NotImplementedException(); // TODO(fpion): implement
+    string? tenantIdValue = tenantId?.Value;
+
+    IEnumerable<StreamId> streamIds = (await _context.ApiKeys.AsNoTracking()
+      .Where(x => x.TenantId == tenantIdValue)
+      .Select(x => x.StreamId)
+      .ToArrayAsync(cancellationToken)).Select(value => new StreamId(value));
+
+    return await LoadAsync<ApiKey>(streamIds, cancellationToken);
   }
 
-  public Task<IReadOnlyCollection<ApiKey>> LoadAsync(Role role, CancellationToken cancellationToken)
+  public async Task<IReadOnlyCollection<ApiKey>> LoadAsync(Role role, CancellationToken cancellationToken)
   {
-    throw new NotImplementedException(); // TODO(fpion): implement
+    string streamId = role.Id.Value;
+
+    IEnumerable<StreamId> streamIds = (await _context.ApiKeys.AsNoTracking()
+      .Include(x => x.Roles)
+      .Where(x => x.Roles.Any(role => role.StreamId == streamId))
+      .Select(x => x.StreamId)
+      .ToArrayAsync(cancellationToken)).Select(value => new StreamId(value));
+
+    return await LoadAsync<ApiKey>(streamIds, cancellationToken);
   }
 
   public async Task SaveAsync(ApiKey apikey, CancellationToken cancellationToken)

@@ -271,6 +271,15 @@ public sealed class UserEntity : AggregateEntity
     }
   }
 
+  public void RemovePassword(UserPasswordRemoved @event)
+  {
+    Update(@event);
+
+    PasswordHash = null;
+    PasswordChangedBy = null;
+    PasswordChangedOn = null;
+  }
+
   public void SetPassword(UserPasswordEvent @event)
   {
     Update(@event);

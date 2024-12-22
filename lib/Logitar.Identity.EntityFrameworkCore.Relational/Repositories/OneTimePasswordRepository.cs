@@ -1,13 +1,17 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Core;
 using Logitar.Identity.Core.Passwords;
+using Microsoft.EntityFrameworkCore;
 
 namespace Logitar.Identity.EntityFrameworkCore.Relational.Repositories;
 
 public class OneTimePasswordRepository : Repository, IOneTimePasswordRepository
 {
-  public OneTimePasswordRepository(IEventStore eventStore) : base(eventStore)
+  private readonly IdentityContext _context;
+
+  public OneTimePasswordRepository(IdentityContext context, IEventStore eventStore) : base(eventStore)
   {
+    _context = context;
   }
 
   public async Task<OneTimePassword?> LoadAsync(OneTimePasswordId id, CancellationToken cancellationToken)
@@ -46,9 +50,16 @@ public class OneTimePasswordRepository : Repository, IOneTimePasswordRepository
     return await LoadAsync<OneTimePassword>(streamIds, isDeleted, cancellationToken);
   }
 
-  public Task<IReadOnlyCollection<OneTimePassword>> LoadAsync(TenantId? tenantId, CancellationToken cancellationToken)
+  public async Task<IReadOnlyCollection<OneTimePassword>> LoadAsync(TenantId? tenantId, CancellationToken cancellationToken)
   {
-    throw new NotImplementedException(); // TODO(fpion): implement
+    string? tenantIdValue = tenantId?.Value;
+
+    IEnumerable<StreamId> streamIds = (await _context.OneTimePasswords.AsNoTracking()
+      .Where(x => x.TenantId == tenantIdValue)
+      .Select(x => x.StreamId)
+      .ToArrayAsync(cancellationToken)).Select(value => new StreamId(value));
+
+    return await LoadAsync<OneTimePassword>(streamIds, cancellationToken);
   }
 
   public async Task SaveAsync(OneTimePassword onetimepassword, CancellationToken cancellationToken)

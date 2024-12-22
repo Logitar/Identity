@@ -1,7 +1,8 @@
-﻿using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
+﻿using Logitar.Identity.Core;
+using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Logitar.Identity.EntityFrameworkCore.Relational.CustomAttributes;
+namespace Logitar.Identity.EntityFrameworkCore.Relational;
 
 public class CustomAttributeService : ICustomAttributeService
 {
@@ -20,40 +21,39 @@ public class CustomAttributeService : ICustomAttributeService
     Context.CustomAttributes.RemoveRange(entities);
   }
 
-  public virtual async Task SynchronizeAsync(string entityType, int entityId, Dictionary<string, string?> customAttributes, CancellationToken cancellationToken)
+  public virtual async Task UpdateAsync(string entityType, int entityId, IReadOnlyDictionary<Identifier, string?> customAttributes, CancellationToken cancellationToken)
   {
-    if (customAttributes.Count == 0)
+    if (customAttributes.Count < 1)
     {
       return;
     }
 
     Dictionary<string, CustomAttributeEntity> entities = (await Context.CustomAttributes
       .Where(x => x.EntityType == entityType && x.EntityId == entityId)
-      .ToArrayAsync(cancellationToken)
-    ).ToDictionary(x => x.Key, x => x);
+      .ToArrayAsync(cancellationToken)).ToDictionary(x => x.Key, x => x);
 
-    foreach (KeyValuePair<string, string?> customAttribute in customAttributes)
+    foreach (KeyValuePair<Identifier, string?> customAttribute in customAttributes)
     {
       if (customAttribute.Value == null)
       {
-        if (entities.TryGetValue(customAttribute.Key, out CustomAttributeEntity? entity))
+        if (entities.TryGetValue(customAttribute.Key.Value, out CustomAttributeEntity? entity))
         {
           Context.CustomAttributes.Remove(entity);
         }
       }
       else
       {
-        if (!entities.TryGetValue(customAttribute.Key, out CustomAttributeEntity? entity))
+        if (!entities.TryGetValue(customAttribute.Key.Value, out CustomAttributeEntity? entity))
         {
           entity = new()
           {
             EntityType = entityType,
             EntityId = entityId,
-            Key = customAttribute.Key
+            Key = customAttribute.Key.Value
           };
 
           Context.CustomAttributes.Add(entity);
-          entities[customAttribute.Key] = entity;
+          entities[customAttribute.Key.Value] = entity;
         }
 
         entity.Value = customAttribute.Value;

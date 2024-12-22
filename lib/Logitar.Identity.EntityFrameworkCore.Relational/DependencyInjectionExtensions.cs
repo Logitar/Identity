@@ -19,21 +19,10 @@ public static class DependencyInjectionExtensions
     return services
       .AddLogitarEventSourcingWithEntityFrameworkCoreRelational()
       .AddLogitarIdentityInfrastructure()
-      .AddEventHandlers()
       .AddMediatR(config => config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()))
       .AddRepositories()
-      //.AddTransient<ICustomAttributeService, CustomAttributeService>() // TODO(fpion): implement
+      .AddTransient<ICustomAttributeService, CustomAttributeService>()
       .AddScoped<ITokenBlacklist, TokenBlacklist>();
-  }
-
-  private static IServiceCollection AddEventHandlers(this IServiceCollection services)
-  {
-    return services/*
-      .AddTransient<IApiKeyEventHandler, ApiKeyEventHandler>()
-      .AddTransient<IOneTimePasswordEventHandler, OneTimePasswordEventHandler>()
-      .AddTransient<IRoleEventHandler, RoleEventHandler>()
-      .AddTransient<ISessionEventHandler, SessionEventHandler>()
-      .AddTransient<IUserEventHandler, UserEventHandler>()*/; // TODO(fpion): implement
   }
 
   private static IServiceCollection AddRepositories(this IServiceCollection services)

@@ -2,13 +2,17 @@
 using Logitar.Identity.Core;
 using Logitar.Identity.Core.Sessions;
 using Logitar.Identity.Core.Users;
+using Microsoft.EntityFrameworkCore;
 
 namespace Logitar.Identity.EntityFrameworkCore.Relational.Repositories;
 
 public class SessionRepository : Repository, ISessionRepository
 {
-  public SessionRepository(IEventStore eventStore) : base(eventStore)
+  private readonly IdentityContext _context;
+
+  public SessionRepository(IdentityContext context, IEventStore eventStore) : base(eventStore)
   {
+    _context = context;
   }
 
   public async Task<Session?> LoadAsync(SessionId id, CancellationToken cancellationToken)
@@ -47,18 +51,41 @@ public class SessionRepository : Repository, ISessionRepository
     return await LoadAsync<Session>(streamIds, isDeleted, cancellationToken);
   }
 
-  public Task<IReadOnlyCollection<Session>> LoadAsync(TenantId? tenantId, CancellationToken cancellationToken)
+  public async Task<IReadOnlyCollection<Session>> LoadAsync(TenantId? tenantId, CancellationToken cancellationToken)
   {
-    throw new NotImplementedException(); // TODO(fpion): implement
+    string? tenantIdValue = tenantId?.Value;
+
+    IEnumerable<StreamId> streamIds = (await _context.Sessions.AsNoTracking()
+      .Where(x => x.TenantId == tenantIdValue)
+      .Select(x => x.StreamId)
+      .ToArrayAsync(cancellationToken)).Select(value => new StreamId(value));
+
+    return await LoadAsync<Session>(streamIds, cancellationToken);
   }
 
-  public Task<IReadOnlyCollection<Session>> LoadActiveAsync(User user, CancellationToken cancellationToken)
+  public async Task<IReadOnlyCollection<Session>> LoadActiveAsync(User user, CancellationToken cancellationToken)
   {
-    throw new NotImplementedException(); // TODO(fpion): implement
+    string streamId = user.Id.Value;
+
+    IEnumerable<StreamId> streamIds = (await _context.Sessions.AsNoTracking()
+      .Include(x => x.User)
+      .Where(x => x.IsActive && x.User!.StreamId == streamId)
+      .Select(x => x.StreamId)
+      .ToArrayAsync(cancellationToken)).Select(value => new StreamId(value));
+
+    return await LoadAsync<Session>(streamIds, cancellationToken);
   }
-  public Task<IReadOnlyCollection<Session>> LoadAsync(User user, CancellationToken cancellationToken)
+  public async Task<IReadOnlyCollection<Session>> LoadAsync(User user, CancellationToken cancellationToken)
   {
-    throw new NotImplementedException(); // TODO(fpion): implement
+    string streamId = user.Id.Value;
+
+    IEnumerable<StreamId> streamIds = (await _context.Sessions.AsNoTracking()
+      .Include(x => x.User)
+      .Where(x => x.User!.StreamId == streamId)
+      .Select(x => x.StreamId)
+      .ToArrayAsync(cancellationToken)).Select(value => new StreamId(value));
+
+    return await LoadAsync<Session>(streamIds, cancellationToken);
   }
 
   public async Task SaveAsync(Session session, CancellationToken cancellationToken)
