@@ -26,7 +26,7 @@ public interface ITokenBlacklist
   /// <param name="tokenIds">The list of token identifiers.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The list of blacklisted token identifiers.</returns>
-  Task<IEnumerable<string>> GetBlacklistedAsync(IEnumerable<string> tokenIds, CancellationToken cancellationToken = default);
+  Task<IReadOnlyCollection<string>> GetBlacklistedAsync(IEnumerable<string> tokenIds, CancellationToken cancellationToken = default);
   /// <summary>
   /// Removes expired token identifiers from the blacklist.
   /// </summary>

@@ -140,8 +140,8 @@ public class JsonWebTokenManager : ITokenManager
     HashSet<string> tokenIds = claimsPrincipal.FindAll(Rfc7519ClaimNames.TokenId).Select(claim => claim.Value).ToHashSet();
     if (tokenIds.Count > 0)
     {
-      IEnumerable<string> blacklistedIds = await TokenBlacklist.GetBlacklistedAsync(tokenIds, cancellationToken);
-      if (blacklistedIds.Any())
+      IReadOnlyCollection<string> blacklistedIds = await TokenBlacklist.GetBlacklistedAsync(tokenIds, cancellationToken);
+      if (blacklistedIds.Count > 0)
       {
         throw new SecurityTokenBlacklistedException(blacklistedIds);
       }
