@@ -118,7 +118,7 @@ public class PasswordManager : IPasswordManager
   public virtual void Validate(string password, IPasswordSettings? passwordSettings)
   {
     passwordSettings ??= SettingsResolver.Resolve().Password;
-    //new PasswordValidator(passwordSettings).ValidateAndThrow(password); // TODO(fpion): complete
+    _ = new PasswordInput(password, passwordSettings);
   }
 
   /// <summary>

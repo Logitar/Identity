@@ -100,6 +100,9 @@ public class JsonWebTokenManagerTests
   [Fact(DisplayName = "ValidateAsync: it should blacklist token identifiers when consuming.")]
   public async Task ValidateAsync_it_should_blacklist_token_identifiers_when_consuming()
   {
+    string[] tokenIds = [_tokenId];
+    _tokenBlacklist.Setup(x => x.GetBlacklistedAsync(tokenIds, _cancellationToken)).ReturnsAsync([]);
+
     SecurityTokenDescriptor tokenDescriptor = new()
     {
       SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_secret)), SecurityAlgorithms.HmacSha256),
@@ -116,7 +119,6 @@ public class JsonWebTokenManagerTests
     AssertIsValid(validatedToken);
 
     DateTime expiresOn = securityToken.ValidTo.AddMinutes(5); // NOTE(fpion): default TokenValidationParameters.ClockSkew
-    string[] tokenIds = [_tokenId];
     _tokenBlacklist.Verify(x => x.GetBlacklistedAsync(It.Is<IEnumerable<string>>(y => y.SequenceEqual(tokenIds)), _cancellationToken), Times.Once);
     _tokenBlacklist.Verify(x => x.BlacklistAsync(tokenIds, expiresOn, It.IsAny<CancellationToken>()), Times.Once);
   }
@@ -147,6 +149,9 @@ public class JsonWebTokenManagerTests
   [Fact(DisplayName = "ValidateAsync: it should validate a token from parameters.")]
   public async Task ValidateAsync_it_should_validate_a_token_from_parameters()
   {
+    string[] tokenIds = [_tokenId];
+    _tokenBlacklist.Setup(x => x.GetBlacklistedAsync(tokenIds, _cancellationToken)).ReturnsAsync([]);
+
     SecurityTokenDescriptor tokenDescriptor = new()
     {
       Audience = "Audience",
@@ -168,13 +173,16 @@ public class JsonWebTokenManagerTests
     ValidatedToken validatedToken = await _tokenManager.ValidateAsync(parameters, _cancellationToken);
     AssertIsValid(validatedToken);
 
-    _tokenBlacklist.Verify(x => x.GetBlacklistedAsync(It.Is<IEnumerable<string>>(y => y.SequenceEqual(new[] { _tokenId })), _cancellationToken), Times.Once);
+    _tokenBlacklist.Verify(x => x.GetBlacklistedAsync(It.Is<IEnumerable<string>>(y => y.SequenceEqual(tokenIds)), _cancellationToken), Times.Once);
     _tokenBlacklist.Verify(x => x.BlacklistAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()), Times.Never);
   }
 
   [Fact(DisplayName = "ValidateAsync: it should validate a token with options.")]
   public async Task ValidateAsync_it_should_validate_a_token_with_options()
   {
+    string[] tokenIds = [_tokenId];
+    _tokenBlacklist.Setup(x => x.GetBlacklistedAsync(tokenIds, _cancellationToken)).ReturnsAsync([]);
+
     SecurityTokenDescriptor tokenDescriptor = new()
     {
       Audience = "Audience",
@@ -196,13 +204,16 @@ public class JsonWebTokenManagerTests
     ValidatedToken validatedToken = await _tokenManager.ValidateAsync(token, _secret, options, _cancellationToken);
     AssertIsValid(validatedToken);
 
-    _tokenBlacklist.Verify(x => x.GetBlacklistedAsync(It.Is<IEnumerable<string>>(y => y.SequenceEqual(new[] { _tokenId })), _cancellationToken), Times.Once);
+    _tokenBlacklist.Verify(x => x.GetBlacklistedAsync(It.Is<IEnumerable<string>>(y => y.SequenceEqual(tokenIds)), _cancellationToken), Times.Once);
     _tokenBlacklist.Verify(x => x.BlacklistAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()), Times.Never);
   }
 
   [Fact(DisplayName = "ValidateAsync: it should validate a token without options.")]
   public async Task ValidateAsync_it_should_validate_a_token_without_options()
   {
+    string[] tokenIds = [_tokenId];
+    _tokenBlacklist.Setup(x => x.GetBlacklistedAsync(tokenIds, _cancellationToken)).ReturnsAsync([]);
+
     SecurityTokenDescriptor tokenDescriptor = new()
     {
       SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_secret)), SecurityAlgorithms.HmacSha256),
@@ -219,7 +230,7 @@ public class JsonWebTokenManagerTests
     validatedToken = await _tokenManager.ValidateAsync(token, _secret, options: null, _cancellationToken);
     AssertIsValid(validatedToken);
 
-    _tokenBlacklist.Verify(x => x.GetBlacklistedAsync(It.Is<IEnumerable<string>>(y => y.SequenceEqual(new[] { _tokenId })), _cancellationToken), Times.Exactly(2));
+    _tokenBlacklist.Verify(x => x.GetBlacklistedAsync(It.Is<IEnumerable<string>>(y => y.SequenceEqual(tokenIds)), _cancellationToken), Times.Exactly(2));
     _tokenBlacklist.Verify(x => x.BlacklistAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()), Times.Never);
   }
 

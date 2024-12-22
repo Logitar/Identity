@@ -4,7 +4,7 @@ namespace Logitar.Identity.Infrastructure.Passwords.Pbkdf2;
 
 public record Pbkdf2Settings
 {
-  public const string SectionKey = "Pbkdf2";
+  public const string SectionKey = "Identity:Passwords:Pbkdf2";
 
   public KeyDerivationPrf Algorithm { get; set; } = KeyDerivationPrf.HMACSHA256;
   public int Iterations { get; set; } = 600000;

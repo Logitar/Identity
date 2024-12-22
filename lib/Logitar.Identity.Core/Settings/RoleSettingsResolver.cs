@@ -11,7 +11,7 @@ public class RoleSettingsResolver : IRoleSettingsResolver
   /// <summary>
   /// The key of the role settings configuration section.
   /// </summary>
-  public const string SectionKey = "Role";
+  public const string SectionKey = "Identity:Role";
 
   /// <summary>
   /// Gets or sets the configuration of the application.
@@ -37,7 +37,7 @@ public class RoleSettingsResolver : IRoleSettingsResolver
   /// <returns>The role settings.</returns>
   public virtual IRoleSettings Resolve()
   {
-    RoleSettings ??= Configuration.GetSection("Identity").GetSection(SectionKey).Get<RoleSettings>() ?? new(); // TODO(fpion): constant
+    RoleSettings ??= Configuration.GetSection(SectionKey).Get<RoleSettings>() ?? new();
     return RoleSettings;
   }
 }
