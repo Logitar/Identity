@@ -147,12 +147,15 @@ public class Role : AggregateRoot
     {
       RemoveCustomAttribute(key);
     }
-    value = value.Trim();
-
-    if (!_customAttributes.TryGetValue(key, out string? existingValue) || existingValue != value)
+    else
     {
-      _customAttributes[key] = value;
-      _updated.CustomAttributes[key] = value;
+      value = value.Trim();
+
+      if (!_customAttributes.TryGetValue(key, out string? existingValue) || existingValue != value)
+      {
+        _customAttributes[key] = value;
+        _updated.CustomAttributes[key] = value;
+      }
     }
   }
 
@@ -161,7 +164,7 @@ public class Role : AggregateRoot
   /// </summary>
   /// <param name="uniqueName">The unique name.</param>
   /// <param name="actorId">The actor identifier.</param>
-  public void SetUniqueName(UniqueName uniqueName, ActorId? actorId)
+  public void SetUniqueName(UniqueName uniqueName, ActorId? actorId = null)
   {
     if (_uniqueName != uniqueName)
     {

@@ -282,12 +282,15 @@ public class ApiKey : AggregateRoot
     {
       RemoveCustomAttribute(key);
     }
-    value = value.Trim();
-
-    if (!_customAttributes.TryGetValue(key, out string? existingValue) || existingValue != value)
+    else
     {
-      _customAttributes[key] = value;
-      _updated.CustomAttributes[key] = value;
+      value = value.Trim();
+
+      if (!_customAttributes.TryGetValue(key, out string? existingValue) || existingValue != value)
+      {
+        _customAttributes[key] = value;
+        _updated.CustomAttributes[key] = value;
+      }
     }
   }
 
@@ -334,4 +337,10 @@ public class ApiKey : AggregateRoot
       }
     }
   }
+
+  /// <summary>
+  /// Returns a string representation of the API key.
+  /// </summary>
+  /// <returns>The string representation.</returns>
+  public override string ToString() => $"{DisplayName} | {base.ToString()}";
 }

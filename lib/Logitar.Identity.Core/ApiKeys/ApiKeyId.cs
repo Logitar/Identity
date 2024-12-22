@@ -8,6 +8,11 @@ namespace Logitar.Identity.Core.ApiKeys;
 public readonly struct ApiKeyId
 {
   /// <summary>
+  /// The separator between the tenant ID and the entity ID.
+  /// </summary>
+  private const char Separator = ':';
+
+  /// <summary>
   /// Gets the identifier of the event stream.
   /// </summary>
   public StreamId StreamId { get; }
@@ -30,27 +35,31 @@ public readonly struct ApiKeyId
   /// </summary>
   /// <param name="tenantId">The tenant identifier.</param>
   /// <param name="entityId">The entity identifier.</param>
-  public ApiKeyId(TenantId? tenantId, Guid entityId) : this(tenantId, Convert.ToBase64String(entityId.ToByteArray()).ToUriSafeBase64())
+  public ApiKeyId(TenantId? tenantId, EntityId entityId)
   {
-  }
-  /// <summary>
-  /// Initializes a new instance of the <see cref="ApiKeyId"/> struct.
-  /// </summary>
-  /// <param name="tenantId">The tenant identifier.</param>
-  /// <param name="entityId">The entity identifier.</param>
-  public ApiKeyId(TenantId? tenantId, string entityId)
-  {
+    StreamId = new(tenantId == null ? entityId.Value : string.Join(Separator, tenantId, entityId));
     TenantId = tenantId;
-    EntityId = new(entityId);
-    StreamId = new(tenantId.HasValue ? $"{tenantId}:{entityId}" : entityId);
+    EntityId = entityId;
   }
+
   /// <summary>
   /// Initializes a new instance of the <see cref="ApiKeyId"/> struct.
   /// </summary>
-  /// <param name="streamId">A stream identifier.</param>
+  /// <param name="streamId">The identifier of the event stream.</param>
   public ApiKeyId(StreamId streamId)
   {
     StreamId = streamId;
+
+    string[] values = streamId.Value.Split(Separator);
+    if (values.Length > 2)
+    {
+      throw new ArgumentException($"The value '{streamId}' is not a valid API key ID.", nameof(streamId));
+    }
+    else if (values.Length == 2)
+    {
+      TenantId = new(values.First());
+    }
+    EntityId = new(values.Last());
   }
 
   /// <summary>
@@ -58,7 +67,7 @@ public readonly struct ApiKeyId
   /// </summary>
   /// <param name="tenantId">The tenant identifier.</param>
   /// <returns>The generated identifier.</returns>
-  public static ApiKeyId NewId(TenantId? tenantId = null) => new(tenantId, Guid.NewGuid());
+  public static ApiKeyId NewId(TenantId? tenantId = null) => new(tenantId, EntityId.NewId());
 
   /// <summary>
   /// Returns a value indicating whether or not the specified identifiers are equal.

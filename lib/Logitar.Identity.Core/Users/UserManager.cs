@@ -75,7 +75,8 @@ public class UserManager : IUserManager
     UserId? userId = null;
     try
     {
-      userId = new(tenantId, id);
+      EntityId entityId = new(id);
+      userId = new(tenantId, entityId);
     }
     catch (Exception)
     {

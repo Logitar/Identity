@@ -45,12 +45,12 @@ public record Address : Contact, IAddress
   /// <param name="postalCode">The postal code of the address.</param>
   /// <param name="region">The region of the address.</param>
   /// <param name="isVerified">A value indicating whether or not the contact is verified.</param>
-  public Address(IAddressHelper helper, string street, string locality, string country, string? postalCode = null, string? region = null, bool isVerified = false) : base(isVerified)
+  public Address(IAddressHelper helper, string street, string locality, string country, string? region = null, string? postalCode = null, bool isVerified = false) : base(isVerified)
   {
     Street = street.Trim();
     Locality = locality.Trim();
-    PostalCode = postalCode?.CleanTrim();
     Region = region?.CleanTrim();
+    PostalCode = postalCode?.CleanTrim();
     Country = country.Trim();
     new AddressValidator(helper).ValidateAndThrow(this);
   }
