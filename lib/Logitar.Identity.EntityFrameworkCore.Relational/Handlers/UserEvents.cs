@@ -26,10 +26,12 @@ public sealed class UserEvents : INotificationHandler<UserAddressChanged>,
   INotificationHandler<UserUpdated>
 {
   private readonly IdentityContext _context;
+  private readonly ICustomAttributeService _customAttributes;
 
-  public UserEvents(IdentityContext context)
+  public UserEvents(IdentityContext context, ICustomAttributeService customAttributes)
   {
     _context = context;
+    _customAttributes = customAttributes;
   }
 
   public async Task Handle(UserAddressChanged @event, CancellationToken cancellationToken)
@@ -64,7 +66,8 @@ public sealed class UserEvents : INotificationHandler<UserAddressChanged>,
 
       _context.Users.Add(user);
 
-      await _context.SaveChangesAsync(cancellationToken); // TODO(fpion): save Actor
+      await SaveActorAsync(user, cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
     }
   }
 
@@ -76,7 +79,9 @@ public sealed class UserEvents : INotificationHandler<UserAddressChanged>,
     {
       _context.Users.Remove(user);
 
-      await _context.SaveChangesAsync(cancellationToken); // TODO(fpion): delete Actor & CustomAttributes
+      await DeleteActorAsync(user, cancellationToken);
+      await _customAttributes.RemoveAsync(EntityType.User, user.UserId, cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
     }
   }
 
@@ -97,8 +102,9 @@ public sealed class UserEvents : INotificationHandler<UserAddressChanged>,
       .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken)
       ?? throw new InvalidOperationException($"The user entity 'StreamId={@event.StreamId}' could not be found.");
 
-    user.SetEmail(@event); // TODO(fpion): save Actor
+    user.SetEmail(@event);
 
+    await SaveActorAsync(user, cancellationToken);
     await _context.SaveChangesAsync(cancellationToken);
   }
 
@@ -238,7 +244,8 @@ public sealed class UserEvents : INotificationHandler<UserAddressChanged>,
 
     user.SetUniqueName(@event);
 
-    await _context.SaveChangesAsync(cancellationToken); // TODO(fpion): save Actor
+    await SaveActorAsync(user, cancellationToken);
+    await _context.SaveChangesAsync(cancellationToken);
   }
 
   public async Task Handle(UserUpdated @event, CancellationToken cancellationToken)
@@ -249,6 +256,36 @@ public sealed class UserEvents : INotificationHandler<UserAddressChanged>,
 
     user.Update(@event);
 
-    await _context.SaveChangesAsync(cancellationToken); // TODO(fpion): save Actor & CustomAttributes
+    await SaveActorAsync(user, cancellationToken);
+    await _customAttributes.UpdateAsync(EntityType.User, user.UserId, @event.CustomAttributes, cancellationToken);
+    await _context.SaveChangesAsync(cancellationToken);
+  }
+
+  private async Task DeleteActorAsync(UserEntity user, CancellationToken cancellationToken)
+  {
+    await SaveActorAsync(user, isDeleted: true, cancellationToken);
+  }
+  private async Task SaveActorAsync(UserEntity user, CancellationToken cancellationToken)
+  {
+    await SaveActorAsync(user, isDeleted: false, cancellationToken);
+  }
+  private async Task SaveActorAsync(UserEntity user, bool isDeleted, CancellationToken cancellationToken)
+  {
+    ActorEntity? actor = await _context.Actors.SingleOrDefaultAsync(x => x.Id == user.StreamId, cancellationToken);
+    if (actor == null)
+    {
+      actor = new()
+      {
+        Id = user.StreamId,
+        Type = ActorType.User
+      };
+      _context.Actors.Add(actor);
+    }
+
+    actor.IsDeleted = isDeleted;
+
+    actor.DisplayName = user.FullName ?? user.UniqueName;
+    actor.EmailAddress = user.EmailAddress;
+    actor.PictureUrl = user.Picture;
   }
 }

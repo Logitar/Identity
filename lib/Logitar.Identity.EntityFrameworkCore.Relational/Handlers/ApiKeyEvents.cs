@@ -13,10 +13,12 @@ public sealed class ApiKeyEvents : INotificationHandler<ApiKeyAuthenticated>,
   INotificationHandler<ApiKeyUpdated>
 {
   private readonly IdentityContext _context;
+  private readonly ICustomAttributeService _customAttributes;
 
-  public ApiKeyEvents(IdentityContext context)
+  public ApiKeyEvents(IdentityContext context, ICustomAttributeService customAttributes)
   {
     _context = context;
+    _customAttributes = customAttributes;
   }
 
   public async Task Handle(ApiKeyAuthenticated @event, CancellationToken cancellationToken)
@@ -40,7 +42,8 @@ public sealed class ApiKeyEvents : INotificationHandler<ApiKeyAuthenticated>,
 
       _context.ApiKeys.Add(apiKey);
 
-      await _context.SaveChangesAsync(cancellationToken); // TODO(fpion): save Actor
+      await SaveActorAsync(apiKey, cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
     }
   }
 
@@ -52,7 +55,9 @@ public sealed class ApiKeyEvents : INotificationHandler<ApiKeyAuthenticated>,
     {
       _context.ApiKeys.Remove(apiKey);
 
-      await _context.SaveChangesAsync(cancellationToken); // TODO(fpion): delete Actor & CustomAttributes
+      await DeleteActorAsync(apiKey, cancellationToken);
+      await _customAttributes.RemoveAsync(EntityType.ApiKey, apiKey.ApiKeyId, cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
     }
   }
 
@@ -91,6 +96,34 @@ public sealed class ApiKeyEvents : INotificationHandler<ApiKeyAuthenticated>,
 
     apiKey.Update(@event);
 
-    await _context.SaveChangesAsync(cancellationToken); // TODO(fpion): save Actor & CustomAttributes
+    await SaveActorAsync(apiKey, cancellationToken);
+    await _customAttributes.UpdateAsync(EntityType.ApiKey, apiKey.ApiKeyId, @event.CustomAttributes, cancellationToken);
+    await _context.SaveChangesAsync(cancellationToken);
+  }
+
+  private async Task DeleteActorAsync(ApiKeyEntity apiKey, CancellationToken cancellationToken)
+  {
+    await SaveActorAsync(apiKey, isDeleted: true, cancellationToken);
+  }
+  private async Task SaveActorAsync(ApiKeyEntity apiKey, CancellationToken cancellationToken)
+  {
+    await SaveActorAsync(apiKey, isDeleted: false, cancellationToken);
+  }
+  private async Task SaveActorAsync(ApiKeyEntity apiKey, bool isDeleted, CancellationToken cancellationToken)
+  {
+    ActorEntity? actor = await _context.Actors.SingleOrDefaultAsync(x => x.Id == apiKey.StreamId, cancellationToken);
+    if (actor == null)
+    {
+      actor = new()
+      {
+        Id = apiKey.StreamId,
+        Type = ActorType.ApiKey
+      };
+      _context.Actors.Add(actor);
+    }
+
+    actor.IsDeleted = isDeleted;
+
+    actor.DisplayName = apiKey.DisplayName;
   }
 }

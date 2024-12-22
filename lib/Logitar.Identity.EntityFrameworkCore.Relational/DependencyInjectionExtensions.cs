@@ -21,7 +21,7 @@ public static class DependencyInjectionExtensions
       .AddLogitarIdentityInfrastructure()
       .AddMediatR(config => config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()))
       .AddRepositories()
-      //.AddTransient<ICustomAttributeService, CustomAttributeService>() // TODO(fpion): implement
+      .AddTransient<ICustomAttributeService, CustomAttributeService>()
       .AddScoped<ITokenBlacklist, TokenBlacklist>();
   }
 

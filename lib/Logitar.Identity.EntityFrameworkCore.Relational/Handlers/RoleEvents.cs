@@ -11,10 +11,12 @@ public sealed class RoleEvents : INotificationHandler<RoleCreated>,
   INotificationHandler<RoleUpdated>
 {
   private readonly IdentityContext _context;
+  private readonly ICustomAttributeService _customAttributes;
 
-  public RoleEvents(IdentityContext context)
+  public RoleEvents(IdentityContext context, ICustomAttributeService customAttributes)
   {
     _context = context;
+    _customAttributes = customAttributes;
   }
 
   public async Task Handle(RoleCreated @event, CancellationToken cancellationToken)
@@ -39,7 +41,8 @@ public sealed class RoleEvents : INotificationHandler<RoleCreated>,
     {
       _context.Roles.Remove(role);
 
-      await _context.SaveChangesAsync(cancellationToken); // TODO(fpion): delete CustomAttributes
+      await _customAttributes.RemoveAsync(EntityType.Role, role.RoleId, cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
     }
   }
 
@@ -62,6 +65,7 @@ public sealed class RoleEvents : INotificationHandler<RoleCreated>,
 
     role.Update(@event);
 
-    await _context.SaveChangesAsync(cancellationToken); // TODO(fpion): save CustomAttributes
+    await _customAttributes.UpdateAsync(EntityType.Role, role.RoleId, @event.CustomAttributes, cancellationToken);
+    await _context.SaveChangesAsync(cancellationToken);
   }
 }

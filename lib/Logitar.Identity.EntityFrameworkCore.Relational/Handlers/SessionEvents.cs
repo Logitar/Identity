@@ -12,10 +12,12 @@ public sealed class SessionEvents : INotificationHandler<SessionCreated>,
   INotificationHandler<SessionUpdated>
 {
   private readonly IdentityContext _context;
+  private readonly ICustomAttributeService _customAttributes;
 
-  public SessionEvents(IdentityContext context)
+  public SessionEvents(IdentityContext context, ICustomAttributeService customAttributes)
   {
     _context = context;
+    _customAttributes = customAttributes;
   }
 
   public async Task Handle(SessionCreated @event, CancellationToken cancellationToken)
@@ -43,7 +45,8 @@ public sealed class SessionEvents : INotificationHandler<SessionCreated>,
     {
       _context.Sessions.Remove(session);
 
-      await _context.SaveChangesAsync(cancellationToken); // TODO(fpion): delete CustomAttributes
+      await _customAttributes.RemoveAsync(EntityType.Session, session.SessionId, cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
     }
   }
 
@@ -77,6 +80,7 @@ public sealed class SessionEvents : INotificationHandler<SessionCreated>,
 
     session.Update(@event);
 
-    await _context.SaveChangesAsync(cancellationToken); // TODO(fpion): save CustomAttributes
+    await _customAttributes.UpdateAsync(EntityType.Session, session.SessionId, @event.CustomAttributes, cancellationToken);
+    await _context.SaveChangesAsync(cancellationToken);
   }
 }

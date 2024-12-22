@@ -12,10 +12,12 @@ public sealed class OneTimePasswordEvents : INotificationHandler<OneTimePassword
   INotificationHandler<OneTimePasswordValidationSucceeded>
 {
   private readonly IdentityContext _context;
+  private readonly ICustomAttributeService _customAttributes;
 
-  public OneTimePasswordEvents(IdentityContext context)
+  public OneTimePasswordEvents(IdentityContext context, ICustomAttributeService customAttributes)
   {
     _context = context;
+    _customAttributes = customAttributes;
   }
 
   public async Task Handle(OneTimePasswordCreated @event, CancellationToken cancellationToken)
@@ -40,7 +42,8 @@ public sealed class OneTimePasswordEvents : INotificationHandler<OneTimePassword
     {
       _context.OneTimePasswords.Remove(oneTimePassword);
 
-      await _context.SaveChangesAsync(cancellationToken); // TODO(fpion): delete CustomAttributes
+      await _customAttributes.RemoveAsync(EntityType.OneTimePassword, oneTimePassword.OneTimePasswordId, cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
     }
   }
 
@@ -52,7 +55,8 @@ public sealed class OneTimePasswordEvents : INotificationHandler<OneTimePassword
 
     oneTimePassword.Update(@event);
 
-    await _context.SaveChangesAsync(cancellationToken); // TODO(fpion): save CustomAttributes
+    await _customAttributes.UpdateAsync(EntityType.OneTimePassword, oneTimePassword.OneTimePasswordId, @event.CustomAttributes, cancellationToken);
+    await _context.SaveChangesAsync(cancellationToken);
   }
 
   public async Task Handle(OneTimePasswordValidationFailed @event, CancellationToken cancellationToken)
