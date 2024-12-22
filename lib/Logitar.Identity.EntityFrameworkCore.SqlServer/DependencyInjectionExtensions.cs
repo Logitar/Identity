@@ -11,10 +11,8 @@ public static class DependencyInjectionExtensions
   {
     return services
       .AddDbContext<IdentityContext>(options => options.UseSqlServer(connectionString,
-        b => b.MigrationsAssembly("Logitar.Identity.EntityFrameworkCore.SqlServer")
-      ))
+        builder => builder.MigrationsAssembly("Logitar.Identity.EntityFrameworkCore.SqlServer")))
       .AddLogitarEventSourcingWithEntityFrameworkCoreSqlServer(connectionString)
-      .AddLogitarIdentityWithEntityFrameworkCoreRelational()
-      .AddSingleton<ISqlHelper, SqlServerHelper>();
+      .AddLogitarIdentityWithEntityFrameworkCoreRelational();
   }
 }
