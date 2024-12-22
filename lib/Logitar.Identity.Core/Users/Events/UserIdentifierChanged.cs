@@ -4,7 +4,7 @@ using MediatR;
 namespace Logitar.Identity.Core.Users.Events;
 
 /// <summary>
-/// The event raised when a custom identifier is added to an user, or updated.
+/// The event raised when a custom identifier is added to a user, or updated.
 /// </summary>
 public record UserIdentifierChanged : DomainEvent, INotification
 {

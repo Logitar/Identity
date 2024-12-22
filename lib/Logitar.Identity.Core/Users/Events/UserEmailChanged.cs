@@ -4,7 +4,7 @@ using MediatR;
 namespace Logitar.Identity.Core.Users.Events;
 
 /// <summary>
-/// The event raised when the email address of an user is updated.
+/// The event raised when the email address of a user is updated.
 /// </summary>
 public record UserEmailChanged : DomainEvent, INotification
 {

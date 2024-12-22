@@ -4,7 +4,7 @@ using MediatR;
 namespace Logitar.Identity.Core.Users.Events;
 
 /// <summary>
-/// The event raised when an user signs-in.
+/// The event raised when a user signs-in.
 /// </summary>
 public record UserSignedIn : DomainEvent, INotification
 {

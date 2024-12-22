@@ -1,7 +1,7 @@
 ﻿namespace Logitar.Identity.Core.Users;
 
 /// <summary>
-/// The exception raised when an user password check fails.
+/// The exception raised when a user password check fails.
 /// </summary>
 public class IncorrectUserPasswordException : InvalidCredentialsException
 {

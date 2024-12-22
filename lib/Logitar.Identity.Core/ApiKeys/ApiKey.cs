@@ -6,7 +6,7 @@ using Logitar.Identity.Core.Roles;
 namespace Logitar.Identity.Core.ApiKeys;
 
 /// <summary>
-/// Represents an API key in the identity system. Similarly to an user, it can have access to processes and resources using roles.
+/// Represents an API key in the identity system. Similarly to a user, it can have access to processes and resources using roles.
 /// It should be used instead of users for backend-to-backend authentication where personal and authentication information are not required.
 /// </summary>
 public class ApiKey : AggregateRoot

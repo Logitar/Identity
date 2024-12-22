@@ -4,7 +4,7 @@ using MediatR;
 namespace Logitar.Identity.Core.Users.Events;
 
 /// <summary>
-/// The event raised when the phone number of an user is updated.
+/// The event raised when the phone number of a user is updated.
 /// </summary>
 public record UserPhoneChanged : DomainEvent, INotification
 {

@@ -38,7 +38,7 @@ public class UserManager : IUserManager
   }
 
   /// <summary>
-  /// Tries finding an user by its unique identifier, unique name, or email address if they are unique.
+  /// Tries finding a user by its unique identifier, unique name, or email address if they are unique.
   /// </summary>
   /// <param name="tenantIdValue">The identifier of the tenant in which to search.</param>
   /// <param name="id">The identifier of the user to find.</param>
@@ -49,7 +49,7 @@ public class UserManager : IUserManager
     return await FindAsync(tenantIdValue, id, userSettings: null, cancellationToken);
   }
   /// <summary>
-  /// Tries finding an user by its unique identifier, unique name, or email address if they are unique.
+  /// Tries finding a user by its unique identifier, unique name, or email address if they are unique.
   /// </summary>
   /// <param name="tenantIdValue">The identifier of the tenant in which to search.</param>
   /// <param name="id">The identifier of the user to find.</param>

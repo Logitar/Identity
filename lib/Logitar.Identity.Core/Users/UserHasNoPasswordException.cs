@@ -1,7 +1,7 @@
 ﻿namespace Logitar.Identity.Core.Users;
 
 /// <summary>
-/// The exception raised when handling an user without a password.
+/// The exception raised when handling a user without a password.
 /// </summary>
 public class UserHasNoPasswordException : InvalidCredentialsException
 {

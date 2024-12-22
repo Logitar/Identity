@@ -4,7 +4,7 @@ using MediatR;
 namespace Logitar.Identity.Core.Users.Events;
 
 /// <summary>
-/// The event raised when the unique name of an user is changed.
+/// The event raised when the unique name of a user is changed.
 /// </summary>
 public record UserUniqueNameChanged : DomainEvent, INotification
 {

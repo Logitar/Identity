@@ -5,7 +5,7 @@ using MediatR;
 namespace Logitar.Identity.Core.Users.Events;
 
 /// <summary>
-/// The event raised when a role is removed from an user.
+/// The event raised when a role is removed from a user.
 /// </summary>
 public record UserRoleRemoved : DomainEvent, INotification
 {
