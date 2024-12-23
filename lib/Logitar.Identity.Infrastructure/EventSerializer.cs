@@ -4,18 +4,15 @@ namespace Logitar.Identity.Infrastructure;
 
 public class EventSerializer : EventSourcing.Infrastructure.EventSerializer
 {
-  private readonly PasswordConverter _passwordConverter;
-
   public EventSerializer(PasswordConverter passwordConverter)
   {
-    _passwordConverter = passwordConverter;
+    SerializerOptions.Converters.Add(passwordConverter);
   }
 
   protected override void RegisterConverters()
   {
     base.RegisterConverters();
 
-    SerializerOptions.Converters.Add(_passwordConverter);
     SerializerOptions.Converters.Add(new ApiKeyIdConverter());
     SerializerOptions.Converters.Add(new CustomIdentifierConverter());
     SerializerOptions.Converters.Add(new DescriptionConverter());
