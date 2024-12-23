@@ -1,0 +1,33 @@
+name: identity
+services:
+  identity_mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: Logitar.Identity_mssql
+    restart: unless-stopped
+    user: root
+    environment:
+      ACCEPT_EULA: 'Y'
+      SA_PASSWORD: nBDSQeH9Jc4jxMtp
+    ports:
+      - 1436:1433
+    volumes:
+      - mssql_backup:/var/opt/mssql/backup
+      - mssql_data:/var/opt/mssql/data
+      - mssql_log:/var/opt/mssql/log
+
+  identity_postgres:
+    image: postgres
+    container_name: Logitar.Identity_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: z5hMKkvaL4N8UuxF
+    ports:
+      - 5436:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  mssql_backup:
+  mssql_data:
+  mssql_log:
+  postgres_data:

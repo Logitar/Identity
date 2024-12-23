@@ -1,4 +1,4 @@
-﻿using Logitar.Identity.Domain.Settings;
+﻿using Logitar.Identity.Core.Settings;
 
 namespace Logitar.Identity.Infrastructure.Passwords;
 
@@ -14,3 +14,4 @@ internal class PasswordManagerMock : PasswordManager
 
   public new IPasswordStrategy GetStrategy(string key) => base.GetStrategy(key);
 }
+

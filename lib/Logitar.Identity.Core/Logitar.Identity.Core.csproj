@@ -1,0 +1,82 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Logitar.Identity.Core</Title>
+    <Authors>Francis Pion</Authors>
+    <Company>Logitar</Company>
+    <Product>Logitar.Identity</Product>
+    <Description>Exposes domain aggregates, events, entities, value objects, exceptions and services of an Identity system.</Description>
+    <Copyright>© 2024 Logitar All Rights Reserved.</Copyright>
+    <PackageIcon>logitar.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/Logitar/Identity</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <FileVersion>$(AssemblyVersion)</FileVersion>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <Version>3.0.0</Version>
+    <NeutralLanguage>en-CA</NeutralLanguage>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <PackageReleaseNotes>Rewrote the framework to include changes made to EventSourcing.</PackageReleaseNotes>
+    <PackageTags>logitar;net;framework;identity;domain</PackageTags>
+    <PackageProjectUrl>https://github.com/Logitar/Identity/tree/main/lib/Logitar.Identity.Core</PackageProjectUrl>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="11.11.0" />
+    <PackageReference Include="libphonenumber-csharp" Version="8.13.52" />
+    <PackageReference Include="Logitar.EventSourcing" Version="7.0.0" />
+    <PackageReference Include="Logitar.Security" Version="7.0.1" />
+    <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.3.0" />
+    <PackageReference Include="NodaTime" Version="3.2.0" />
+    <PackageReference Include="System.Text.Json" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Logitar.Identity.Contracts\Logitar.Identity.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="System" />
+    <Using Include="System.Collections.Generic" />
+    <Using Include="System.Collections.Immutable" />
+    <Using Include="System.Diagnostics.CodeAnalysis" />
+    <Using Include="System.Globalization" />
+    <Using Include="System.Linq" />
+    <Using Include="System.Security.Claims" />
+    <Using Include="System.Text" />
+    <Using Include="System.Text.Json.Serialization" />
+    <Using Include="System.Threading" />
+    <Using Include="System.Threading.Tasks" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="LICENSE">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
+    <None Update="logitar.png">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
+    <None Update="README.md">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
+  </ItemGroup>
+
+</Project>

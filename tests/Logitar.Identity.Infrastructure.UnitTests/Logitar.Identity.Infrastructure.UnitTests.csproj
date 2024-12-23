@@ -1,12 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-
     <IsPackable>false</IsPackable>
-    <IsTestProject>true</IsTestProject>
     <RootNamespace>Logitar.Identity.Infrastructure</RootNamespace>
   </PropertyGroup>
 
@@ -19,27 +17,26 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
-    <PackageReference Include="xunit" Version="2.7.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.7">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    <PackageReference Include="coverlet.collector" Version="6.0.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.0.0">
       <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="coverlet.collector" Version="6.0.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Logitar.Identity.Infrastructure\Logitar.Identity.Infrastructure.csproj" />
-    <ProjectReference Include="..\Logitar.Identity.Tests\Logitar.Identity.Tests.csproj" />
+    <ProjectReference Include="..\..\lib\Logitar.Identity.Infrastructure\Logitar.Identity.Infrastructure.csproj" />
+    <ProjectReference Include="..\Logitar.Identity.Core.UnitTests\Logitar.Identity.Core.UnitTests.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Using Include="System.IdentityModel.Tokens.Jwt" />
     <Using Include="System.Security.Claims" />
+    <Using Include="System.Text.Encodings.Web" />
     <Using Include="System.Text" />
+    <Using Include="System.Text.Json" />
     <Using Include="Xunit" />
   </ItemGroup>
 

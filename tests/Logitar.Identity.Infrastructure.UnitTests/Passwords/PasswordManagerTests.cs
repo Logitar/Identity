@@ -1,5 +1,5 @@
-﻿using Logitar.Identity.Domain.Passwords;
-using Logitar.Identity.Domain.Settings;
+﻿using Logitar.Identity.Core.Passwords;
+using Logitar.Identity.Core.Settings;
 using Logitar.Identity.Infrastructure.Passwords.Pbkdf2;
 using Moq;
 
