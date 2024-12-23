@@ -175,7 +175,7 @@ public class User : AggregateRoot
     get => _birthdate;
     set
     {
-      if (value.HasValue && value.Value.AsUniversalTime() < DateTime.UtcNow)
+      if (value.HasValue && value.Value.AsUniversalTime() >= DateTime.UtcNow)
       {
         throw new ArgumentOutOfRangeException(nameof(Birthdate), "The birthdate must be set in the past.");
       }
@@ -750,7 +750,7 @@ public class User : AggregateRoot
   /// </summary>
   /// <param name="uniqueName">The unique name.</param>
   /// <param name="actorId">The actor identifier.</param>
-  public void SetUniqueName(UniqueName uniqueName, ActorId? actorId)
+  public void SetUniqueName(UniqueName uniqueName, ActorId? actorId = null)
   {
     if (_uniqueName != uniqueName)
     {

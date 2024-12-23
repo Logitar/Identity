@@ -67,7 +67,7 @@ public sealed class ApiKeyEntity : AggregateEntity
   {
     Update(@event);
 
-    AuthenticatedOn = @event.OccurredOn.ToUniversalTime();
+    AuthenticatedOn = @event.OccurredOn.AsUniversalTime();
   }
 
   public void RemoveRole(ApiKeyRoleRemoved @event)
@@ -95,7 +95,7 @@ public sealed class ApiKeyEntity : AggregateEntity
     }
     if (@event.ExpiresOn.HasValue)
     {
-      ExpiresOn = @event.ExpiresOn.Value.ToUniversalTime();
+      ExpiresOn = @event.ExpiresOn.Value.AsUniversalTime();
     }
 
     Dictionary<string, string> customAttributes = GetCustomAttributes();

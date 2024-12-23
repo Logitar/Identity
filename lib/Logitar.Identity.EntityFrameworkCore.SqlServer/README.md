@@ -11,7 +11,7 @@ This project is setup to use migrations. All the commands below must be executed
 To create a new migration, execute the following command. Do not forget to provide a migration name!
 
 ```sh
-dotnet ef migrations add <YOUR_MIGRATION_NAME> --context IdentityContext --project src/Logitar.Identity.EntityFrameworkCore.SqlServer --startup-project src/Logitar.Identity.Demo
+dotnet ef migrations add <YOUR_MIGRATION_NAME> --context IdentityContext --project lib/Logitar.Identity.EntityFrameworkCore.SqlServer --startup-project tools/Logitar.Identity.Database
 ```
 
 ### Remove a migration
@@ -19,7 +19,7 @@ dotnet ef migrations add <YOUR_MIGRATION_NAME> --context IdentityContext --proje
 To remove the latest unapplied migration, execute the following command.
 
 ```sh
-dotnet ef migrations remove --context IdentityContext --project src/Logitar.Identity.EntityFrameworkCore.SqlServer --startup-project src/Logitar.Identity.Demo
+dotnet ef migrations remove --context IdentityContext --project lib/Logitar.Identity.EntityFrameworkCore.SqlServer --startup-project tools/Logitar.Identity.Database
 ```
 
 ### Generate a script
@@ -27,5 +27,5 @@ dotnet ef migrations remove --context IdentityContext --project src/Logitar.Iden
 To generate a script, execute the following command. Do not forget to provide a source migration name!
 
 ```sh
-dotnet ef migrations script <SOURCE_MIGRATION> --context IdentityContext --project src/Logitar.Identity.EntityFrameworkCore.SqlServer --startup-project src/Logitar.Identity.Demo
+dotnet ef migrations script <SOURCE_MIGRATION> --context IdentityContext --project lib/Logitar.Identity.EntityFrameworkCore.SqlServer --startup-project tools/Logitar.Identity.Database
 ```

@@ -26,7 +26,7 @@ public sealed class SessionEntity : AggregateEntity
   public DateTime? SignedOutOn { get; private set; }
   public bool IsActive
   {
-    get => SignedOutBy == null && SignedOutOn == null;
+    get => !SignedOutOn.HasValue;
     private set { }
   }
 
@@ -79,7 +79,7 @@ public sealed class SessionEntity : AggregateEntity
     Update(@event);
 
     SignedOutBy = @event.ActorId?.Value;
-    SignedOutOn = @event.OccurredOn.ToUniversalTime();
+    SignedOutOn = @event.OccurredOn.AsUniversalTime();
   }
 
   public void Update(SessionUpdated @event)

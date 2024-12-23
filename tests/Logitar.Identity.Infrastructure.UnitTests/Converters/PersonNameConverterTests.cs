@@ -12,6 +12,7 @@ public class PersonNameConverterTests
   public PersonNameConverterTests()
   {
     _serializerOptions.Converters.Add(new PersonNameConverter());
+    _serializerOptions.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
   }
 
   [Fact(DisplayName = "It should deserialize the correct value from a non-null value.")]

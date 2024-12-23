@@ -74,10 +74,10 @@ public class JsonWebTokenManager : ITokenManager
     SecurityTokenDescriptor tokenDescriptor = new()
     {
       Audience = parameters.Audience,
-      Expires = parameters.Expires?.ToUniversalTime(),
-      IssuedAt = parameters.IssuedAt?.ToUniversalTime(),
+      Expires = parameters.Expires?.AsUniversalTime(),
+      IssuedAt = parameters.IssuedAt?.AsUniversalTime(),
       Issuer = parameters.Issuer,
-      NotBefore = parameters.NotBefore?.ToUniversalTime(),
+      NotBefore = parameters.NotBefore?.AsUniversalTime(),
       SigningCredentials = signingCredentials,
       Subject = parameters.Subject,
       TokenType = parameters.Type

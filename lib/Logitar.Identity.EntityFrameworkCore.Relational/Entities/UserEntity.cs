@@ -24,7 +24,7 @@ public sealed class UserEntity : AggregateEntity
   public DateTime? PasswordChangedOn { get; private set; }
   public bool HasPassword
   {
-    get => PasswordChangedBy != null && PasswordChangedOn != null;
+    get => PasswordChangedOn.HasValue;
     private set { }
   }
 
@@ -32,7 +32,7 @@ public sealed class UserEntity : AggregateEntity
   public DateTime? DisabledOn { get; private set; }
   public bool IsDisabled
   {
-    get => DisabledBy != null && DisabledOn != null;
+    get => DisabledOn.HasValue;
     private set { }
   }
 
@@ -46,7 +46,7 @@ public sealed class UserEntity : AggregateEntity
   public DateTime? AddressVerifiedOn { get; private set; }
   public bool IsAddressVerified
   {
-    get => AddressVerifiedBy != null && AddressVerifiedOn != null;
+    get => AddressVerifiedOn.HasValue;
     private set { }
   }
 
@@ -60,7 +60,7 @@ public sealed class UserEntity : AggregateEntity
   public DateTime? EmailVerifiedOn { get; private set; }
   public bool IsEmailVerified
   {
-    get => EmailVerifiedBy != null && EmailVerifiedOn != null;
+    get => EmailVerifiedOn.HasValue;
     private set { }
   }
 
@@ -72,7 +72,7 @@ public sealed class UserEntity : AggregateEntity
   public DateTime? PhoneVerifiedOn { get; private set; }
   public bool IsPhoneVerified
   {
-    get => PhoneVerifiedBy != null && PhoneVerifiedOn != null;
+    get => PhoneVerifiedOn.HasValue;
     private set { }
   }
 
@@ -177,7 +177,7 @@ public sealed class UserEntity : AggregateEntity
   {
     Update(@event);
 
-    AuthenticatedOn = @event.OccurredOn.ToUniversalTime();
+    AuthenticatedOn = @event.OccurredOn.AsUniversalTime();
   }
 
   public void Disable(UserDisabled @event)
@@ -185,7 +185,7 @@ public sealed class UserEntity : AggregateEntity
     Update(@event);
 
     DisabledBy = @event.ActorId?.Value;
-    DisabledOn = @event.OccurredOn.ToUniversalTime();
+    DisabledOn = @event.OccurredOn.AsUniversalTime();
   }
 
   public void Enable(UserEnabled @event)
@@ -230,7 +230,7 @@ public sealed class UserEntity : AggregateEntity
     if (!IsAddressVerified && @event.Address?.IsVerified == true)
     {
       AddressVerifiedBy = @event.ActorId?.Value;
-      AddressVerifiedOn = @event.OccurredOn.ToUniversalTime();
+      AddressVerifiedOn = @event.OccurredOn.AsUniversalTime();
     }
     else if (IsAddressVerified && @event.Address?.IsVerified != true)
     {
@@ -262,7 +262,7 @@ public sealed class UserEntity : AggregateEntity
     if (!IsEmailVerified && @event.Email?.IsVerified == true)
     {
       EmailVerifiedBy = @event.ActorId?.Value;
-      EmailVerifiedOn = @event.OccurredOn.ToUniversalTime();
+      EmailVerifiedOn = @event.OccurredOn.AsUniversalTime();
     }
     else if (IsEmailVerified && @event.Email?.IsVerified != true)
     {
@@ -286,7 +286,7 @@ public sealed class UserEntity : AggregateEntity
 
     PasswordHash = @event.Password.Encode();
     PasswordChangedBy = @event.ActorId?.Value;
-    PasswordChangedOn = @event.OccurredOn.ToUniversalTime();
+    PasswordChangedOn = @event.OccurredOn.AsUniversalTime();
   }
 
   public void SetPhone(UserPhoneChanged @event)
@@ -301,7 +301,7 @@ public sealed class UserEntity : AggregateEntity
     if (!IsPhoneVerified && @event.Phone?.IsVerified == true)
     {
       PhoneVerifiedBy = @event.ActorId?.Value;
-      PhoneVerifiedOn = @event.OccurredOn.ToUniversalTime();
+      PhoneVerifiedOn = @event.OccurredOn.AsUniversalTime();
     }
     else if (IsPhoneVerified && @event.Phone?.IsVerified != true)
     {
@@ -321,7 +321,7 @@ public sealed class UserEntity : AggregateEntity
   {
     Update(@event);
 
-    AuthenticatedOn = @event.OccurredOn.ToUniversalTime();
+    AuthenticatedOn = @event.OccurredOn.AsUniversalTime();
   }
 
   public void Update(UserUpdated @event)
@@ -351,7 +351,7 @@ public sealed class UserEntity : AggregateEntity
 
     if (@event.Birthdate != null)
     {
-      Birthdate = @event.Birthdate.Value?.ToUniversalTime();
+      Birthdate = @event.Birthdate.Value?.AsUniversalTime();
     }
     if (@event.Gender != null)
     {
