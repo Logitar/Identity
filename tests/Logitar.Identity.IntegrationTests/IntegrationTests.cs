@@ -61,8 +61,14 @@ public abstract class IntegrationTests : IAsyncLifetime
     await IdentityContext.Database.MigrateAsync();
 
     StringBuilder sql = new();
+    sql.Append(GetDeleteBuilder(IdentityDb.TokenBlacklist.Table).Build().Text).Append(';').AppendLine();
     sql.Append(GetDeleteBuilder(IdentityDb.CustomAttributes.Table).Build().Text).Append(';').AppendLine();
+    sql.Append(GetDeleteBuilder(IdentityDb.OneTimePasswords.Table).Build().Text).Append(';').AppendLine();
+    sql.Append(GetDeleteBuilder(IdentityDb.Sessions.Table).Build().Text).Append(';').AppendLine();
+    sql.Append(GetDeleteBuilder(IdentityDb.Users.Table).Build().Text).Append(';').AppendLine();
     sql.Append(GetDeleteBuilder(IdentityDb.ApiKeys.Table).Build().Text).Append(';').AppendLine();
+    sql.Append(GetDeleteBuilder(IdentityDb.Roles.Table).Build().Text).Append(';').AppendLine();
+    sql.Append(GetDeleteBuilder(IdentityDb.Actors.Table).Build().Text).Append(';').AppendLine();
     sql.Append(GetDeleteBuilder(EventDb.Streams.Table).Build().Text).Append(';').AppendLine();
 
     await IdentityContext.Database.ExecuteSqlRawAsync(sql.ToString());
