@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Nothing yet.
 
+## [3.0.0] - 2024-12-23
+
+### Changed
+
+- Rewrote the framework to include changes made to EventSourcing.
+
 ## [2.0.0] - 2024-06-06
 
 ### Changed
@@ -26,6 +32,7 @@ Nothing yet.
 - Relational storage (PostgreSQL and Microsoft SQL Server) for Identity entities.
 - Unit and Integration tests.
 
-[unreleased]: https://github.com/Logitar/Identity/compare/v2.0.0...HEAD
+[unreleased]: https://github.com/Logitar/Identity/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/Logitar/Identity/compare/v2.0.0...v3.0.0
 [2.0.0]: https://github.com/Logitar/Identity/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/Logitar/Identity/releases/tag/v1.0.0
