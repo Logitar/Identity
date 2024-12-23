@@ -287,5 +287,14 @@ public class RolePostgresIntegrationTests : IntegrationTests
       Assert.Contains(customAttributes, c => c.EntityType == EntityType.Role && c.EntityId == entity.RoleId && c.Key == customAttribute.Key.Value
         && c.Value == customAttribute.Value && c.ValueShortened == customAttribute.Value.Truncate(byte.MaxValue));
     }
+
+    role.Delete();
+    await _roleRepository.SaveAsync(role);
+
+    entity = await IdentityContext.Roles.AsNoTracking().SingleOrDefaultAsync();
+    Assert.Null(entity);
+
+    customAttributes = await IdentityContext.CustomAttributes.AsNoTracking().ToArrayAsync();
+    Assert.Empty(customAttributes);
   }
 }

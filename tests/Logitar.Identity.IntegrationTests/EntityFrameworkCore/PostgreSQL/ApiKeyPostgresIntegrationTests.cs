@@ -237,6 +237,15 @@ public class ApiKeyPostgresIntegrationTests : IntegrationTests
     Assert.Equal(@"{""manage_api"":""True""}", entity.CustomAttributes);
     Assert.Equal(role.Id.Value, Assert.Single(entity.Roles).StreamId);
 
+    ActorEntity? actor = await IdentityContext.Actors.AsNoTracking().SingleOrDefaultAsync();
+    Assert.NotNull(actor);
+    Assert.Equal(entity.StreamId, actor.Id);
+    Assert.Equal(ActorType.ApiKey, actor.Type);
+    Assert.False(actor.IsDeleted);
+    Assert.Equal(entity.DisplayName, actor.DisplayName);
+    Assert.Null(actor.EmailAddress);
+    Assert.Null(actor.PictureUrl);
+
     CustomAttributeEntity[] customAttributes = await IdentityContext.CustomAttributes.AsNoTracking().ToArrayAsync();
     Assert.Equal(apiKey.CustomAttributes.Count, customAttributes.Length);
     foreach (KeyValuePair<Identifier, string> customAttribute in apiKey.CustomAttributes)
@@ -244,5 +253,18 @@ public class ApiKeyPostgresIntegrationTests : IntegrationTests
       Assert.Contains(customAttributes, c => c.EntityType == EntityType.ApiKey && c.EntityId == entity.ApiKeyId && c.Key == customAttribute.Key.Value
         && c.Value == customAttribute.Value && c.ValueShortened == customAttribute.Value.Truncate(byte.MaxValue));
     }
+
+    apiKey.Delete();
+    await _apiKeyRepository.SaveAsync(apiKey);
+
+    entity = await IdentityContext.ApiKeys.AsNoTracking().SingleOrDefaultAsync();
+    Assert.Null(entity);
+
+    actor = await IdentityContext.Actors.AsNoTracking().SingleOrDefaultAsync();
+    Assert.NotNull(actor);
+    Assert.True(actor.IsDeleted);
+
+    customAttributes = await IdentityContext.CustomAttributes.AsNoTracking().ToArrayAsync();
+    Assert.Empty(customAttributes);
   }
 }
