@@ -22,7 +22,7 @@ public abstract class AggregateEntity
     StreamId = @event.StreamId.Value;
 
     CreatedBy = @event.ActorId?.Value;
-    CreatedOn = @event.OccurredOn.ToUniversalTime();
+    CreatedOn = @event.OccurredOn.AsUniversalTime();
 
     Update(@event);
   }
@@ -46,7 +46,7 @@ public abstract class AggregateEntity
     Version = @event.Version;
 
     UpdatedBy = @event.ActorId?.Value;
-    UpdatedOn = @event.OccurredOn.ToUniversalTime();
+    UpdatedOn = @event.OccurredOn.AsUniversalTime();
   }
 
   public override bool Equals(object? obj) => obj is AggregateEntity aggregate && aggregate.StreamId == StreamId;

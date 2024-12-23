@@ -42,7 +42,7 @@ public class TokenBlacklist : ITokenBlacklist
   /// <returns>The asynchronous operation.</returns>
   public virtual async Task BlacklistAsync(IEnumerable<string> tokenIds, DateTime? expiresOn, CancellationToken cancellationToken)
   {
-    expiresOn = expiresOn?.ToUniversalTime();
+    expiresOn = expiresOn?.AsUniversalTime();
 
     Dictionary<string, BlacklistedTokenEntity> entities = await Context.TokenBlacklist
       .Where(x => tokenIds.Contains(x.TokenId))

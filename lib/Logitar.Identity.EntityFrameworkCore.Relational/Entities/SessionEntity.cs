@@ -79,7 +79,7 @@ public sealed class SessionEntity : AggregateEntity
     Update(@event);
 
     SignedOutBy = @event.ActorId?.Value;
-    SignedOutOn = @event.OccurredOn.ToUniversalTime();
+    SignedOutOn = @event.OccurredOn.AsUniversalTime();
   }
 
   public void Update(SessionUpdated @event)
