@@ -55,7 +55,7 @@ public class JsonWebTokenManagerTests
       Audience = "test_audience",
       Issuer = "test_issuer",
       Expires = now.AddMinutes(15),
-      IssuedAt = now.AddSeconds(-15).ToUniversalTime(),
+      IssuedAt = now.AddSeconds(-15).AsUniversalTime(),
       NotBefore = new(now.Ticks, DateTimeKind.Unspecified)
     };
     CreatedToken createdToken = await _tokenManager.CreateAsync(parameters, _cancellationToken);
@@ -72,7 +72,7 @@ public class JsonWebTokenManagerTests
       Audience = "test_audience",
       Issuer = "test_issuer",
       Expires = now.AddMinutes(15),
-      IssuedAt = now.AddSeconds(-15).ToUniversalTime(),
+      IssuedAt = now.AddSeconds(-15).AsUniversalTime(),
       NotBefore = new(now.Ticks, DateTimeKind.Unspecified)
     };
     CreatedToken createdToken = await _tokenManager.CreateAsync(_subject, _secret, options, _cancellationToken);
