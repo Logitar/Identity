@@ -26,7 +26,7 @@ public sealed class SessionEntity : AggregateEntity
   public DateTime? SignedOutOn { get; private set; }
   public bool IsActive
   {
-    get => SignedOutOn.HasValue;
+    get => !SignedOutOn.HasValue;
     private set { }
   }
 

@@ -38,8 +38,6 @@ public class UserPostgresIntegrationTests : IntegrationTests
     _password = new Pbkdf2Password(PasswordString, pbkdf2.Algorithm, pbkdf2.Iterations, pbkdf2.SaltLength, pbkdf2.HashLength);
   }
 
-  // TODO(fpion): Session
-
   [Theory(DisplayName = "LoadAsync: it should return the correct result, given a deletion status.")]
   [InlineData(null)]
   [InlineData(false)]
