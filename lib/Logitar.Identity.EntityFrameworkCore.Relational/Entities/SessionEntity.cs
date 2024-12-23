@@ -24,7 +24,11 @@ public sealed class SessionEntity : AggregateEntity
 
   public string? SignedOutBy { get; private set; }
   public DateTime? SignedOutOn { get; private set; }
-  public bool IsActive { get; private set; }
+  public bool IsActive
+  {
+    get => SignedOutOn.HasValue;
+    private set { }
+  }
 
   public string? CustomAttributes { get; private set; }
 
@@ -38,8 +42,6 @@ public sealed class SessionEntity : AggregateEntity
     UserId = user.UserId;
 
     SecretHash = @event.Secret?.Encode();
-
-    IsActive = true;
   }
 
   private SessionEntity() : base()
@@ -78,7 +80,6 @@ public sealed class SessionEntity : AggregateEntity
 
     SignedOutBy = @event.ActorId?.Value;
     SignedOutOn = @event.OccurredOn.ToUniversalTime();
-    IsActive = false;
   }
 
   public void Update(SessionUpdated @event)
