@@ -69,7 +69,7 @@ public class UserRepository : Repository, IUserRepository
     string? tenantIdValue = tenantId?.Value;
     string uniqueNameNormalized = IdentityDb.Helper.Normalize(uniqueName.Value);
 
-    string? streamId = await _context.Roles.AsNoTracking()
+    string? streamId = await _context.Users.AsNoTracking()
       .Where(x => x.TenantId == tenantIdValue && x.UniqueNameNormalized == uniqueNameNormalized)
       .Select(x => x.StreamId)
       .SingleOrDefaultAsync(cancellationToken);
@@ -85,8 +85,8 @@ public class UserRepository : Repository, IUserRepository
     string? tenantIdValue = tenantId?.Value;
     string emailAddressNormalized = IdentityDb.Helper.Normalize(email.Address);
 
-    IEnumerable<StreamId> streamIds = (await _context.Roles.AsNoTracking()
-      .Where(x => x.TenantId == tenantIdValue && x.UniqueNameNormalized == emailAddressNormalized)
+    IEnumerable<StreamId> streamIds = (await _context.Users.AsNoTracking()
+      .Where(x => x.TenantId == tenantIdValue && x.EmailAddressNormalized == emailAddressNormalized)
       .Select(x => x.StreamId)
       .ToArrayAsync(cancellationToken)).Select(value => new StreamId(value));
 

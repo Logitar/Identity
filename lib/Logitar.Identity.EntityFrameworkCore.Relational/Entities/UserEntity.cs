@@ -22,19 +22,11 @@ public sealed class UserEntity : AggregateEntity
   public string? PasswordHash { get; private set; }
   public string? PasswordChangedBy { get; private set; }
   public DateTime? PasswordChangedOn { get; private set; }
-  public bool HasPassword
-  {
-    get => PasswordChangedBy != null && PasswordChangedOn != null;
-    private set { }
-  }
+  public bool HasPassword { get; private set; }
 
   public string? DisabledBy { get; private set; }
   public DateTime? DisabledOn { get; private set; }
-  public bool IsDisabled
-  {
-    get => DisabledBy != null && DisabledOn != null;
-    private set { }
-  }
+  public bool IsDisabled { get; private set; }
 
   public string? AddressStreet { get; private set; }
   public string? AddressLocality { get; private set; }
@@ -44,11 +36,7 @@ public sealed class UserEntity : AggregateEntity
   public string? AddressFormatted { get; private set; }
   public string? AddressVerifiedBy { get; private set; }
   public DateTime? AddressVerifiedOn { get; private set; }
-  public bool IsAddressVerified
-  {
-    get => AddressVerifiedBy != null && AddressVerifiedOn != null;
-    private set { }
-  }
+  public bool IsAddressVerified { get; private set; }
 
   public string? EmailAddress { get; private set; }
   public string? EmailAddressNormalized
@@ -58,11 +46,7 @@ public sealed class UserEntity : AggregateEntity
   }
   public string? EmailVerifiedBy { get; private set; }
   public DateTime? EmailVerifiedOn { get; private set; }
-  public bool IsEmailVerified
-  {
-    get => EmailVerifiedBy != null && EmailVerifiedOn != null;
-    private set { }
-  }
+  public bool IsEmailVerified { get; private set; }
 
   public string? PhoneCountryCode { get; private set; }
   public string? PhoneNumber { get; private set; }
@@ -70,11 +54,7 @@ public sealed class UserEntity : AggregateEntity
   public string? PhoneE164Formatted { get; private set; }
   public string? PhoneVerifiedBy { get; private set; }
   public DateTime? PhoneVerifiedOn { get; private set; }
-  public bool IsPhoneVerified
-  {
-    get => PhoneVerifiedBy != null && PhoneVerifiedOn != null;
-    private set { }
-  }
+  public bool IsPhoneVerified { get; private set; }
 
   public bool IsConfirmed
   {
@@ -186,6 +166,7 @@ public sealed class UserEntity : AggregateEntity
 
     DisabledBy = @event.ActorId?.Value;
     DisabledOn = @event.OccurredOn.ToUniversalTime();
+    IsDisabled = true;
   }
 
   public void Enable(UserEnabled @event)
@@ -194,6 +175,7 @@ public sealed class UserEntity : AggregateEntity
 
     DisabledBy = null;
     DisabledOn = null;
+    IsDisabled = false;
   }
 
   public void RemoveCustomIdentifier(UserIdentifierRemoved @event)
@@ -231,11 +213,13 @@ public sealed class UserEntity : AggregateEntity
     {
       AddressVerifiedBy = @event.ActorId?.Value;
       AddressVerifiedOn = @event.OccurredOn.ToUniversalTime();
+      IsAddressVerified = true;
     }
     else if (IsAddressVerified && @event.Address?.IsVerified != true)
     {
       AddressVerifiedBy = null;
       AddressVerifiedOn = null;
+      IsAddressVerified = false;
     }
   }
 
@@ -263,11 +247,13 @@ public sealed class UserEntity : AggregateEntity
     {
       EmailVerifiedBy = @event.ActorId?.Value;
       EmailVerifiedOn = @event.OccurredOn.ToUniversalTime();
+      IsEmailVerified = true;
     }
     else if (IsEmailVerified && @event.Email?.IsVerified != true)
     {
       EmailVerifiedBy = null;
       EmailVerifiedOn = null;
+      IsEmailVerified = false;
     }
   }
 
@@ -278,6 +264,7 @@ public sealed class UserEntity : AggregateEntity
     PasswordHash = null;
     PasswordChangedBy = null;
     PasswordChangedOn = null;
+    HasPassword = false;
   }
 
   public void SetPassword(UserPasswordEvent @event)
@@ -287,6 +274,7 @@ public sealed class UserEntity : AggregateEntity
     PasswordHash = @event.Password.Encode();
     PasswordChangedBy = @event.ActorId?.Value;
     PasswordChangedOn = @event.OccurredOn.ToUniversalTime();
+    HasPassword = true;
   }
 
   public void SetPhone(UserPhoneChanged @event)
@@ -302,11 +290,13 @@ public sealed class UserEntity : AggregateEntity
     {
       PhoneVerifiedBy = @event.ActorId?.Value;
       PhoneVerifiedOn = @event.OccurredOn.ToUniversalTime();
+      IsPhoneVerified = true;
     }
     else if (IsPhoneVerified && @event.Phone?.IsVerified != true)
     {
       PhoneVerifiedBy = null;
       PhoneVerifiedOn = null;
+      IsPhoneVerified = false;
     }
   }
 
