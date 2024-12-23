@@ -208,7 +208,8 @@ public class ApiKeyPostgresIntegrationTests : IntegrationTests
       Description = new Description("This is a test API key."),
       ExpiresOn = DateTime.Now.AddDays(1)
     };
-    apiKey.SetCustomAttribute(new Identifier("manage_api"), bool.TrueString);
+    string userId = Guid.NewGuid().ToString();
+    apiKey.SetCustomAttribute(new Identifier("UserId"), userId);
     apiKey.Update();
     apiKey.AddRole(role);
     apiKey.Authenticate(SecretString);
@@ -234,7 +235,7 @@ public class ApiKeyPostgresIntegrationTests : IntegrationTests
     Assert.Equal(apiKey.ExpiresOn.Value.AsUniversalTime(), entity.ExpiresOn.Value, TimeSpan.FromSeconds(1));
     Assert.True(entity.AuthenticatedOn.HasValue);
     Assert.Equal(DateTime.UtcNow, entity.AuthenticatedOn.Value, TimeSpan.FromSeconds(1));
-    Assert.Equal(@"{""manage_api"":""True""}", entity.CustomAttributes);
+    Assert.Equal($@"{{""UserId"":""{userId}""}}", entity.CustomAttributes);
     Assert.Equal(role.Id.Value, Assert.Single(entity.Roles).StreamId);
 
     ActorEntity? actor = await IdentityContext.Actors.AsNoTracking().SingleOrDefaultAsync();

@@ -19,7 +19,7 @@ public class Session : AggregateRoot
   /// <summary>
   /// Gets the identifier of the session.
   /// </summary>
-  public new UserId Id => new(base.Id);
+  public new SessionId Id => new(base.Id);
   /// <summary>
   /// Gets the tenant identifier of the session.
   /// </summary>
