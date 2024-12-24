@@ -40,10 +40,10 @@ public record Locale
   /// <param name="code">The multipart code of the locale.</param>
   public Locale(string code)
   {
-    Code = code;
+    Code = code.Trim();
     new Validator().ValidateAndThrow(this);
 
-    Culture = CultureInfo.GetCultureInfo(code);
+    Culture = CultureInfo.GetCultureInfo(Code);
   }
 
   /// <summary>
