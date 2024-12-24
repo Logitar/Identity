@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Logitar.Identity.Infrastructure;
 
-internal class EventBus : IEventBus
+public class EventBus : IEventBus
 {
   private readonly IMediator _mediator;
 
@@ -13,7 +13,7 @@ internal class EventBus : IEventBus
     _mediator = mediator;
   }
 
-  public async Task PublishAsync(IEvent @event, CancellationToken cancellationToken)
+  public virtual async Task PublishAsync(IEvent @event, CancellationToken cancellationToken)
   {
     await _mediator.Publish(@event, cancellationToken);
   }
