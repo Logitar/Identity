@@ -30,11 +30,8 @@ public record Url
   /// Initializes a new instance of the <see cref="Url"/> class.
   /// </summary>
   /// <param name="uri">The Uniform Resource Identifier (URI) object.</param>
-  public Url(Uri uri)
+  public Url(Uri uri) : this(uri.ToString())
   {
-    Uri = uri;
-    Value = uri.ToString();
-    new Validator().ValidateAndThrow(this);
   }
   /// <summary>
   /// Initializes a new instance of the <see cref="Url"/> class.
@@ -42,10 +39,10 @@ public record Url
   /// <param name="value">A string representation of an Uniform Resource Identifier (URI).</param>
   public Url(string value)
   {
-    Value = value;
+    Value = value.Trim();
     new Validator().ValidateAndThrow(this);
 
-    Uri = new Uri(value, UriKind.Absolute);
+    Uri = new Uri(Value, UriKind.Absolute);
   }
 
   /// <summary>
