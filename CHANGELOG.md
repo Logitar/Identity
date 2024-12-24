@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Nothing yet.
 
+## [3.0.1] - 2024-12-23
+
+### Added
+
+- Value object unit tests.
+
+### Fixed
+
+- EventBus is now a public class and can be overriden.
+- Locale constructor.
+- Url constructor.
+
 ## [3.0.0] - 2024-12-23
 
 ### Changed
@@ -32,7 +44,8 @@ Nothing yet.
 - Relational storage (PostgreSQL and Microsoft SQL Server) for Identity entities.
 - Unit and Integration tests.
 
-[unreleased]: https://github.com/Logitar/Identity/compare/v3.0.0...HEAD
+[unreleased]: https://github.com/Logitar/Identity/compare/v3.0.1...HEAD
+[3.0.1]: https://github.com/Logitar/Identity/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/Logitar/Identity/compare/v2.0.0...v3.0.0
 [2.0.0]: https://github.com/Logitar/Identity/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/Logitar/Identity/releases/tag/v1.0.0
