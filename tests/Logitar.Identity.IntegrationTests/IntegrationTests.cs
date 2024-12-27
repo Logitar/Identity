@@ -3,9 +3,11 @@ using Logitar.Data;
 using Logitar.Data.PostgreSQL;
 using Logitar.Data.SqlServer;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
+using Logitar.Identity.Core;
 using Logitar.Identity.EntityFrameworkCore.PostgreSQL;
 using Logitar.Identity.EntityFrameworkCore.Relational;
 using Logitar.Identity.EntityFrameworkCore.SqlServer;
+using Logitar.Identity.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +36,10 @@ public abstract class IntegrationTests : IAsyncLifetime
 
     ServiceCollection services = new();
     services.AddSingleton(Configuration);
+
+    services.AddLogitarIdentityCore();
+    services.AddLogitarIdentityInfrastructure();
+    services.AddLogitarIdentityWithEntityFrameworkCoreRelational();
 
     string connectionString = Configuration.GetConnectionString(databaseProvider.ToString())
       ?.Replace("{Database}", GetType().Name)

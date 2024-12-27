@@ -7,7 +7,6 @@ using Logitar.Identity.Core.Tokens;
 using Logitar.Identity.Core.Users;
 using Logitar.Identity.EntityFrameworkCore.Relational.Repositories;
 using Logitar.Identity.EntityFrameworkCore.Relational.Tokens;
-using Logitar.Identity.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Logitar.Identity.EntityFrameworkCore.Relational;
@@ -18,7 +17,6 @@ public static class DependencyInjectionExtensions
   {
     return services
       .AddLogitarEventSourcingWithEntityFrameworkCoreRelational()
-      .AddLogitarIdentityInfrastructure()
       .AddMediatR(config => config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()))
       .AddRepositories()
       .AddTransient<ICustomAttributeService, CustomAttributeService>()
