@@ -12,7 +12,6 @@ public static class DependencyInjectionExtensions
     return services
       .AddDbContext<IdentityContext>(options => options.UseNpgsql(connectionString,
         builder => builder.MigrationsAssembly("Logitar.Identity.EntityFrameworkCore.PostgreSQL")))
-      .AddLogitarEventSourcingWithEntityFrameworkCorePostgreSQL(connectionString)
-      .AddLogitarIdentityWithEntityFrameworkCoreRelational();
+      .AddLogitarEventSourcingWithEntityFrameworkCorePostgreSQL(connectionString);
   }
 }

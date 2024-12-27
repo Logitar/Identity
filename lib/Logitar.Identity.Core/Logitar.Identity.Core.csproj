@@ -37,7 +37,7 @@
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.11.0" />
     <PackageReference Include="libphonenumber-csharp" Version="8.13.52" />
-    <PackageReference Include="Logitar.EventSourcing" Version="7.0.0" />
+    <PackageReference Include="Logitar.EventSourcing" Version="7.0.1" />
     <PackageReference Include="Logitar.Security" Version="7.0.1" />
     <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.0" />

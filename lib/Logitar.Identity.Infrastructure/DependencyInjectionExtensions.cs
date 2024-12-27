@@ -1,5 +1,4 @@
 ﻿using Logitar.EventSourcing.Infrastructure;
-using Logitar.Identity.Core;
 using Logitar.Identity.Core.Passwords;
 using Logitar.Identity.Core.Tokens;
 using Logitar.Identity.Infrastructure.Converters;
@@ -16,7 +15,6 @@ public static class DependencyInjectionExtensions
   public static IServiceCollection AddLogitarIdentityInfrastructure(this IServiceCollection services)
   {
     return services
-      .AddLogitarIdentityCore()
       .AddPasswordStrategies()
       .AddSingleton(serviceProvider =>
       {
