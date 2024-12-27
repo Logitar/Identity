@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Nothing yet.
 
+## [3.0.4] - 2024-12-27
+
+### Fixed
+
+- Session ID on user `SignIn` method.
+
 ## [3.0.3] - 2024-12-27
 
 ### Fixed
@@ -61,7 +67,8 @@ Nothing yet.
 - Relational storage (PostgreSQL and Microsoft SQL Server) for Identity entities.
 - Unit and Integration tests.
 
-[unreleased]: https://github.com/Logitar/Identity/compare/v3.0.3...HEAD
+[unreleased]: https://github.com/Logitar/Identity/compare/v3.0.4...HEAD
+[3.0.4]: https://github.com/Logitar/Identity/compare/v3.0.3...v3.0.4
 [3.0.3]: https://github.com/Logitar/Identity/compare/v3.0.2...v3.0.3
 [3.0.2]: https://github.com/Logitar/Identity/compare/v3.0.1...v3.0.2
 [3.0.1]: https://github.com/Logitar/Identity/compare/v3.0.0...v3.0.1
