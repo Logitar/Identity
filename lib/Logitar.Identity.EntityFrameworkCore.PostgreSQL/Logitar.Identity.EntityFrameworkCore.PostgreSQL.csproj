@@ -15,14 +15,14 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Logitar/Identity</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <AssemblyVersion>3.0.3.0</AssemblyVersion>
+    <AssemblyVersion>3.0.4.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>3.0.3</Version>
+    <Version>3.0.4</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
-    <PackageReleaseNotes>Fixed Dependency Injection.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixed Session ID on User.SignIn method.</PackageReleaseNotes>
     <PackageTags>logitar;net;framework;identity;entityframeworkcore;postgres</PackageTags>
     <PackageProjectUrl>https://github.com/Logitar/Identity/tree/main/lib/Logitar.Identity.EntityFrameworkCore.PostgreSQL</PackageProjectUrl>
   </PropertyGroup>

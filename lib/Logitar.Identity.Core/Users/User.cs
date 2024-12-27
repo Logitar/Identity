@@ -771,14 +771,14 @@ public class User : AggregateRoot
   /// </summary>
   /// <param name="secret">The secret of the session.</param>
   /// <param name="actorId">(Optional) The actor identifier. This parameter should be left null so that it defaults to the user's identifier.</param>
-  /// <param name="sessionId">The identifier of the session.</param>
+  /// <param name="entityId">The identifier of the session.</param>
   /// <returns>The newly opened session.</returns>
   /// <exception cref="IncorrectUserPasswordException">The password is incorrect.</exception>
   /// <exception cref="UserHasNoPasswordException">The user has no password.</exception>
   /// <exception cref="UserIsDisabledException">The user is disabled.</exception>
-  public Session SignIn(Password? secret = null, ActorId? actorId = null, SessionId? sessionId = null)
+  public Session SignIn(Password? secret = null, ActorId? actorId = null, EntityId? entityId = null)
   {
-    return SignIn(password: null, secret, actorId, sessionId);
+    return SignIn(password: null, secret, actorId, entityId);
   }
   /// <summary>
   /// Signs-in the user, opening a new session.
@@ -786,12 +786,12 @@ public class User : AggregateRoot
   /// <param name="password">The password to check.</param>
   /// <param name="secret">The secret of the session.</param>
   /// <param name="actorId">(Optional) The actor identifier. This parameter should be left null so that it defaults to the user's identifier.</param>
-  /// <param name="sessionId">The identifier of the session.</param>
+  /// <param name="entityId">The identifier of the session.</param>
   /// <returns>The newly opened session.</returns>
   /// <exception cref="IncorrectUserPasswordException">The password is incorrect.</exception>
   /// <exception cref="UserHasNoPasswordException">The user has no password.</exception>
   /// <exception cref="UserIsDisabledException">The user is disabled.</exception>
-  public Session SignIn(string? password, Password? secret = null, ActorId? actorId = null, SessionId? sessionId = null)
+  public Session SignIn(string? password, Password? secret = null, ActorId? actorId = null, EntityId? entityId = null)
   {
     if (IsDisabled)
     {
@@ -810,6 +810,7 @@ public class User : AggregateRoot
     }
 
     actorId ??= new(Id.Value);
+    SessionId sessionId = entityId.HasValue ? new SessionId(TenantId, entityId.Value) : SessionId.NewId(TenantId);
     Session session = new(this, secret, actorId, sessionId);
     Raise(new UserSignedIn(session.CreatedOn), actorId.Value);
 
