@@ -322,7 +322,7 @@ public class ApiKey : AggregateRoot
     }
     if (@event.ExpiresOn.HasValue)
     {
-      ExpiresOn = @event.ExpiresOn.Value;
+      _expiresOn = @event.ExpiresOn.Value;
     }
 
     foreach (KeyValuePair<Identifier, string?> customAttribute in @event.CustomAttributes)

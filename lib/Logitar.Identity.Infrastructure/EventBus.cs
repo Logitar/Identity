@@ -6,15 +6,15 @@ namespace Logitar.Identity.Infrastructure;
 
 public class EventBus : IEventBus
 {
-  private readonly IMediator _mediator;
+  protected IMediator Mediator { get; }
 
   public EventBus(IMediator mediator)
   {
-    _mediator = mediator;
+    Mediator = mediator;
   }
 
   public virtual async Task PublishAsync(IEvent @event, CancellationToken cancellationToken)
   {
-    await _mediator.Publish(@event, cancellationToken);
+    await Mediator.Publish(@event, cancellationToken);
   }
 }

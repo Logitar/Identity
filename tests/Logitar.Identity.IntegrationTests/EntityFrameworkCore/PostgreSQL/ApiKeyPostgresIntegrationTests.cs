@@ -195,6 +195,35 @@ public class ApiKeyPostgresIntegrationTests : IntegrationTests
     }
   }
 
+  [Fact(DisplayName = "SaveAsync: it should remove an API key role.")]
+  public async Task Given_ApiKeyWithRole_When_SaveAsync_Then_RoleRemoved()
+  {
+    Role role = new(new UniqueName(new UniqueNameSettings(), "admin"));
+    await _roleRepository.SaveAsync(role);
+
+    ApiKey apiKey = new(new DisplayName("Test"), _secret);
+    apiKey.AddRole(role);
+
+    await _apiKeyRepository.SaveAsync(apiKey);
+
+    ApiKeyEntity? entity = await IdentityContext.ApiKeys.AsNoTracking()
+      .Include(x => x.Roles)
+      .SingleOrDefaultAsync();
+    Assert.NotNull(entity);
+    Assert.Equal(apiKey.Id.Value, entity.StreamId);
+    Assert.Equal(role.Id.Value, Assert.Single(entity.Roles).StreamId);
+
+    apiKey.RemoveRole(role);
+    await _apiKeyRepository.SaveAsync(apiKey);
+
+    entity = await IdentityContext.ApiKeys.AsNoTracking()
+      .Include(x => x.Roles)
+      .SingleOrDefaultAsync();
+    Assert.NotNull(entity);
+    Assert.Equal(apiKey.Id.Value, entity.StreamId);
+    Assert.Empty(entity.Roles);
+  }
+
   [Fact(DisplayName = "SaveAsync: it should save the API key correctly.")]
   public async Task Given_ApiKey_When_SaveAsync_Then_SavedCorrectly()
   {
