@@ -7,7 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+- Some integration tests.
+
+### Fixed
+
+- EventBus Mediator is now public.
+- API key expiration.
 
 ## [3.0.1] - 2024-12-23
 
