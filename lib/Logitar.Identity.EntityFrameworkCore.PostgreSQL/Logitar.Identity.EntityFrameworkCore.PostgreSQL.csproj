@@ -15,14 +15,14 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Logitar/Identity</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <AssemblyVersion>3.0.1.0</AssemblyVersion>
+    <AssemblyVersion>3.0.2.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>3.0.1</Version>
+    <Version>3.0.2</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
-    <PackageReleaseNotes>Fixed EventBus; fixed Locale and Url constructor.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixed EventBus again; fixed API key expiration.</PackageReleaseNotes>
     <PackageTags>logitar;net;framework;identity;entityframeworkcore;postgres</PackageTags>
     <PackageProjectUrl>https://github.com/Logitar/Identity/tree/main/lib/Logitar.Identity.EntityFrameworkCore.PostgreSQL</PackageProjectUrl>
   </PropertyGroup>

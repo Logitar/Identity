@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [3.0.2] - 2024-12-27
+
 ### Added
 
 - Some integration tests.
@@ -51,7 +55,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Relational storage (PostgreSQL and Microsoft SQL Server) for Identity entities.
 - Unit and Integration tests.
 
-[unreleased]: https://github.com/Logitar/Identity/compare/v3.0.1...HEAD
+[unreleased]: https://github.com/Logitar/Identity/compare/v3.0.2...HEAD
+[3.0.2]: https://github.com/Logitar/Identity/compare/v3.0.1...v3.0.2
 [3.0.1]: https://github.com/Logitar/Identity/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/Logitar/Identity/compare/v2.0.0...v3.0.0
 [2.0.0]: https://github.com/Logitar/Identity/compare/v1.0.0...v2.0.0
