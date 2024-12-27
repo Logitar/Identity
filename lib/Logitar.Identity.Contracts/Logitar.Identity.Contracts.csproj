@@ -15,14 +15,14 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Logitar/Identity</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <AssemblyVersion>3.0.2.0</AssemblyVersion>
+    <AssemblyVersion>3.0.3.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>3.0.2</Version>
+    <Version>3.0.3</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <PackageReleaseNotes>Fixed EventBus again; fixed API key expiration.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixed Dependency Injection.</PackageReleaseNotes>
     <PackageTags>logitar;net;framework;identity;contracts</PackageTags>
     <PackageProjectUrl>https://github.com/Logitar/Identity/tree/main/lib/Logitar.Identity.Contracts</PackageProjectUrl>
   </PropertyGroup>
