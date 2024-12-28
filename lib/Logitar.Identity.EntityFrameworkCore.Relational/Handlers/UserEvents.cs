@@ -27,39 +27,58 @@ public sealed class UserEvents : INotificationHandler<UserAddressChanged>,
 {
   private readonly IdentityContext _context;
   private readonly ICustomAttributeService _customAttributes;
+  private readonly IMediator _mediator;
 
-  public UserEvents(IdentityContext context, ICustomAttributeService customAttributes)
+  public UserEvents(IdentityContext context, ICustomAttributeService customAttributes, IMediator mediator)
   {
     _context = context;
     _customAttributes = customAttributes;
+    _mediator = mediator;
   }
 
   public async Task Handle(UserAddressChanged @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await _context.Users
-      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'StreamId={@event.StreamId}' could not be found.");
+    UserEntity? user = await _context.Users
+      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
 
-    user.SetAddress(@event);
+    if (user == null || user.Version != (@event.Version - 1))
+    {
+      await _mediator.Publish(new EventNotHandled(@event, user), cancellationToken);
+    }
+    else
+    {
+      user.SetAddress(@event);
 
-    await _context.SaveChangesAsync(cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
+    }
   }
 
   public async Task Handle(UserAuthenticated @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await _context.Users
-      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'StreamId={@event.StreamId}' could not be found.");
+    UserEntity? user = await _context.Users
+      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
 
-    user.Authenticate(@event);
+    if (user == null || user.Version != (@event.Version - 1))
+    {
+      await _mediator.Publish(new EventNotHandled(@event, user), cancellationToken);
+    }
+    else
+    {
+      user.Authenticate(@event);
 
-    await _context.SaveChangesAsync(cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
+    }
   }
 
   public async Task Handle(UserCreated @event, CancellationToken cancellationToken)
   {
     UserEntity? user = await _context.Users.AsNoTracking()
       .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
+
     if (user == null)
     {
       user = new(@event);
@@ -68,6 +87,12 @@ public sealed class UserEvents : INotificationHandler<UserAddressChanged>,
 
       await SaveActorAsync(user, cancellationToken);
       await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
+    }
+    else
+    {
+      await _mediator.Publish(new EventNotHandled(@event, user), cancellationToken);
     }
   }
 
@@ -75,190 +100,317 @@ public sealed class UserEvents : INotificationHandler<UserAddressChanged>,
   {
     UserEntity? user = await _context.Users
       .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
-    if (user != null)
+
+    if (user == null)
+    {
+      await _mediator.Publish(new EventNotHandled(@event, user), cancellationToken);
+    }
+    else
     {
       _context.Users.Remove(user);
 
       await DeleteActorAsync(user, cancellationToken);
       await _customAttributes.RemoveAsync(EntityType.User, user.UserId, cancellationToken);
       await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
     }
   }
 
   public async Task Handle(UserDisabled @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await _context.Users
-      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'StreamId={@event.StreamId}' could not be found.");
+    UserEntity? user = await _context.Users
+      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
 
-    user.Disable(@event);
+    if (user == null || user.Version != (@event.Version - 1))
+    {
+      await _mediator.Publish(new EventNotHandled(@event, user), cancellationToken);
+    }
+    else
+    {
+      user.Disable(@event);
 
-    await _context.SaveChangesAsync(cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
+    }
   }
 
   public async Task Handle(UserEmailChanged @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await _context.Users
-      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'StreamId={@event.StreamId}' could not be found.");
+    UserEntity? user = await _context.Users
+      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
 
-    user.SetEmail(@event);
+    if (user == null || user.Version != (@event.Version - 1))
+    {
+      await _mediator.Publish(new EventNotHandled(@event, user), cancellationToken);
+    }
+    else
+    {
+      user.SetEmail(@event);
 
-    await SaveActorAsync(user, cancellationToken);
-    await _context.SaveChangesAsync(cancellationToken);
+      await SaveActorAsync(user, cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
+    }
   }
 
   public async Task Handle(UserEnabled @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await _context.Users
-      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'StreamId={@event.StreamId}' could not be found.");
+    UserEntity? user = await _context.Users
+      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
 
-    user.Enable(@event);
+    if (user == null || user.Version != (@event.Version - 1))
+    {
+      await _mediator.Publish(new EventNotHandled(@event, user), cancellationToken);
+    }
+    else
+    {
+      user.Enable(@event);
 
-    await _context.SaveChangesAsync(cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
+    }
   }
 
   public async Task Handle(UserIdentifierChanged @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await _context.Users
+    UserEntity? user = await _context.Users
       .Include(x => x.Identifiers)
-      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'StreamId={@event.StreamId}' could not be found.");
+      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
 
-    user.SetCustomIdentifier(@event);
+    if (user == null || user.Version != (@event.Version - 1))
+    {
+      await _mediator.Publish(new EventNotHandled(@event, user), cancellationToken);
+    }
+    else
+    {
+      user.SetCustomIdentifier(@event);
 
-    await _context.SaveChangesAsync(cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
+    }
   }
 
   public async Task Handle(UserIdentifierRemoved @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await _context.Users
+    UserEntity? user = await _context.Users
       .Include(x => x.Identifiers)
-      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'StreamId={@event.StreamId}' could not be found.");
+      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
 
-    user.RemoveCustomIdentifier(@event);
+    if (user == null || user.Version != (@event.Version - 1))
+    {
+      await _mediator.Publish(new EventNotHandled(@event, user), cancellationToken);
+    }
+    else
+    {
+      user.RemoveCustomIdentifier(@event);
 
-    await _context.SaveChangesAsync(cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
+    }
   }
 
   public async Task Handle(UserPasswordChanged @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await _context.Users
-      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'StreamId={@event.StreamId}' could not be found.");
+    UserEntity? user = await _context.Users
+      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
 
-    user.SetPassword(@event);
+    if (user == null || user.Version != (@event.Version - 1))
+    {
+      await _mediator.Publish(new EventNotHandled(@event, user), cancellationToken);
+    }
+    else
+    {
+      user.SetPassword(@event);
 
-    await _context.SaveChangesAsync(cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
+    }
   }
 
   public async Task Handle(UserPasswordRemoved @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await _context.Users
-      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'StreamId={@event.StreamId}' could not be found.");
+    UserEntity? user = await _context.Users
+      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
 
-    user.RemovePassword(@event);
+    if (user == null || user.Version != (@event.Version - 1))
+    {
+      await _mediator.Publish(new EventNotHandled(@event, user), cancellationToken);
+    }
+    else
+    {
+      user.RemovePassword(@event);
 
-    await _context.SaveChangesAsync(cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
+    }
   }
 
   public async Task Handle(UserPasswordReset @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await _context.Users
-      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'StreamId={@event.StreamId}' could not be found.");
+    UserEntity? user = await _context.Users
+      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
 
-    user.SetPassword(@event);
+    if (user == null || user.Version != (@event.Version - 1))
+    {
+      await _mediator.Publish(new EventNotHandled(@event, user), cancellationToken);
+    }
+    else
+    {
+      user.SetPassword(@event);
 
-    await _context.SaveChangesAsync(cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
+    }
   }
 
   public async Task Handle(UserPasswordUpdated @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await _context.Users
-      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'StreamId={@event.StreamId}' could not be found.");
+    UserEntity? user = await _context.Users
+      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
 
-    user.SetPassword(@event);
+    if (user == null || user.Version != (@event.Version - 1))
+    {
+      await _mediator.Publish(new EventNotHandled(@event, user), cancellationToken);
+    }
+    else
+    {
+      user.SetPassword(@event);
 
-    await _context.SaveChangesAsync(cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
+    }
   }
 
   public async Task Handle(UserPhoneChanged @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await _context.Users
-      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'StreamId={@event.StreamId}' could not be found.");
+    UserEntity? user = await _context.Users
+      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
 
-    user.SetPhone(@event);
+    if (user == null || user.Version != (@event.Version - 1))
+    {
+      await _mediator.Publish(new EventNotHandled(@event, user), cancellationToken);
+    }
+    else
+    {
+      user.SetPhone(@event);
 
-    await _context.SaveChangesAsync(cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
+    }
   }
 
   public async Task Handle(UserRoleAdded @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await _context.Users
-      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'StreamId={@event.StreamId}' could not be found.");
+    UserEntity? user = await _context.Users
+      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
 
     RoleEntity role = await _context.Roles
       .SingleOrDefaultAsync(x => x.StreamId == @event.RoleId.Value, cancellationToken)
       ?? throw new InvalidOperationException($"The role entity 'StreamId={@event.RoleId}' could not be found.");
 
-    user.AddRole(role, @event);
+    if (user == null || user.Version != (@event.Version - 1))
+    {
+      await _mediator.Publish(new EventNotHandled(@event, user), cancellationToken);
+    }
+    else
+    {
+      user.AddRole(role, @event);
 
-    await _context.SaveChangesAsync(cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
+    }
   }
 
   public async Task Handle(UserRoleRemoved @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await _context.Users
+    UserEntity? user = await _context.Users
       .Include(x => x.Roles)
-      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'StreamId={@event.StreamId}' could not be found.");
+      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
 
-    user.RemoveRole(@event);
+    if (user == null || user.Version != (@event.Version - 1))
+    {
+      await _mediator.Publish(new EventNotHandled(@event, user), cancellationToken);
+    }
+    else
+    {
+      user.RemoveRole(@event);
 
-    await _context.SaveChangesAsync(cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
+    }
   }
 
   public async Task Handle(UserSignedIn @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await _context.Users
-      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'StreamId={@event.StreamId}' could not be found.");
+    UserEntity? user = await _context.Users
+      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
 
-    user.SignIn(@event);
+    if (user == null || user.Version != (@event.Version - 1))
+    {
+      await _mediator.Publish(new EventNotHandled(@event, user), cancellationToken);
+    }
+    else
+    {
+      user.SignIn(@event);
 
-    await _context.SaveChangesAsync(cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
+    }
   }
 
   public async Task Handle(UserUniqueNameChanged @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await _context.Users
-      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'StreamId={@event.StreamId}' could not be found.");
+    UserEntity? user = await _context.Users
+      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
 
-    user.SetUniqueName(@event);
+    if (user == null || user.Version != (@event.Version - 1))
+    {
+      await _mediator.Publish(new EventNotHandled(@event, user), cancellationToken);
+    }
+    else
+    {
+      user.SetUniqueName(@event);
 
-    await SaveActorAsync(user, cancellationToken);
-    await _context.SaveChangesAsync(cancellationToken);
+      await SaveActorAsync(user, cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
+    }
   }
 
   public async Task Handle(UserUpdated @event, CancellationToken cancellationToken)
   {
-    UserEntity user = await _context.Users
-      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The user entity 'StreamId={@event.StreamId}' could not be found.");
+    UserEntity? user = await _context.Users
+      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
 
-    user.Update(@event);
+    if (user == null || user.Version != (@event.Version - 1))
+    {
+      await _mediator.Publish(new EventNotHandled(@event, user), cancellationToken);
+    }
+    else
+    {
+      user.Update(@event);
 
-    await SaveActorAsync(user, cancellationToken);
-    await _customAttributes.UpdateAsync(EntityType.User, user.UserId, @event.CustomAttributes, cancellationToken);
-    await _context.SaveChangesAsync(cancellationToken);
+      await SaveActorAsync(user, cancellationToken);
+      await _customAttributes.UpdateAsync(EntityType.User, user.UserId, @event.CustomAttributes, cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
+    }
   }
 
   private async Task DeleteActorAsync(UserEntity user, CancellationToken cancellationToken)

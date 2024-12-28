@@ -14,28 +14,39 @@ public sealed class ApiKeyEvents : INotificationHandler<ApiKeyAuthenticated>,
 {
   private readonly IdentityContext _context;
   private readonly ICustomAttributeService _customAttributes;
+  private readonly IMediator _mediator;
 
-  public ApiKeyEvents(IdentityContext context, ICustomAttributeService customAttributes)
+  public ApiKeyEvents(IdentityContext context, ICustomAttributeService customAttributes, IMediator mediator)
   {
     _context = context;
     _customAttributes = customAttributes;
+    _mediator = mediator;
   }
 
   public async Task Handle(ApiKeyAuthenticated @event, CancellationToken cancellationToken)
   {
-    ApiKeyEntity apiKey = await _context.ApiKeys
-      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The API key entity 'StreamId={@event.StreamId}' could not be found.");
+    ApiKeyEntity? apiKey = await _context.ApiKeys
+      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
 
-    apiKey.Authenticate(@event);
+    if (apiKey == null || apiKey.Version != (@event.Version - 1))
+    {
+      await _mediator.Publish(new EventNotHandled(@event, apiKey), cancellationToken);
+    }
+    else
+    {
+      apiKey.Authenticate(@event);
 
-    await _context.SaveChangesAsync(cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
+    }
   }
 
   public async Task Handle(ApiKeyCreated @event, CancellationToken cancellationToken)
   {
     ApiKeyEntity? apiKey = await _context.ApiKeys.AsNoTracking()
       .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
+
     if (apiKey == null)
     {
       apiKey = new(@event);
@@ -44,6 +55,12 @@ public sealed class ApiKeyEvents : INotificationHandler<ApiKeyAuthenticated>,
 
       await SaveActorAsync(apiKey, cancellationToken);
       await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
+    }
+    else
+    {
+      await _mediator.Publish(new EventNotHandled(@event, apiKey), cancellationToken);
     }
   }
 
@@ -51,54 +68,85 @@ public sealed class ApiKeyEvents : INotificationHandler<ApiKeyAuthenticated>,
   {
     ApiKeyEntity? apiKey = await _context.ApiKeys
       .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
-    if (apiKey != null)
+
+    if (apiKey == null)
+    {
+      await _mediator.Publish(new EventNotHandled(@event, apiKey), cancellationToken);
+    }
+    else
     {
       _context.ApiKeys.Remove(apiKey);
 
       await DeleteActorAsync(apiKey, cancellationToken);
       await _customAttributes.RemoveAsync(EntityType.ApiKey, apiKey.ApiKeyId, cancellationToken);
       await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
     }
   }
 
   public async Task Handle(ApiKeyRoleAdded @event, CancellationToken cancellationToken)
   {
-    ApiKeyEntity apiKey = await _context.ApiKeys
-      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The API key entity 'StreamId={@event.StreamId}' could not be found.");
+    ApiKeyEntity? apiKey = await _context.ApiKeys
+      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
 
-    RoleEntity role = await _context.Roles
-      .SingleOrDefaultAsync(x => x.StreamId == @event.RoleId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The role entity 'StreamId={@event.RoleId}' could not be found.");
+    if (apiKey == null || apiKey.Version != (@event.Version - 1))
+    {
+      await _mediator.Publish(new EventNotHandled(@event, apiKey), cancellationToken);
+    }
+    else
+    {
+      RoleEntity role = await _context.Roles
+        .SingleOrDefaultAsync(x => x.StreamId == @event.RoleId.Value, cancellationToken)
+        ?? throw new InvalidOperationException($"The role entity 'StreamId={@event.RoleId}' could not be found.");
 
-    apiKey.AddRole(role, @event);
+      apiKey.AddRole(role, @event);
 
-    await _context.SaveChangesAsync(cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
+    }
   }
 
   public async Task Handle(ApiKeyRoleRemoved @event, CancellationToken cancellationToken)
   {
-    ApiKeyEntity apiKey = await _context.ApiKeys
+    ApiKeyEntity? apiKey = await _context.ApiKeys
       .Include(x => x.Roles)
-      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The API key entity 'StreamId={@event.StreamId}' could not be found.");
+      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
 
-    apiKey.RemoveRole(@event);
+    if (apiKey == null || apiKey.Version != (@event.Version - 1))
+    {
+      await _mediator.Publish(new EventNotHandled(@event, apiKey), cancellationToken);
+    }
+    else
+    {
+      apiKey.RemoveRole(@event);
 
-    await _context.SaveChangesAsync(cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
+    }
   }
 
   public async Task Handle(ApiKeyUpdated @event, CancellationToken cancellationToken)
   {
-    ApiKeyEntity apiKey = await _context.ApiKeys
-      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The API key entity 'StreamId={@event.StreamId}' could not be found.");
+    ApiKeyEntity? apiKey = await _context.ApiKeys
+      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
 
-    apiKey.Update(@event);
+    if (apiKey == null || apiKey.Version != (@event.Version - 1))
+    {
+      await _mediator.Publish(new EventNotHandled(@event, apiKey), cancellationToken);
+    }
+    else
+    {
+      apiKey.Update(@event);
 
-    await SaveActorAsync(apiKey, cancellationToken);
-    await _customAttributes.UpdateAsync(EntityType.ApiKey, apiKey.ApiKeyId, @event.CustomAttributes, cancellationToken);
-    await _context.SaveChangesAsync(cancellationToken);
+      await SaveActorAsync(apiKey, cancellationToken);
+      await _customAttributes.UpdateAsync(EntityType.ApiKey, apiKey.ApiKeyId, @event.CustomAttributes, cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
+
+      await _mediator.Publish(new EventHandled(@event), cancellationToken);
+    }
   }
 
   private async Task DeleteActorAsync(ApiKeyEntity apiKey, CancellationToken cancellationToken)

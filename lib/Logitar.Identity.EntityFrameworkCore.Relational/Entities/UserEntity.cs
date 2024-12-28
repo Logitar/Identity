@@ -198,6 +198,8 @@ public sealed class UserEntity : AggregateEntity
 
   public void RemoveCustomIdentifier(UserIdentifierRemoved @event)
   {
+    Update(@event);
+
     UserIdentifierEntity? identifier = Identifiers.SingleOrDefault(x => x.Key == @event.Key.Value);
     if (identifier != null)
     {
@@ -241,6 +243,8 @@ public sealed class UserEntity : AggregateEntity
 
   public void SetCustomIdentifier(UserIdentifierChanged @event)
   {
+    Update(@event);
+
     UserIdentifierEntity? identifier = Identifiers.SingleOrDefault(x => x.Key == @event.Key.Value);
     if (identifier == null)
     {
